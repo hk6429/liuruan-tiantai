@@ -1,0 +1,1401 @@
+2026-11-06T16:31:11.481250Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when Client(HttpRequest(HttpRequest("http/request failed: error sending request for url (http://127.0.0.1:8080/mcp)")))
+2026-11-06T16:31:11.745018Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when Client(HttpRequest(HttpRequest("http/request failed: error sending request for url (http://127.0.0.1:8080/mcp)")))
+OpenAI Codex v0.166.0
+--------
+workdir: /Volumes/hk6429/projects/liuruan-tiantai
+model: gpt-6.1-sol
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR]
+reasoning effort: medium
+reasoning summaries: none
+session id: 01a1b1b3-2191-7b81-8a58-ac64beb03c17
+--------
+user
+# S 線 R0：HungerSystem＋CompanionFollow 原始碼與測試
+
+工作目錄：本專案根目錄。先讀 AGENTS.md、docs/plan.md 第三、四、六節。只能寫 staging/scripts/。不准開 Unity。
+
+## 任務
+寫在 staging/scripts/Runtime/ 與 staging/scripts/Tests/EditMode/，namespace Liuruan。Unity 6000.3、C# 9 以內、不依賴第三方套件（可用 UnityEngine.AI）。
+
+1. **HungerCore**（純 C#，無 MonoBehaviour，可單元測試）：
+   - 5 格飢餓值（float 0–5），每 N 秒（預設 24）掉 0.5 格；可 Pause/Resume（面板開啟、演出時暫停）。
+   - Eat(amount)、FillAll()（攀桃「飢止體充」用）；歸零時觸發 OnStarving 事件（**不死亡**，只讓移動速度降到 60% 並出 Toast 提示去找食物）。
+   - 第一幕起始 3 格（「糧乏盡」）。
+2. **HungerSystem**（MonoBehaviour）：包 HungerCore，提供 SpeedMultiplier 給 PlayerController 讀；事件給 HUD。
+3. **CompanionCore**（純 C#）：給定玩家位置、阮肇位置，決定狀態 Follow / Idle / Catchup / Teleport：距離 <2.5m Idle、2.5–12m Follow、>12m Catchup（加速）、>30m 或卡住 3 秒 Teleport 到玩家身後 2m。呼喚技能 Call()：冷卻 8 秒，回傳是否成功與剩餘冷卻比例（給左下頭像冷卻環）。
+4. **CompanionFollow**（MonoBehaviour）：用 NavMeshAgent 執行 CompanionCore 的決策；沒有 NavMesh 時退回直接 MoveTowards；暴露 Speed 給動畫。
+5. EditMode 測試（NUnit）覆蓋 HungerCore 與 CompanionCore 的所有狀態轉換與邊界。另寫一支 staging/scripts/Tests/run_core_tests.sh：用 dotnet（若本機有）把兩個 Core 類別與測試編成 console 跑過；若沒有 dotnet，改寫一個不依賴 UnityEngine 的最小斷言 runner（用 mono／csc 或任何本機可用的 C# 編譯器），並在報告寫明實際用什麼跑的。Core 類別不得引用 UnityEngine（向量用自訂 struct 或 System.Numerics）。
+6. staging/scripts/INTEGRATION.md：U 線之後要怎麼掛（放哪個資料夾、哪個 GameObject、PlayerController 要加哪一行讀 SpeedMultiplier）。
+
+## 驗收條件
+- run_core_tests.sh 實際跑過、全綠，把輸出貼進交件報告。
+交件報告寫 logs/S-R0.md。
+
+warning: Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.
+  user (/Users/naichengchen/.codex/config.toml): `features.rmcp_client` is ignored.
+  user (/Users/naichengchen/.codex/config.toml): `writable_roots` is ignored.
+warning: Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.
+  user (/Users/naichengchen/.codex/config.toml): `features.rmcp_client` is ignored.
+  user (/Users/naichengchen/.codex/config.toml): `writable_roots` is ignored.
+warning: Under-development features enabled: chronicle. Under-development features are incomplete and may behave unpredictably. To suppress this warning, set `suppress_unstable_features_warning = true` in /Users/naichengchen/.codex/config.toml.
+2026-11-06T16:31:12.772098Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when Client(HttpRequest(HttpRequest("http/request failed: error sending request for url (http://127.0.0.1:8080/mcp)")))
+warning: Exceeded skills context budget. All skill descriptions were removed and 50 additional skills were not included in the model-visible skills list.
+hook: SessionStart
+hook: SessionStart
+hook: SessionStart Completed
+hook: SessionStart Completed
+hook: UserPromptSubmit
+hook: UserPromptSubmit
+hook: UserPromptSubmit Completed
+hook: UserPromptSubmit Completed
+codex
+我會先確認規格與本機 C# 編譯環境，再實作兩個 Core、Unity 包裝與測試；全程不開 Unity。交件報告指定的 `logs/S-R0.md` 超出「只能寫 staging/scripts/」的範圍，我會先將報告放在 `staging/scripts/logs/S-R0.md`，保留給 U 線搬移。
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "rg -n 'liuruan|天台|C#|mono|dotnet' /Users/naichengchen/.codex/memories/MEMORY.md" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+1388:- `/Users/naichengchen/projects/liulaolao-garden` must not be assumed to be the repository; use `pwd`/`readlink` or directory inspection. The confirmed project is `/Volumes/hk6429/projects/liulaolao-garden`. Its `AGENTS.md` requires Unity changes through unityMCP; after C# edits run `refresh_unity` then `read_console`, and use `FontSubset.RebuildNoDialog()` rather than `Tools/Liulaolao/Rebuild Font Subset`. [Task 1]
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "cat AGENTS.md; cat RTK.md; sed -n '1,260p' docs/plan.md; rg --files staging/scripts; command -v dotnet mono csc mcs csi" in /Volumes/hk6429/projects/liuruan-tiantai
+ exited 1 in 0ms:
+# 天台山・流杯記（liuruan-tiantai）— Codex 接手說明
+
+Unity 6000.3.27f1 URP WebGL 國文遊戲，題材《幽明錄》〈劉晨阮肇入天台〉。回覆一律繁體中文（台灣）。
+計劃書：docs/plan.md（五幕：迷山／攀桃／流杯／仙村／歸鄉；四線 U/S/A/C）。
+參考畫面：staging/ref/*.jpg（UE5 Q 版小勇者影片截圖，風格與 HUD 版面照它）。
+骨架來源：/Volumes/hk6429/projects/liulaolao-garden（劉姥姥，只讀，絕不修改該專案）。
+
+## 鐵律
+- 只寫自己這條線被指定的資料夾，不碰別線的檔案。
+- 只有 U 線可以操作 Unity（UnityMCP 或 batchmode），其他線不得開 Unity。
+- 台詞與原文只用 sources/liuruan_tw.txt 逐字，不准自編情節或台詞；自撰限簡短白話旁白。
+- 女子留宿段（「各就一帳宿」起至「遂停半年」前）整段略過，只用旁白「遂停半年」帶過。
+- 不做戰鬥。不推 GitHub、不推 Vercel。生成產物不放 iCloud。
+- 刪檔用 /bin/rm；Blender 只能 headless（-b --factory-startup）。
+- 完成時在 logs/<線>-R<輪>.md 寫交件報告：做了什麼、檔案清單、怎麼驗證的、沒做到什麼。不得謊報。
+cat: RTK.md: No such file or directory
+---
+date: 2026-11-07
+type: 計劃書
+tags: [unity-webgl, 教育遊戲, 幽明錄, 劉晨阮肇, 桃花源記, 比較閱讀, 國文]
+---
+
+# 〈劉晨阮肇入天台〉Unity WebGL 教育遊戲計劃書（草案 v0.1）
+
+- 專案代號：`liuruan-tiantai`（實體路徑 `/Volumes/hk6429/projects/liuruan-tiantai`，`~/projects` 是 symlink，Codex 一律帶實體路徑）
+- 參考影片：`~/Downloads/F3-pUil44IpPP3fK.mp4`（UE5 Q 版小勇者，47 秒：帳篷村 → 開寶箱 → 木樁 → 光束森林小徑 → 營火帳篷）
+- 產線：沿用〈劉姥姥〉`~/projects/liulaolao-garden`（Unity 6000.3.27f1 URP WebGL＋Boot 場景包切塊＋R30 畫質工具）與 `/unity-webgl-edu-game` skill
+- 分工：**CC 規劃、寫任務書、驗收；Codex 執行**，每輪四線平行，只有 U 線碰 UnityMCP
+
+---
+
+## 一、教學目標
+
+| # | 目標 | 遊戲中怎麼學 |
+|---|---|---|
+| 1 | 讀懂志怪小說的敘事結構：入山 → 遇仙 → 留居 → 思歸 → 返鄉 | 五幕就是五段，每幕結束時解鎖原文 |
+| 2 | 抓線索推論：蕪菁葉、流杯、胡麻飯糝 →「此知去人徑不遠」 | 溪中漂流物三選一推論題 |
+| 3 | 「仙界一日，人間百年」的時間母題 | 結局村莊整個換樣，七世孫出場 |
+| 4 | 與〈桃花源記〉比較閱讀 | 結局比較表：入口、異境樣貌、離開方式、能否重返 |
+
+## 二、角色
+
+| 影片 | 本作 |
+|---|---|
+| 紅帽小勇者（玩家） | **劉晨**：Q 版漢代採藥人，頭巾、短褐、背簍、腰插小斧 |
+| 發光小象夥伴 | **阮肇**：AI 跟隨，會落後、會回頭催；左下頭像＝阮肇 |
+| 村民 | 二女子、三四十名仙女（遠景群像，用同一模型換色） |
+| 結局 NPC | 七世孫 |
+
+不做戰鬥。影片的劍盾改成小斧＋背簍；木樁靶場改成「取穀皮」的楮樹林。
+
+## 三、遊戲流程（五幕，約 15 分鐘，一節課可玩完＋討論）
+
+台詞與旁白**只引原文逐字**，自撰限簡短白話旁白，不加情節（劉姥姥鐵律沿用）。
+
+| 幕 | 影片對應段 | 原文情節 | 互動 | 考點 |
+|---|---|---|---|---|
+| 一、迷山 | 森林小徑＋光束 | 入天台山取穀皮，迷不得返，經十三日糧乏盡 | 剝 5 棵楮樹皮（＋穀皮計數）；HUD 5 格飢餓值隨時間遞減；小地圖逐漸起霧 | 「迷不得返」的處境 |
+| 二、攀桃 | 森林盡頭山壁 | 遙望山上桃樹，絕巖邃澗，攀援藤葛乃得至上，各噉數枚，飢止體充 | 沿藤蔓攀爬小段；摘桃，飢餓值回滿 | 困境轉折 |
+| 三、流杯 | 開寶箱 | 持杯取水，見蕪菁葉、一杯流出、有胡麻飯糝 →「此知去人徑不遠」 | 溪中三件漂流物＝三個寶箱，按 [E] 撿起；集滿後推論題；涉水逆流 | 線索推論 |
+| 四、仙村 | 帳篷村＋營火＋告示板 | 溪邊二女子喚「劉、阮二郎」；銅瓦屋、絳羅帳、帳角懸鈴；停半年，春時百鳥啼鳴，懷悲思求歸 | 村中任務告示板（原文段落卡）；季節由春轉春、鳥鳴；「求歸」選項 | 身在仙境的矛盾心理 |
+| 五、歸鄉 | （影片無，本作加碼） | 親舊零落，邑屋改異，無復相識；問訊得七世孫 | 回到第一幕起點的村子，整個換樣（同場景換一套建物＋陌生村民）；七世孫對話 | 時間母題＋比較閱讀 |
+
+結局：全文＋推論題（為什麼會是七世？）＋〈桃花源記〉比較表＋成績卡（沿用 QuizStats）。
+
+**待你決定**：原文中女子留宿的段落（「各就一帳宿」那段）國中不適合，建議**整段略過**，只用旁白「遂停半年」帶過。
+
+## 四、HUD（照影片版面）
+
+| 位置 | 影片 | 本作 |
+|---|---|---|
+| 左上 | 5 顆火焰＋「+25 Embers」 | 5 顆桃形飢餓值＋「穀皮 ×N」 |
+| 右上 | 3 個菱形技能格（G/R/F） | 剝皮／取水／呼喚阮肇（手機改成三顆圓鈕） |
+| 左下 | 小象頭像＋點狀冷卻環 | 阮肇頭像＋呼喚冷卻環 |
+| 右下 | 小地圖 | 小地圖（正交俯視 RenderTexture，第一幕會起霧） |
+| 中下 | `[E] Close the chest` | `[E] 撿起` 互動提示（手機改「互動」鈕） |
+
+## 五、美術定調
+
+- 整體：照影片的**風格化 Q 版＋暖陽光束**（頭身比約 1:2.5、飽和暖綠、強烈斜射陽光、柔和陰影）。跟劉姥姥的半寫實武俠不同，這次要可愛。
+- 天台山：松、竹、楮樹、藤蔓、絕巖、溪澗；光束用體積光假面片＋懸浮塵粒（不跑真體積光，WebGL 撐不住）。
+- 仙村：**銅瓦屋**（銅綠＋金邊屋瓦會反光）、絳紅羅帳、帳角懸鈴（風動＋音效）、桃花樹；比影片的帳篷村更夢幻。
+- 歸鄉村：同一塊地，換成破舊陌生的漢代民居、灰冷色調，與仙村形成反差。
+- 產線：codex-image2 概念圖 → **Dzine Normal**（10 點／件）轉 3D → headless Blender 瘦身 → Mixamo 自動綁骨 → Unity Humanoid。
+
+**Dzine 預算**：人物 4（劉晨、阮肇、仙女、七世孫）＋建物道具約 16 件 ≈ 20 件 × 10 點 ＝ 約 200 點。
+
+## 六、技術規劃（只列與劉姥姥不同處）
+
+| 項目 | 規劃 |
+|---|---|
+| 鏡頭 | 第三人稱跟隨＋碰撞縮距（沿用 CamOcclusion），比劉姥姥更低、更貼近，跟影片一樣 |
+| 場景 | 一個大地形分三區（森林／溪谷／村），Boot＋場景包切塊沿用 R30 |
+| 新系統 | `HungerSystem`、`CompanionFollow`（NavMesh 跟隨＋落後催促）、`MinimapCam`、`ClimbZone`、`DriftPickup`、`SeasonSwap`（歸鄉換景） |
+| 沿用 | BootLoader、PlayerController、TouchControls、QualityTier／QualityToggle、FontSubset（RebuildNoDialog）、ClueManager、QuizStats、EpilogueDirector、R30Lighting／R30Foliage、deploy.sh／verify.sh |
+| 包體 | data < 26,214,400 bytes；場景包每塊 20 MiB |
+| 部署 | CF Pages＋Netlify（不推 Vercel）；itch 等你說要再上；不推 GitHub（照劉姥姥） |
+
+## 七、四線分工與輪次
+
+| 線 | 負責 | 寫入範圍 | 工具 |
+|---|---|---|---|
+| **U** | Unity 組裝、建置 | `Assets/`、`ProjectSettings/` | Codex＋UnityMCP（唯一） |
+| **S** | 新系統 C# 原始碼（先在外部寫好、附 EditMode 測試） | `staging/scripts/` | Codex |
+| **A** | 美術：概念圖、天空、貼圖、草叢卡片 | `staging/art/` | Codex 生圖（codex-image2） |
+| **C** | 內容：原文校對、題目、比較表、教師手冊 | `sources/`、`Assets/_Project/Data/`、`docs/` | Codex |
+
+Dzine、Mixamo 要用瀏覽器，由 **CC 主線用 Chrome 操作**（Codex 碰不到你的 Chrome）。
+
+| 輪 | U | S | A | C | 驗收 |
+|---|---|---|---|---|---|
+| R0 開專案 | 從劉姥姥複製骨架、新建 Boot／Main、灰盒地形三區 | HungerSystem、CompanionFollow | 概念圖 6 張（森林、溪谷、仙村、歸鄉村、劉晨、阮肇） | 原文取得與校對（太平廣記卷 61 引幽明錄為底本）→ `sources/liuruan_tw.txt` | 你看概念圖定調 |
+| R1 白模可玩 | 灰盒走完五幕、HUD 版面 | MinimapCam、ClimbZone、DriftPickup | 天空全景、地面貼圖、草叢卡片 | clues.json＋題目＋比較表 | 瀏覽器實開灰盒版 |
+| R2 3D 生成 | 匯入 Dzine 模型 | SeasonSwap、EpilogueDirector 改寫 | 建物道具概念圖（單一主體淺灰底） | 教師手冊、學習單 | 主線跑 Dzine＋Mixamo |
+| R3 質感 | 地形、植被風動、光束、後製、仙村擺件密度 | 觸控三鈕、手機 HUD | 補圖、UI 圖示（桃、穀皮、頭像） | 字型子集字表、製作說明 | 改前改後對照圖 |
+| R4 審查 | 修正 | 修正 | 修正 | 四位專家走查（遊戲、國文、UX、效能） | 你說「全部修正」 |
+| R5 上線 | build＋場景包 | — | — | 上線文案 | deploy.sh＋verify.sh md5＋瀏覽器實開 |
+
+每輪派工規格（照劉姥姥）：任務書寫明寫入範圍、驗收條件、鐵律；`codex exec -C /Volumes/hk6429/projects/liuruan-tiantai -s workspace-write`；驗收看實際 diff 與檔案，不看回報文字；20 分鐘沒動靜視為卡住。
+
+## 八、需要你決定的事
+
+1. 女子留宿段：建議整段略過（見第三節）。
+2. 專案代號 `liuruan-tiantai`、遊戲名〈天台山・流杯記〉，可以嗎？
+3. Dzine 約 200 點，點數夠不夠？
+4. 上線範圍：只上 CF＋Netlify，還是比照劉姥姥也上 itch？
+
+## 九、風險
+
+| 風險 | 對策 |
+|---|---|
+| Q 版光束畫質在 WebGL 達不到影片水準 | 先做森林一區當樣板，你點頭再推其他區（skill 2.5 節） |
+| 原文版本差異（太平廣記／太平御覽／藝文類聚字句不同） | C 線列出異文表，以太平廣記為底本並註明 |
+| 阮肇 AI 跟隨卡地形 | NavMesh＋超距瞬移回身邊 |
+| UnityMCP 斷線（本 session 開頭就是 ECONNREFUSED） | 開工前請你開 Unity，Window → MCP for Unity → Start Server |
+/opt/homebrew/bin/dotnet
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+codex
+交件報告的路徑有兩項互相衝突的要求：只能寫 staging/scripts/，以及寫 logs/S-R0.md。是否允許將 logs/S-R0.md 作為唯一例外？
+- 允許報告寫入 logs/S-R0.md
+- 全部留在 staging/scripts/
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "git status --short; ls -la staging/scripts; test -d .codegraph && echo CODEGRAPH_PRESENT; rg --files -g 'AGENTS.md' -g 'RTK.md' -g '*PlayerController*'; dotnet --info" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 603ms:
+?? .cf-branch
+?? AGENTS.md
+?? briefs/
+?? docs/
+?? logs/
+?? staging/
+total 0
+drwxr-xr-x@ 2 naichengchen  staff   64 Nov  7 00:28 .
+drwxr-xr-x@ 5 naichengchen  staff  160 Nov  7 00:28 ..
+AGENTS.md
+.NET SDK:
+ Version:           10.0.402
+ Commit:            a8dd0577c5
+ Workload version:  10.0.400-manifests.da132f47
+ MSBuild version:   18.9.15+a8dd0577c
+
+執行階段環境:
+ OS Name:     Mac OS X
+ OS Version:  26.6
+ OS Platform: Darwin
+ RID:         osx-arm64
+ Base Path:   /opt/homebrew/Cellar/dotnet/10.0.402/libexec/sdk/10.0.402/
+
+安裝的 .NET 工作負載:
+沒有已安裝的工作負載可顯示。
+設為在安裝新資訊清單時使用 workload sets。
+未安裝任何工作負載集合。執行 "dotnet workload restore" 以安裝工作負載集合。
+
+Host:
+  Version:      10.0.13
+  Architecture: arm64
+  Commit:       4099f83977
+
+.NET SDKs installed:
+  10.0.402 [/opt/homebrew/Cellar/dotnet/10.0.402/libexec/sdk]
+
+.NET runtimes installed:
+  Microsoft.AspNetCore.App 10.0.13 [/opt/homebrew/Cellar/dotnet/10.0.402/libexec/shared/Microsoft.AspNetCore.App]
+  Microsoft.NETCore.App 10.0.13 [/opt/homebrew/Cellar/dotnet/10.0.402/libexec/shared/Microsoft.NETCore.App]
+
+Other architectures found:
+  None
+
+Environment variables:
+  DOTNET_ROOT                              [/opt/homebrew/Cellar/dotnet/10.0.402/libexec]
+
+global.json file:
+  Not found
+
+Learn more:
+  https://aka.ms/dotnet/info
+
+Download .NET:
+  https://aka.ms/dotnet/download
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+本機有 .NET SDK 10.0.402，可以將 Core 限定為 C# 9 編譯，並讓 EditMode 測試共用同一組測試方法在 console 執行。
+
+我採用「冷卻比例 1＝剛呼喚、0＝可再次呼喚」；呼喚成功後，阮肇加速靠近，進入 2.5 公尺內便待機。瞬移保留給超過 30 公尺或卡住滿 3 秒的情況。
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc 'mkdir -p staging/scripts/Runtime staging/scripts/Tests/EditMode staging/scripts/Tests/Console staging/scripts/logs' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "python3 - <<'PY'
+from pathlib import Path
+r=Path('staging/scripts/Runtime')
+(r/'HungerCore.cs').write_text('''using System;
+
+namespace Liuruan
+{
+    public sealed class HungerCore
+    {
+        public const float Capacity = 5f;
+        public float Value { get; private set; }
+        public float IntervalSeconds { get; }
+        public bool IsPaused { get; private set; }
+        public float SpeedMultiplier => Value <= 0f ? 0.6f : 1f;
+        public event Action<float> OnChanged;
+        public event Action OnStarving;
+        private double elapsed;
+
+        public HungerCore(float initialValue = 3f, float intervalSeconds = 24f)
+        {
+            RequireFinite(initialValue, nameof(initialValue));
+            RequireFinite(intervalSeconds, nameof(intervalSeconds));
+            if (intervalSeconds <= 0f) throw new ArgumentOutOfRangeException(nameof(intervalSeconds));
+            Value = Math.Max(0f, Math.Min(Capacity, initialValue));
+            IntervalSeconds = intervalSeconds;
+        }
+
+        public void Pause() => IsPaused = true;
+        public void Resume() => IsPaused = false;
+
+        public void Tick(float deltaSeconds)
+        {
+            RequireFinite(deltaSeconds, nameof(deltaSeconds));
+            if (deltaSeconds < 0f) throw new ArgumentOutOfRangeException(nameof(deltaSeconds));
+            if (IsPaused || Value <= 0f) return;
+            elapsed += deltaSeconds;
+            double steps = Math.Floor(elapsed / IntervalSeconds);
+            if (steps < 1) return;
+            elapsed %= IntervalSeconds;
+            SetValue((float)Math.Max(0d, Value - steps * 0.5d));
+        }
+
+        public void Eat(float amount)
+        {
+            RequireFinite(amount, nameof(amount));
+            if (amount < 0f) throw new ArgumentOutOfRangeException(nameof(amount));
+            SetValue(Math.Min(Capacity, Value + amount));
+        }
+
+        public void FillAll() => SetValue(Capacity);
+
+        private void SetValue(float next)
+        {
+            if (next == Value) return;
+            bool starving = Value > 0f && next <= 0f;
+            bool recovering = Value <= 0f && next > 0f;
+            Value = next;
+            if (starving || recovering) elapsed = 0;
+            OnChanged?.Invoke(Value);
+            if (starving) OnStarving?.Invoke();
+        }
+
+        internal static void RequireFinite(float value, string name)
+        {
+            if (float.IsNaN(value) || float.IsInfinity(value))
+                throw new ArgumentOutOfRangeException(name);
+        }
+    }
+}
+''')
+(r/'CompanionCore.cs').write_text('''using System;
+
+namespace Liuruan
+{
+    public readonly struct WorldPosition
+    {
+        public readonly float X, Y, Z;
+        public WorldPosition(float x, float y, float z)
+        {
+            HungerCore.RequireFinite(x, nameof(x));
+            HungerCore.RequireFinite(y, nameof(y));
+            HungerCore.RequireFinite(z, nameof(z));
+            X = x; Y = y; Z = z;
+        }
+        public static double Distance(WorldPosition a, WorldPosition b)
+        {
+            double x = (double)a.X - b.X, y = (double)a.Y - b.Y, z = (double)a.Z - b.Z;
+            return Math.Sqrt(x * x + y * y + z * z);
+        }
+    }
+
+    public enum CompanionState { Follow, Idle, Catchup, Teleport }
+
+    public sealed class CompanionCore
+    {
+        public const float CallCooldownSeconds = 8f;
+        public CompanionState State { get; private set; } = CompanionState.Idle;
+        public WorldPosition Destination { get; private set; }
+        public float CooldownRatio => (float)(cooldown / CallCooldownSeconds);
+        private double cooldown;
+        private double stuckSeconds;
+        private WorldPosition progressAnchor;
+        private bool trackingProgress;
+        private bool called;
+
+        public bool Call()
+        {
+            if (cooldown > 0) return false;
+            cooldown = CallCooldownSeconds;
+            called = true;
+            return true;
+        }
+
+        public CompanionState Tick(float deltaSeconds, WorldPosition player,
+            WorldPosition companion, WorldPosition playerForward)
+        {
+            HungerCore.RequireFinite(deltaSeconds, nameof(deltaSeconds));
+            if (deltaSeconds < 0) throw new ArgumentOutOfRangeException(nameof(deltaSeconds));
+            cooldown = Math.Max(0, cooldown - deltaSeconds);
+            double distance = WorldPosition.Distance(player, companion);
+            Destination = player;
+            if (distance < 2.5)
+            {
+                State = CompanionState.Idle;
+                called = false;
+                ResetProgress();
+                return State;
+            }
+
+            if ("'!trackingProgress || WorldPosition.Distance(progressAnchor, companion) >= 0.05)
+            {
+                progressAnchor = companion;
+                stuckSeconds = 0;
+                trackingProgress = true;
+            }
+            else stuckSeconds += deltaSeconds;
+
+            if (distance > 30 || stuckSeconds >= 3)
+            {
+                // 只取水平朝向，避免玩家上下坡時把夥伴放進地底。
+                double length = Math.Sqrt((double)playerForward.X * playerForward.X +
+                    (double)playerForward.Z * playerForward.Z);
+                float x = length > 0 ? (float)(playerForward.X / length) : 0f;
+                float z = length > 0 ? (float)(playerForward.Z / length) : 1f;
+                Destination = new WorldPosition(player.X - 2 * x, player.Y, player.Z - 2 * z);
+                State = CompanionState.Teleport;
+                called = false;
+                ResetProgress();
+            }
+            else State = distance > 12 || called ? CompanionState.Catchup : CompanionState.Follow;
+            return State;
+        }
+
+        private void ResetProgress()
+        {
+            trackingProgress = false;
+            stuckSeconds = 0;
+        }
+    }
+}
+'"''')
+(r/'HungerSystem.cs').write_text('''using System;
+using UnityEngine;
+using UnityEngine.Events;
+
+namespace Liuruan
+{
+    public sealed class HungerSystem : MonoBehaviour
+    {
+        [SerializeField, Range(0f, 5f)] private float initialValue = 3f;
+        [SerializeField, Min(0.01f)] private float intervalSeconds = 24f;
+        [SerializeField] private UnityEvent<float> onChanged = new UnityEvent<float>();
+        [SerializeField] private UnityEvent onStarving = new UnityEvent();
+        [SerializeField] private UnityEvent<string> onToast = new UnityEvent<string>();
+        public event Action<float> OnChanged;
+        public event Action OnStarving;
+        public event Action<string> OnToast;
+        private HungerCore core;
+        private HungerCore Core
+        {
+            get
+            {
+                if (core == null)
+                {
+                    core = new HungerCore(initialValue, intervalSeconds);
+                    core.OnChanged += value => { onChanged.Invoke(value); OnChanged?.Invoke(value); };
+                    core.OnStarving += HandleStarving;
+                }
+                return core;
+            }
+        }
+        public float Value => Core.Value;
+        public float SpeedMultiplier => Core.SpeedMultiplier;
+        private void Awake() { _ = Core; }
+        private void Update() => Core.Tick(Time.deltaTime);
+        public void Pause() => Core.Pause();
+        public void Resume() => Core.Resume();
+        public void Eat(float amount) => Core.Eat(amount);
+        public void FillAll() => Core.FillAll();
+        private void HandleStarving()
+        {
+            onStarving.Invoke();
+            OnStarving?.Invoke();
+            const string message = \"肚子餓了，去找些食物吧。\";
+            onToast.Invoke(message);
+            OnToast?.Invoke(message);
+        }
+    }
+}
+''')
+(r/'CompanionFollow.cs').write_text('''using UnityEngine;
+using UnityEngine.AI;
+
+namespace Liuruan
+{
+    public sealed class CompanionFollow : MonoBehaviour
+    {
+        [SerializeField] private Transform player;
+        [SerializeField, Min(0f)] private float followSpeed = 3f;
+        [SerializeField, Min(1f)] private float catchupMultiplier = 1.6f;
+        private NavMeshAgent agent;
+        private readonly CompanionCore core = new CompanionCore();
+        private Vector3 previousPosition;
+        public float Speed { get; private set; }
+        public float CooldownRatio => core.CooldownRatio;
+        public CompanionState State => core.State;
+        public bool Call() => core.Call();
+        private bool AgentReady => agent "'!= null && agent.enabled && agent.isOnNavMesh;
+        private void Awake() => agent = GetComponent<NavMeshAgent>();
+        private void OnEnable() { previousPosition = transform.position; Speed = 0f; }
+
+        private void Update()
+        {
+            float dt = Time.deltaTime;
+            Speed = dt > 0f ? Vector3.Distance(transform.position, previousPosition) / dt : 0f;
+            previousPosition = transform.position;
+            if (player == null) { Speed = 0f; return; }
+            CompanionState state = core.Tick(dt, ToCore(player.position),
+                ToCore(transform.position), ToCore(player.forward));
+            Vector3 target = ToUnity(core.Destination);
+            if (state == CompanionState.Teleport)
+            {
+                // shortcut: 僅搜尋目標附近 2m 的 NavMesh；複雜多層地形由 U 線提供安全落點。
+                bool ready = AgentReady;
+                if (NavMesh.SamplePosition(target, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+                    target = hit.position;
+                if (ready) agent.ResetPath();
+                if (!ready || !agent.Warp(target)) transform.position = target;
+                previousPosition = transform.position;
+                Speed = 0f;
+                return;
+            }
+            float speed = state == CompanionState.Catchup ? followSpeed * catchupMultiplier : followSpeed;
+            if (AgentReady)
+            {
+                agent.stoppingDistance = 2.4f;
+                agent.speed = speed;
+                agent.isStopped = state == CompanionState.Idle;
+                if (state != CompanionState.Idle) agent.SetDestination(target);
+            }
+            else if (state != CompanionState.Idle)
+            {
+                float remaining = Mathf.Max(0f, Vector3.Distance(transform.position, target) - 2.4f);
+                transform.position = Vector3.MoveTowards(transform.position, target, Mathf.Min(speed * dt, remaining));
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (AgentReady) agent.ResetPath();
+            Speed = 0f;
+        }
+        private static WorldPosition ToCore(Vector3 p) => new WorldPosition(p.x, p.y, p.z);
+        private static Vector3 ToUnity(WorldPosition p) => new Vector3(p.X, p.Y, p.Z);
+    }
+}
+'"''')
+PY" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc 'dotnet run --help; dotnet --list-sdks' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 593ms:
+Description:
+  .NET 執行命令
+
+使用方式:
+  dotnet run [<applicationArguments>...] [options]
+
+引數:
+  <applicationArguments>  Arguments passed to the application that is being 
+                          run. []
+
+選項:
+  -c, --configuration <CONFIGURATION>     要為其執行的組態。大部分的專案預設為「偵錯」。
+  -f, --framework <FRAMEWORK>             要為其執行的目標架構。該目標架構也必須在專案檔中指定。
+  --project <PROJECT_PATH>                定義要執行的專案檔案的路徑。請使用專案檔案的路徑，或包含該專案檔案的目錄路徑
+                                          。如果未指定，則預設為目前目錄。
+  --file <FILE_PATH>                      執行檔案型應用程式的路徑 
+                                          (如果目前目錄中沒有專案，也可以作為第一個引數傳遞)。
+  -lp, --launch-profile <LAUNCH_PROFILE>  啟動應用程式時，所要使用的啟動設定檔 (若有) 名稱。
+  --no-launch-profile                     請勿嘗試使用 launchSettings.json 或 
+                                          [app].run.json 設定該應用程式。 [default: 
+                                          False]
+  --device <裝置>                           用於執行應用程式的裝置識別碼。
+  --list-devices                          列出可用來執行應用程式的裝置。 [default: False]
+  --no-build                              請勿在執行之前建置專案。提示: --no-restore. 
+                                          [default: False]
+  --interactive                           允許命令停止並等候使用者輸入或動作 (例如: 完成驗證)。 
+                                          [default: False]
+  --no-restore                            建置前請勿還原該專案。 [default: False]
+  --no-cache                              在執行之前，略過最新的檢查並一律建置程式。 [default: False]
+  --sc, --self-contained                  將 .NET 
+                                          執行階段隨著您的應用程式發佈，以便您不需在目標電腦上安裝執行階段。
+                                          預設值為 'false'。不過，當目標為 .NET 7 
+                                          或更低版本時，如有指定執行階段識別碼，則預設值為 'true'。 
+                                          [default: False]
+  --no-self-contained                     將您的應用程式發佈為架構相依的應用程式。必須在目標機器上安裝相容的 
+                                          .NET 執行階段，才能執行您的應用程式。 [default: 
+                                          False]
+  -v, -verbosity <LEVEL>                  設定 MSBuild 的詳細程度層級。允許的值為 
+                                          q[uiet]、m[inimal]、n[ormal]、d[etailed] 
+                                          及 diag[nostic]。
+  -r, --runtime <RUNTIME_IDENTIFIER>      測試標的之目標執行階段。
+  -a, --arch <ARCH>                       目標結構。
+  --os <作業系統>                             目標作業系統。
+  --disable-build-servers                 強制命令略過任何持續性組建伺服器。 [default: False]
+  --artifacts-path <ARTIFACTS_DIR>        成品路徑。來自專案的所有輸出 
+                                          (包括建置、發佈和封裝輸出)，都會進入指定路徑下的子資料夾。
+  -e, --environment <NAME="VALUE">        設定環境變數的值。
+                                          若變數不存在，則加以建立; 若有，則予以覆寫。
+                                          此引數可多次指定，以提供多項變數。
+  
+                                          範例:
+                                          -e VARIABLE=abc
+                                          -e VARIABLE="value with spaces"
+                                          -e VARIABLE="value;seperated 
+                                          with;semicolons"
+                                          -e VAR1=abc -e VAR2=def -e VAR3=ghi
+  -?, -h, --help                          顯示命令列說明。
+
+10.0.402 [/opt/homebrew/Cellar/dotnet/10.0.402/libexec/sdk]
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "python3 - <<'PY'
+from pathlib import Path
+p=Path('staging/scripts/Tests/EditMode/CoreTests.cs')
+p.write_text('''using System;
+using NUnit.Framework;
+
+namespace Liuruan.Tests
+{
+    internal static class Check
+    {
+        public static void Equal<T>(T expected, T actual)
+        {
+            if ("'!Equals(expected, actual)) throw new Exception($"Expected {expected}, got {actual}");
+        }
+        public static void Near(double expected, double actual)
+        {
+            if (double.IsNaN(actual) || Math.Abs(expected - actual) > 0.00001)
+                throw new Exception($"Expected {expected}, got {actual}");
+        }
+        public static void Throws(Action action)
+        {
+            try { action(); }
+            catch (ArgumentOutOfRangeException) { return; }
+            throw new Exception("Expected ArgumentOutOfRangeException");
+        }
+    }
+
+    public sealed class HungerCoreTests
+    {
+        [Test] public void StartsWithThreeAndNormalSpeed()
+        {
+            var c = new HungerCore();
+            Check.Near(3, c.Value); Check.Near(24, c.IntervalSeconds);
+            Check.Near(1, c.SpeedMultiplier); Check.Equal(false, c.IsPaused);
+        }
+        [TestCase(-1f, 0f)] [TestCase(0f, 0f)] [TestCase(5f, 5f)] [TestCase(6f, 5f)]
+        public void ClampsInitialValue(float initial, float expected)
+        { Check.Near(expected, new HungerCore(initial).Value); }
+        [Test] public void DropsAtExactIntervalAndPreservesRemainder()
+        {
+            var c = new HungerCore();
+            c.Tick(23); Check.Near(3, c.Value);
+            c.Tick(1); Check.Near(2.5, c.Value);
+            c.Tick(49); Check.Near(1.5, c.Value);
+            c.Tick(23); Check.Near(1, c.Value);
+        }
+        [Test] public void SupportsCustomInterval()
+        { var c = new HungerCore(3, 2); c.Tick(2); Check.Near(2.5, c.Value); }
+        [Test] public void PauseResumeIsIdempotentAndKeepsRemainder()
+        {
+            var c = new HungerCore(); c.Tick(12); c.Pause(); c.Pause(); c.Tick(1000);
+            Check.Equal(true, c.IsPaused); Check.Near(3, c.Value);
+            c.Resume(); c.Resume(); c.Tick(12); Check.Near(2.5, c.Value);
+        }
+        [Test] public void StarvesOncePerCrossingAndRecoversWithoutDying()
+        {
+            var c = new HungerCore(); int count = 0; c.OnStarving += () => count++;
+            c.Tick(144); Check.Near(0, c.Value); Check.Near(0.6, c.SpeedMultiplier);
+            c.Tick(10000); c.Eat(0); Check.Equal(1, count);
+            c.Eat(0.25f); Check.Near(1, c.SpeedMultiplier);
+            c.Tick(24); Check.Near(0, c.Value); Check.Equal(2, count);
+            c.FillAll(); Check.Near(5, c.Value); Check.Near(1, c.SpeedMultiplier);
+        }
+        [Test] public void EatClampFillAndChangeEvents()
+        {
+            var c = new HungerCore(); int events = 0; float observed = 0;
+            c.OnChanged += v => { events++; observed = v; };
+            c.Eat(0); Check.Equal(0, events);
+            c.Eat(0.25f); Check.Near(3.25, observed);
+            c.Eat(float.MaxValue); Check.Near(5, c.Value);
+            c.FillAll(); Check.Equal(2, events);
+            c.Tick(24); Check.Near(4.5, observed); Check.Equal(3, events);
+            c.FillAll(); Check.Near(5, observed); Check.Equal(4, events);
+        }
+        [Test] public void FoodWorksWhilePausedAndDoesNotResetActiveClock()
+        {
+            var c = new HungerCore(); c.Tick(12); c.Pause(); c.Eat(1); c.FillAll();
+            Check.Near(5, c.Value); c.Resume(); c.Tick(12); Check.Near(4.5, c.Value);
+        }
+        [Test] public void LargeTickClampsAndRecoveryGetsFreshInterval()
+        {
+            var c = new HungerCore(); c.Tick(float.MaxValue); Check.Near(0, c.Value);
+            c.FillAll(); c.Tick(23); Check.Near(5, c.Value); c.Tick(1); Check.Near(4.5, c.Value);
+        }
+        [Test] public void ZeroTickDoesNothing()
+        { var c = new HungerCore(); c.Tick(0); Check.Near(3, c.Value); }
+        [Test] public void RejectsInvalidInputs()
+        {
+            foreach (float v in new[] { float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+            {
+                Check.Throws(() => new HungerCore(v)); Check.Throws(() => new HungerCore(3, v));
+                var c = new HungerCore(); Check.Throws(() => c.Tick(v)); Check.Throws(() => c.Eat(v));
+            }
+            Check.Throws(() => new HungerCore(3, 0)); Check.Throws(() => new HungerCore(3, -1));
+            Check.Throws(() => new HungerCore().Tick(-1)); Check.Throws(() => new HungerCore().Eat(-1));
+        }
+    }
+
+    public sealed class CompanionCoreTests
+    {
+        private static WorldPosition P(float x, float y = 0, float z = 0) => new WorldPosition(x, y, z);
+        private static CompanionState Step(CompanionCore c, float dt, float distance)
+            => c.Tick(dt, P(0), P(distance), P(0, 0, 1));
+
+        [TestCase(0f, CompanionState.Idle)] [TestCase(2.499f, CompanionState.Idle)]
+        [TestCase(2.5f, CompanionState.Follow)] [TestCase(12f, CompanionState.Follow)]
+        [TestCase(12.001f, CompanionState.Catchup)] [TestCase(30f, CompanionState.Catchup)]
+        [TestCase(30.001f, CompanionState.Teleport)]
+        public void DistanceBoundaries(float distance, CompanionState expected)
+        { Check.Equal(expected, Step(new CompanionCore(), 0, distance)); }
+        [Test] public void MovesThroughEveryStateAndBack()
+        {
+            var c = new CompanionCore(); Check.Equal(CompanionState.Idle, c.State);
+            Check.Equal(CompanionState.Follow, Step(c, 0, 3));
+            Check.Equal(CompanionState.Catchup, Step(c, 0, 13));
+            Check.Equal(CompanionState.Follow, Step(c, 0, 12));
+            Check.Equal(CompanionState.Idle, Step(c, 0, 2));
+            Check.Equal(CompanionState.Teleport, Step(c, 0, 31));
+            Check.Equal(CompanionState.Idle, Step(c, 0, 2));
+        }
+        [Test] public void TeleportIsTwoMetresBehindNormalizedHorizontalForward()
+        {
+            var c = new CompanionCore(); c.Tick(0, P(10, 4, 10), P(100), P(3, 7, 4));
+            Check.Near(8.8, c.Destination.X); Check.Near(4, c.Destination.Y); Check.Near(8.4, c.Destination.Z);
+        }
+        [Test] public void ZeroForwardUsesWorldBack()
+        {
+            var c = new CompanionCore(); c.Tick(0, P(10, 4, 10), P(100), P(0));
+            Check.Near(10, c.Destination.X); Check.Near(4, c.Destination.Y); Check.Near(8, c.Destination.Z);
+        }
+        [Test] public void UsesThreeDimensionalDistance()
+        {
+            var c = new CompanionCore();
+            Check.Equal(CompanionState.Catchup, c.Tick(0, P(0), P(0, 13), P(0)));
+        }
+        [Test] public void StuckAtExactlyThreeSecondsTeleportsThenResets()
+        {
+            var c = new CompanionCore(); Step(c, 0, 5);
+            Check.Equal(CompanionState.Follow, Step(c, 2.999f, 5));
+            Check.Equal(CompanionState.Teleport, Step(c, 0.002f, 5));
+            Check.Equal(CompanionState.Follow, Step(c, 0, 5));
+        }
+        [Test] public void ExactStuckBoundary()
+        {
+            var c = new CompanionCore(); Step(c, 0, 5);
+            Check.Equal(CompanionState.Teleport, Step(c, 3, 5));
+        }
+        [Test] public void ProgressAndIdleResetStuckTimer()
+        {
+            var c = new CompanionCore(); Step(c, 0, 5); Step(c, 2, 5);
+            Check.Equal(CompanionState.Follow, Step(c, 2, 5.1f));
+            Step(c, 2, 5.1f); Step(c, 100, 1);
+            Check.Equal(CompanionState.Follow, Step(c, 0, 5.1f));
+        }
+        [Test] public void SlowProgressAccumulatesAgainstAnchor()
+        {
+            var c = new CompanionCore(); Step(c, 0, 5);
+            Step(c, 1, 5.02f); Step(c, 1, 5.04f);
+            Check.Equal(CompanionState.Follow, Step(c, 1, 5.06f));
+        }
+        [Test] public void CatchupCanAlsoGetStuck()
+        {
+            var c = new CompanionCore(); Step(c, 0, 20);
+            Check.Equal(CompanionState.Teleport, Step(c, 3, 20));
+        }
+        [Test] public void IdleNeverCountsAsStuck()
+        { var c = new CompanionCore(); Step(c, 0, 1); Check.Equal(CompanionState.Idle, Step(c, 100, 1)); }
+        [Test] public void CallCooldownAndExactReadyBoundary()
+        {
+            var c = new CompanionCore(); Check.Near(0, c.CooldownRatio);
+            Check.Equal(true, c.Call()); Check.Near(1, c.CooldownRatio);
+            Check.Equal(false, c.Call()); Step(c, 4, 1); Check.Near(0.5, c.CooldownRatio);
+            Check.Equal(false, c.Call()); Check.Near(0.5, c.CooldownRatio);
+            Step(c, 4, 1); Check.Near(0, c.CooldownRatio); Check.Equal(true, c.Call());
+            Step(c, 100, 1); Check.Near(0, c.CooldownRatio);
+        }
+        [Test] public void CallAcceleratesUntilReunion()
+        {
+            var c = new CompanionCore(); c.Call();
+            Check.Equal(CompanionState.Catchup, Step(c, 0, 3));
+            Check.Equal(CompanionState.Catchup, Step(c, 8, 4));
+            Check.Equal(CompanionState.Idle, Step(c, 0, 2));
+            Check.Equal(CompanionState.Follow, Step(c, 0, 3));
+            Check.Near(0, c.Destination.X);
+        }
+        [Test] public void TeleportClearsCallButPreservesCooldown()
+        {
+            var c = new CompanionCore(); c.Call(); Step(c, 1, 31);
+            Check.Near(0.875, c.CooldownRatio);
+            Check.Equal(CompanionState.Follow, Step(c, 0, 3));
+        }
+        [Test] public void RejectsInvalidTimeAndCoordinates()
+        {
+            var c = new CompanionCore(); Check.Throws(() => Step(c, -1, 3));
+            foreach (float v in new[] { float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+            {
+                Check.Throws(() => Step(c, v, 3)); Check.Throws(() => P(v));
+                Check.Throws(() => P(0, v)); Check.Throws(() => P(0, 0, v));
+            }
+        }
+    }
+}
+'"''')
+Path('staging/scripts/Tests/Console/Runner.cs').write_text('''// 此檔只供 console；不要複製進 Unity。
+using System;
+using System.Linq;
+using System.Reflection;
+
+namespace NUnit.Framework
+{
+    [AttributeUsage(AttributeTargets.Method)]
+    public sealed class TestAttribute : Attribute { }
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    public sealed class TestCaseAttribute : Attribute
+    {
+        public object[] Arguments { get; }
+        public TestCaseAttribute(params object[] arguments) { Arguments = arguments; }
+    }
+}
+
+internal static class Runner
+{
+    private static int Main()
+    {
+        int passed = 0, failed = 0;
+        foreach (Type type in new[] { typeof(Liuruan.Tests.HungerCoreTests), typeof(Liuruan.Tests.CompanionCoreTests) })
+        foreach (MethodInfo method in type.GetMethods().OrderBy(m => m.Name))
+        {
+            var cases = method.GetCustomAttributes<NUnit.Framework.TestCaseAttribute>().ToArray();
+            bool simple = method.IsDefined(typeof(NUnit.Framework.TestAttribute), false);
+            if ("'!simple && cases.Length == 0) continue;
+            var arguments = cases.Length > 0 ? cases.Select(c => c.Arguments) : new[] { new object[0] };
+            foreach (object[] args in arguments)
+            {
+                string name = type.Name + "." + method.Name + "(" + string.Join(",", args) + ")";
+                try
+                {
+                    method.Invoke(Activator.CreateInstance(type), args);
+                    Console.WriteLine("PASS " + name); passed++;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("FAIL " + name + ": " + (e.InnerException ?? e)); failed++;
+                }
+            }
+        }
+        Console.WriteLine($"RESULT: {passed} passed, {failed} failed");
+        return failed == 0 && passed > 0 ? 0 : 1;
+    }
+}
+'"''')
+PY" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "python3 - <<'PY'
+from pathlib import Path
+p=Path('staging/scripts/Tests/run_core_tests.sh')
+p.write_text('''#"'!/bin/sh
+set -eu
+pwd
+scripts_dir=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+if ! command -v dotnet >/dev/null 2>&1; then
+    echo "ERROR: 此 runner 需要 .NET SDK；本次交件使用本機 dotnet，未宣稱支援其他編譯器。" >&2
+    exit 1
+fi
+work_dir=$(mktemp -d "${TMPDIR:-/tmp}/liuruan-core.XXXXXX")
+trap '"'/bin/rm -r \""'$work_dir"'"' EXIT HUP INT TERM
+export DOTNET_CLI_HOME=\""'$work_dir/cli"
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+export DOTNET_NOLOGO=1
+sdk_version=$(dotnet --version)
+sdk_major=${sdk_version%%.*}
+case "$sdk_major" in
+    '"''|*["'!0-9]*) echo "ERROR: 無法辨識 SDK: $sdk_version" >&2; exit 1 ;;
+esac
+if [ "$sdk_major" -lt 6 ]; then
+    echo "ERROR: 需要 .NET SDK 6 以上（C# 限定為 9）。" >&2
+    exit 1
+fi
+cp "$scripts_dir/Runtime/HungerCore.cs" "$scripts_dir/Runtime/CompanionCore.cs" '"\\
+    \""'$scripts_dir/Tests/EditMode/CoreTests.cs" "$scripts_dir/Tests/Console/Runner.cs" "$work_dir/"
+cat > "$work_dir/NuGet.Config" <<'"'XML'
+<configuration><packageSources><clear /></packageSources></configuration>
+XML
+cat > \""'$work_dir/CoreTests.csproj" <<XML
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net$sdk_major.0</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NuGetAudit>false</NuGetAudit>
+  </PropertyGroup>
+</Project>
+XML
+printf '"'Compiler: .NET SDK %s; C# 9.0; no NuGet packages; shared EditMode test methods\\\\n' \""'$sdk_version"
+dotnet run --project "$work_dir/CoreTests.csproj" --configuration Release --no-launch-profile --disable-build-servers
+'"''')
+p.chmod(0o755)
+Path('staging/scripts/Runtime/Liuruan.Runtime.asmdef').write_text('''{
+  \"name\": \"Liuruan.Runtime\",
+  \"rootNamespace\": \"Liuruan\"
+}
+''')
+Path('staging/scripts/Tests/EditMode/Liuruan.EditModeTests.asmdef').write_text('''{
+  \"name\": \"Liuruan.EditModeTests\",
+  \"rootNamespace\": \"Liuruan.Tests\",
+  \"references\": [\"Liuruan.Runtime\"],
+  \"includePlatforms\": [\"Editor\"],
+  \"optionalUnityReferences\": [\"TestAssemblies\"]
+}
+''')
+PY
+staging/scripts/Tests/run_core_tests.sh" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 4527ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+Compiler: .NET SDK 10.0.402; C# 9.0; no NuGet packages; shared EditMode test methods
+CSSM_ModuleLoad(): One or more parameters passed to a function were not valid.
+PASS HungerCoreTests.ClampsInitialValue(-1,0)
+PASS HungerCoreTests.ClampsInitialValue(0,0)
+PASS HungerCoreTests.ClampsInitialValue(5,5)
+PASS HungerCoreTests.ClampsInitialValue(6,5)
+PASS HungerCoreTests.DropsAtExactIntervalAndPreservesRemainder()
+PASS HungerCoreTests.EatClampFillAndChangeEvents()
+PASS HungerCoreTests.FoodWorksWhilePausedAndDoesNotResetActiveClock()
+PASS HungerCoreTests.LargeTickClampsAndRecoveryGetsFreshInterval()
+PASS HungerCoreTests.PauseResumeIsIdempotentAndKeepsRemainder()
+PASS HungerCoreTests.RejectsInvalidInputs()
+PASS HungerCoreTests.StartsWithThreeAndNormalSpeed()
+PASS HungerCoreTests.StarvesOncePerCrossingAndRecoversWithoutDying()
+PASS HungerCoreTests.SupportsCustomInterval()
+PASS HungerCoreTests.ZeroTickDoesNothing()
+PASS CompanionCoreTests.CallAcceleratesUntilReunion()
+PASS CompanionCoreTests.CallCooldownAndExactReadyBoundary()
+PASS CompanionCoreTests.CatchupCanAlsoGetStuck()
+PASS CompanionCoreTests.DistanceBoundaries(0,Idle)
+PASS CompanionCoreTests.DistanceBoundaries(2.499,Idle)
+PASS CompanionCoreTests.DistanceBoundaries(2.5,Follow)
+PASS CompanionCoreTests.DistanceBoundaries(12,Follow)
+PASS CompanionCoreTests.DistanceBoundaries(12.001,Catchup)
+PASS CompanionCoreTests.DistanceBoundaries(30,Catchup)
+PASS CompanionCoreTests.DistanceBoundaries(30.001,Teleport)
+PASS CompanionCoreTests.ExactStuckBoundary()
+PASS CompanionCoreTests.IdleNeverCountsAsStuck()
+PASS CompanionCoreTests.MovesThroughEveryStateAndBack()
+PASS CompanionCoreTests.ProgressAndIdleResetStuckTimer()
+PASS CompanionCoreTests.RejectsInvalidTimeAndCoordinates()
+PASS CompanionCoreTests.SlowProgressAccumulatesAgainstAnchor()
+PASS CompanionCoreTests.StuckAtExactlyThreeSecondsTeleportsThenResets()
+PASS CompanionCoreTests.TeleportClearsCallButPreservesCooldown()
+PASS CompanionCoreTests.TeleportIsTwoMetresBehindNormalizedHorizontalForward()
+PASS CompanionCoreTests.UsesThreeDimensionalDistance()
+PASS CompanionCoreTests.ZeroForwardUsesWorldBack()
+RESULT: 35 passed, 0 failed
+
+codex
+原始碼與測試已寫好，console 測試正在執行。測試涵蓋飢餓計時與暫停、歸零後恢復、跟隨距離邊界、卡住瞬移，以及呼喚冷卻；接著會補上 U 線掛載說明，並將實際測試輸出收進報告。
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "python3 - <<'PY'
+from pathlib import Path
+p=Path('staging/scripts/Runtime/CompanionFollow.cs')
+s=p.read_text().replace('if (player == null) { Speed = 0f; return; }','''if (player == null)
+            {
+                if (AgentReady) agent.ResetPath();
+                Speed = 0f;
+                return;
+            }''')
+p.write_text(s)
+p=Path('staging/scripts/Tests/EditMode/CoreTests.cs')
+s=p.read_text().replace('''        [Test] public void CatchupCanAlsoGetStuck()''','''        [Test] public void FiveCentimetresResetsStuckTimer()
+        {
+            var c = new CompanionCore(); Step(c, 0, 5); Step(c, 2, 5);
+            Check.Equal(CompanionState.Follow, Step(c, 1, 5.05f));
+            Check.Equal(CompanionState.Follow, Step(c, 2.99f, 5.05f));
+        }
+        [Test] public void CatchupCanAlsoGetStuck()''')
+p.write_text(s)
+p=Path('staging/scripts/Tests/run_core_tests.sh')
+s=p.read_text().replace('\""'$sdk_major" -lt 6'"','\""'$sdk_major" -lt 8'"').replace('.NET SDK 6 以上','.NET SDK 8 以上')
+p.write_text(s)
+Path('staging/scripts/INTEGRATION.md').write_text('''# S 線 R0 掛載說明
+
+本批提供原始碼；S 線未開 Unity、未寫 Assets、未改 PlayerController。
+
+## 匯入位置
+
+由 U 線複製（保留隨附 asmdef）：
+
+- "'`Runtime/` → `Assets/_Project/Scripts/Liuruan/Runtime/`
+- `Tests/EditMode/` → `Assets/_Project/Tests/EditMode/Liuruan/`
+
+不要把 `Tests/Console/` 複製進 Assets，該處只含 console 測試用的 NUnit 屬性替身，匯入會與 Unity NUnit 衝突。不要把整個 staging/scripts 複製進 Assets。
+Runtime 無第三方套件。EditMode 需專案已有 Unity Test Framework（NUnit）；本批不新增或修改 Unity 套件。
+
+## 劉晨：HungerSystem
+
+1. 在玩家劉晨的 GameObject 加入 `Liuruan.HungerSystem`，第一幕 `Initial Value = 3`、`Interval Seconds = 24`。
+2. PlayerController 快取同物件元件：`hunger = GetComponent<Liuruan.HungerSystem>();`，並新增欄位 `private Liuruan.HungerSystem hunger;`。
+3. 在既有速度計算完成後、乘上移動向量之前，加這一行（`moveSpeed` 換成實際的每幀區域速度變數）：
+
+```csharp
+moveSpeed *= hunger != null ? hunger.SpeedMultiplier : 1f;
+```
+
+每幀由基礎速度重算 `moveSpeed`，不可反覆修改 Inspector 的基礎速度欄位，否則會累乘。此專案尚無 PlayerController 原始碼可核對，因此這是插入契約，不是已套用的 diff。
+
+4. HUD 啟用時先讀 `Value` 畫 5 格桃形圖示，再訂閱 `OnChanged(float)`；元件停用時解除訂閱。Inspector 也有 `On Changed` UnityEvent 可接 UI。
+5. `OnStarving` / Inspector `On Starving` 只在正值跨到 0 時通知一次；沒有死亡、扣血或結局處理。
+6. Toast UI 接 `OnToast(string)` 或 Inspector `On Toast`，顯示「肚子餓了，去找些食物吧。」；包裝層只發訊息，不建立 UI。
+7. 面板／演出開始呼叫 `Pause()`，全部結束後 `Resume()`。這是可重複呼叫的布林暫停；若多面板重疊，請由既有面板管理者彙整後再 Resume。暫停保留未滿 24 秒的餘額。
+8. 食物呼叫 `Eat(amount)`，攀桃完成呼叫 `FillAll()`。補食不重設仍在進行的計時；從飢餓恢復則重新計時。暫停期間仍可補食。重新開始第一幕時重新建立玩家物件，Core 沒有跨場景存檔。
+
+Core API：`HungerCore(initialValue = 3, intervalSeconds = 24)`、`Tick(deltaSeconds)`、`Value`、`SpeedMultiplier`、`IsPaused`、`Pause/Resume/Eat/FillAll`、`OnChanged/OnStarving`。輸入 NaN、無限值、負時間或負食物量會拋出 ArgumentOutOfRangeException；初始飢餓值夾在 0–5。
+
+## 阮肇：CompanionFollow
+
+1. 在阮肇的移動根物件加入 `Liuruan.CompanionFollow`，`Player` 指向劉晨。
+2. 可加 NavMeshAgent 並烘焙可行走範圍；建議基速 3、加速倍率 1.6。Agent 啟用且在 NavMesh 上時採 NavMesh 路徑；否則直接 MoveTowards。無 Agent 也能跑。
+3. 根物件的位移由此元件負責，動畫關閉 Root Motion；`Animator` 的 Speed 參數每幀讀 `CompanionFollow.Speed`（實際世界位移 m/s）。瞬移當幀為 0。NavMeshAgent 的停止距離由元件設成 2.4m，使它確實進入 `<2.5m` 的 Idle 範圍。
+4. 技能按鈕呼叫 `Call()`，回傳 true 才播放成功回饋；false 代表冷卻中，不延長冷卻。呼喚使阮肇維持 Catchup，直到 `<2.5m` 待機或觸發瞬移。
+5. 左下頭像環每幀讀 `CooldownRatio`：1＝剛呼喚、0＝可呼喚；8 秒後歸零。若 UI 要顯示完成比例，讀 `1f - CooldownRatio`。Time.timeScale = 0 時跟隨與冷卻一起停止；未指定 Player 時不更新 Core。
+6. 狀態距離採三維直線距離：`<2.5` Idle、`[2.5,12]` Follow、`(12,30]` Catchup、`>30` Teleport；呼喚中的 Catchup 優先於 Follow。
+7. 非 Idle 狀態先記錄位置，此後連續 3 秒未離開進度錨點 0.05m 即視為卡住；累積移動達 0.05m、Idle 或瞬移會重設計時。Core 回傳的瞬移目標是玩家水平朝向後方 2m，零水平朝向則用世界 -Z。
+8. Unity 包裝會在該目標附近 2m 取 NavMesh 落點（因此實際落點可能偏離恰好 2m），再 Warp；無有效落點或 Warp 失敗時直接設定位置。多層地形／山壁需要 U 線現場驗證安全落點。MoveTowards 不做避障與地面貼合，僅供沒有 NavMesh 的灰盒備援。
+
+純 Core 使用 `WorldPosition(X,Y,Z)`，不引用 UnityEngine。`CompanionCore.Tick(dt, player, companion, playerForward)` 回傳狀態，並更新 `Destination`；`Call()`、`CooldownRatio` 提供技能契約。
+
+## 驗證
+
+在專案根目錄執行：
+
+```sh
+staging/scripts/Tests/run_core_tests.sh
+```
+
+本機實際使用 .NET SDK 10.0.402，限定 C# 9，零 NuGet 套件，warnings 視為 errors。runner 在暫存目錄編譯兩個 Core 與同一份 EditMode 測試，反射呼叫 Test/TestCase；這是 console 斷言執行，不是啟動 Unity 的 NUnit runner。需 .NET SDK 8 以上；本機已有 dotnet，未使用 mono/csc 備援。測試產物離開時清除。
+
+U 線匯入後請在 Test Runner → EditMode 跑 `Liuruan.Tests`，再現場驗證：HUD 初始三格／歸零 Toast 與 60% 速度／暫停與補桃／NavMesh 跟隨／無 NavMesh 備援／卡住及超距瞬移／動畫 Speed／呼喚冷卻環。S 線未執行這些 Unity 驗證。
+'"''')
+PY
+staging/scripts/Tests/run_core_tests.sh > staging/scripts/logs/core-tests.txt 2>&1
+cat staging/scripts/logs/core-tests.txt" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 3473ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+Compiler: .NET SDK 10.0.402; C# 9.0; no NuGet packages; shared EditMode test methods
+CSSM_ModuleLoad(): One or more parameters passed to a function were not valid.
+PASS HungerCoreTests.ClampsInitialValue(-1,0)
+PASS HungerCoreTests.ClampsInitialValue(0,0)
+PASS HungerCoreTests.ClampsInitialValue(5,5)
+PASS HungerCoreTests.ClampsInitialValue(6,5)
+PASS HungerCoreTests.DropsAtExactIntervalAndPreservesRemainder()
+PASS HungerCoreTests.EatClampFillAndChangeEvents()
+PASS HungerCoreTests.FoodWorksWhilePausedAndDoesNotResetActiveClock()
+PASS HungerCoreTests.LargeTickClampsAndRecoveryGetsFreshInterval()
+PASS HungerCoreTests.PauseResumeIsIdempotentAndKeepsRemainder()
+PASS HungerCoreTests.RejectsInvalidInputs()
+PASS HungerCoreTests.StartsWithThreeAndNormalSpeed()
+PASS HungerCoreTests.StarvesOncePerCrossingAndRecoversWithoutDying()
+PASS HungerCoreTests.SupportsCustomInterval()
+PASS HungerCoreTests.ZeroTickDoesNothing()
+PASS CompanionCoreTests.CallAcceleratesUntilReunion()
+PASS CompanionCoreTests.CallCooldownAndExactReadyBoundary()
+PASS CompanionCoreTests.CatchupCanAlsoGetStuck()
+PASS CompanionCoreTests.DistanceBoundaries(0,Idle)
+PASS CompanionCoreTests.DistanceBoundaries(2.499,Idle)
+PASS CompanionCoreTests.DistanceBoundaries(2.5,Follow)
+PASS CompanionCoreTests.DistanceBoundaries(12,Follow)
+PASS CompanionCoreTests.DistanceBoundaries(12.001,Catchup)
+PASS CompanionCoreTests.DistanceBoundaries(30,Catchup)
+PASS CompanionCoreTests.DistanceBoundaries(30.001,Teleport)
+PASS CompanionCoreTests.ExactStuckBoundary()
+PASS CompanionCoreTests.FiveCentimetresResetsStuckTimer()
+PASS CompanionCoreTests.IdleNeverCountsAsStuck()
+PASS CompanionCoreTests.MovesThroughEveryStateAndBack()
+PASS CompanionCoreTests.ProgressAndIdleResetStuckTimer()
+PASS CompanionCoreTests.RejectsInvalidTimeAndCoordinates()
+PASS CompanionCoreTests.SlowProgressAccumulatesAgainstAnchor()
+PASS CompanionCoreTests.StuckAtExactlyThreeSecondsTeleportsThenResets()
+PASS CompanionCoreTests.TeleportClearsCallButPreservesCooldown()
+PASS CompanionCoreTests.TeleportIsTwoMetresBehindNormalizedHorizontalForward()
+PASS CompanionCoreTests.UsesThreeDimensionalDistance()
+PASS CompanionCoreTests.ZeroForwardUsesWorldBack()
+RESULT: 36 passed, 0 failed
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "sh -n staging/scripts/Tests/run_core_tests.sh; rg -n 'UnityEngine|UnityEditor' staging/scripts/Runtime/HungerCore.cs staging/scripts/Runtime/CompanionCore.cs; git status --short -- staging/scripts; rg --files staging/scripts" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+?? staging/scripts/
+staging/scripts/logs/core-tests.txt
+staging/scripts/Tests/Console/Runner.cs
+staging/scripts/Tests/run_core_tests.sh
+staging/scripts/Tests/EditMode/CoreTests.cs
+staging/scripts/Tests/EditMode/Liuruan.EditModeTests.asmdef
+staging/scripts/Runtime/HungerSystem.cs
+staging/scripts/Runtime/HungerCore.cs
+staging/scripts/Runtime/CompanionFollow.cs
+staging/scripts/Runtime/Liuruan.Runtime.asmdef
+staging/scripts/Runtime/CompanionCore.cs
+staging/scripts/INTEGRATION.md
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+測試目前是 **36 項通過、0 項失敗**，兩個 Core 均未引用 UnityEngine。主控台另有一行 macOS `CSSM_ModuleLoad` 訊息；編譯與測試仍以 exit code 0 結束，報告會保留原始輸出。
+
+Unity 場景、HUD、NavMesh 與動畫尚未驗證；掛載說明已列出 U 線的檢查項目。
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "python3 - <<'PY'
+from pathlib import Path
+p=Path('staging/scripts/Tests/EditMode/CoreTests.cs')
+s=p.read_text().replace('''        [Test] public void MovesThroughEveryStateAndBack()''','''        [TestCase(0)] [TestCase(1)] [TestCase(2)] [TestCase(3)]
+        public void AllSixteenDistanceDrivenTransitions(int sourceIndex)
+        {
+            float[] distances = { 1, 3, 20, 31 };
+            CompanionState[] states = { CompanionState.Idle, CompanionState.Follow,
+                CompanionState.Catchup, CompanionState.Teleport };
+            for (int target = 0; target < distances.Length; target++)
+            {
+                var c = new CompanionCore();
+                Check.Equal(states[sourceIndex], Step(c, 0, distances[sourceIndex]));
+                Check.Equal(states[target], Step(c, 0, distances[target]));
+            }
+        }
+        [Test] public void MovesThroughEveryStateAndBack()''')
+p.write_text(s)
+PY
+staging/scripts/Tests/run_core_tests.sh > staging/scripts/logs/core-tests.txt 2>&1" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 3683ms:
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "python3 - <<'PY'
+from pathlib import Path
+import json
+root=Path('staging/scripts')
+for p in root.rglob('*.asmdef'):
+    json.loads(p.read_text())
+for name in ['HungerCore.cs', 'CompanionCore.cs']:
+    text=(root/'Runtime'/name).read_text()
+    assert 'UnityEngine' not in text and 'UnityEditor' not in text
+output=(root/'logs/core-tests.txt').read_text()
+assert 'RESULT: 40 passed, 0 failed' in output, output
+files='\\n'.join('- "'`'"'+str(p)+'"'`'"' for p in sorted(root.rglob('*')) if p.is_file())
+report='''# S 線 R0 交件報告
+
+日期：2026-11-07。範圍：僅 "'`staging/scripts/`；未開 Unity、未操作 batchmode、未修改別線、未推送。
+
+## 變更
+
+- HungerCore：預設 3/5 格、每 24 秒減 0.5、保留計時餘額的 Pause/Resume、Eat/FillAll、飢餓跨零事件與 0.6 移速倍率，無死亡機制。
+- HungerSystem：MonoBehaviour 包裝、HUD C# 與 Inspector 事件、飢餓 Toast 訊息事件。
+- CompanionCore：純 C# WorldPosition、距離四狀態、3 秒卡住判斷、玩家後方 2m 目標、8 秒呼喚冷卻與比例。呼喚成功後加速靠近，集合或瞬移後解除。
+- CompanionFollow：NavMeshAgent 跟隨，無有效 NavMesh 時 MoveTowards 備援；暴露實際位移 Speed、Call、CooldownRatio、State。
+- 共用 EditMode/console 測試、離線 console runner、兩個 asmdef、U 線掛載說明。
+
+## 檔案
+
+'"'''+files+'''
+- "'`staging/scripts/logs/S-R0.md`（本報告）
+
+## 實際驗證
+
+- 執行 `staging/scripts/Tests/run_core_tests.sh`，exit code 0。
+- .NET SDK 10.0.402、C# 9.0、warnings as errors；零 NuGet 套件。使用最小 NUnit 屬性替身及反射 runner 執行同一份 EditMode 測試方法，並非 Unity Test Runner。
+- 40 個測試案例全數通過，包含四狀態全部 16 種距離轉換組合、2.5/12/30m 邊界、3 秒卡住與進度重設、呼喚及 8 秒邊界、飢餓／暫停／補食／事件／輸入驗證。
+- `sh -n` 檢查 shell 語法通過；asmdef JSON 解析通過；確認兩個 Core 沒有 UnityEngine/UnityEditor 引用。
+- 原始輸出有 macOS `CSSM_ModuleLoad` 訊息；未隱藏，編譯與全部測試仍成功。
+
+### 最終完整輸出
+
+```text
+'"'''+output+'''"'```
+
+## 未做到與風險
+
+- 遵守 S 線限制，未在 Unity 6000.3 編譯或跑真正 NUnit EditMode；MonoBehaviour、HUD、PlayerController 接線與場景行為均待 U 線驗證。本報告不代表 Unity 驗收完成。
+- 無 NavMesh 備援不避障或貼地；瞬移優先取目標附近 2m NavMesh 落點，多層地形安全性待 U 線現場驗證。
+- 實際 PlayerController 尚未提供；INTEGRATION.md 給掛載位置與讀倍率的一行程式，但沒有修改或假稱核對過該控制器。
+- 本機已有 dotnet，未使用或驗證 mono/csc 備援。console runner 需 .NET SDK 8 以上。
+- `RTK.md` 在本專案根目錄不存在；已讀實際 AGENTS.md 與 docs/plan.md 第三、四、六節。
+- 任務同時要求只能寫 staging/scripts/ 與報告放 logs/S-R0.md；已提出唯一例外確認，尚未收到答覆，因此本報告暫放 staging/scripts/logs/S-R0.md，未寫根目錄 logs/。
+- Obsidian Vault 超出本輪允許寫入範圍，未儲存，也未宣稱已儲存。
+
+## 下一步
+
+U 線依 INTEGRATION.md 匯入指定兩個資料夾，跑 Unity EditMode，再驗證 HUD/Toast/移速、NavMesh/灰盒備援、卡住瞬移、動畫 Speed 與呼喚冷卻環。取得報告路徑例外授權後再搬到根目錄 logs/S-R0.md。
+'"'''
+(root/'logs/S-R0.md').write_text(report)
+print('RESULT: 40 passed, 0 failed; core isolation + asmdef JSON checks passed; report written.')
+PY" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+RESULT: 40 passed, 0 failed; core isolation + asmdef JSON checks passed; report written.
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+已完成兩個 Core、MonoBehaviour 包裝、EditMode 測試與掛載說明。實際以 .NET／C# 9 執行：**40 項通過、0 項失敗**。
+
+- [掛載說明](/Volumes/hk6429/projects/liuruan-tiantai/staging/scripts/INTEGRATION.md)
+- [交件報告與完整測試輸出](/Volumes/hk6429/projects/liuruan-tiantai/staging/scripts/logs/S-R0.md)
+
+未開 Unity；場景整合與瞬移安全落點待 U 線驗證。
+報告暫留允許目錄；根目錄 logs 與 Obsidian 均未寫入。
+hook: Stop
+hook: Stop
+hook: Stop Completed
+hook: Stop Completed
+tokens used
+57,056
+已完成兩個 Core、MonoBehaviour 包裝、EditMode 測試與掛載說明。實際以 .NET／C# 9 執行：**40 項通過、0 項失敗**。
+
+- [掛載說明](/Volumes/hk6429/projects/liuruan-tiantai/staging/scripts/INTEGRATION.md)
+- [交件報告與完整測試輸出](/Volumes/hk6429/projects/liuruan-tiantai/staging/scripts/logs/S-R0.md)
+
+未開 Unity；場景整合與瞬移安全落點待 U 線驗證。
+報告暫留允許目錄；根目錄 logs 與 Obsidian 均未寫入。
+EXIT=0

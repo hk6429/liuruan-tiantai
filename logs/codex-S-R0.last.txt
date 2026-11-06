@@ -1,0 +1,7 @@
+已完成兩個 Core、MonoBehaviour 包裝、EditMode 測試與掛載說明。實際以 .NET／C# 9 執行：**40 項通過、0 項失敗**。
+
+- [掛載說明](/Volumes/hk6429/projects/liuruan-tiantai/staging/scripts/INTEGRATION.md)
+- [交件報告與完整測試輸出](/Volumes/hk6429/projects/liuruan-tiantai/staging/scripts/logs/S-R0.md)
+
+未開 Unity；場景整合與瞬移安全落點待 U 線驗證。
+報告暫留允許目錄；根目錄 logs 與 Obsidian 均未寫入。

@@ -1,0 +1,12 @@
+/Library/
+/Temp/
+/Obj/
+/Build/
+/Deploy/
+/UserSettings/
+/.netlify/
+/.wrangler/
+*.csproj
+*.sln
+.DS_Store
+__pycache__/

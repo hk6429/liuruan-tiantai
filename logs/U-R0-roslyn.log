@@ -1,0 +1,15 @@
+runtime: exit 0, files 19
+Assets/_Project/Scripts/SpeechBridge.cs(22,90): warning CS0649: 從未指派欄位 'SpeechBridge.Manifest.items'，會持續使用其預設值 null
+Assets/_Project/Scripts/ClueManager.cs(52,27): warning CS0649: 從未指派欄位 'ClueList.clues'，會持續使用其預設值 null
+Assets/_Project/Scripts/ClueManager.cs(55,31): warning CS0649: 從未指派欄位 'ClueList.evidenceCards'，會持續使用其預設值 null
+Assets/_Project/Scripts/SpeechBridge.cs(21,59): warning CS0649: 從未指派欄位 'SpeechBridge.Entry.k'，會持續使用其預設值 null
+Assets/_Project/Scripts/ClueManager.cs(53,25): warning CS0649: 從未指派欄位 'ClueList.infer'，會持續使用其預設值 null
+Assets/_Project/Scripts/ClueManager.cs(70,36): warning CS0649: 從未指派欄位 'ClueManager.clueJson'，會持續使用其預設值 null
+Assets/_Project/Scripts/ScrollUI.cs(18,40): warning CS0649: 從未指派欄位 'ScrollUI.font'，會持續使用其預設值 null
+Assets/_Project/Scripts/SpeechBridge.cs(21,76): warning CS0649: 從未指派欄位 'SpeechBridge.Entry.f'，會持續使用其預設值 null
+Assets/_Project/Scripts/ClueManager.cs(56,27): warning CS0649: 從未指派欄位 'ClueList.reflection'，會持續使用其預設值 null
+Assets/_Project/Scripts/ClueManager.cs(72,35): warning CS0649: 從未指派欄位 'ClueManager.markerMat'，會持續使用其預設值 null
+Assets/_Project/Scripts/ClueManager.cs(71,35): warning CS0649: 從未指派欄位 'ClueManager.ui'，會持續使用其預設值 null
+Assets/_Project/Scripts/ClueManager.cs(54,23): warning CS0649: 從未指派欄位 'ClueList.endingText'，會持續使用其預設值 null
+
+editor: exit 0, files 6

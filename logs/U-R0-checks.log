@@ -1,0 +1,18 @@
+python3 scripts/test_r0_delivery.py
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.131s
+
+OK
+
+bash syntax: exit 0
+
+所有 Python 腳本語法：通過
+
+rg -ri liulaolao Assets scripts: 0 matches (exit 1)
+
+資產／ProjectSettings GUID 靜態依賴掃描：198 個引用，0 個未解析（對照來源相同版本 PackageCache）
+
+未設定 NETLIFY_SITE_ID：在任何部署前正確停止；未呼叫線上 CLI
+
+未產生 Library／Build／Deploy／前作 Art；未啟動 Unity

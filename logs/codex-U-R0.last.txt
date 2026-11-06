@@ -1,0 +1,7 @@
+已交付骨架與灰盒產生器；Runtime／Editor 預編譯皆 0 錯誤，3 項離線測試通過，舊名稱搜尋 0 筆。
+
+- [交件報告](/Volumes/hk6429/projects/liuruan-tiantai/logs/U-R0.md)
+- [完整檔案清單](/Volumes/hk6429/projects/liuruan-tiantai/docs/U-R0-files.md)
+
+未啟動 Unity；Boot／Main 尚待 CC 執行 batchmode 生成及驗收。
+Obsidian 位於允許寫入範圍外，本輪未同步。
