@@ -1,0 +1,8 @@
+已交付 **29 張正式素材＋9 張檢查圖**，全部確認落盤，尺寸、透明通道與邊界檢查通過。
+
+- [素材目錄](/Volumes/hk6429/projects/liuruan-tiantai/staging/art/R1/)
+- [提示詞](/Volumes/hk6429/projects/liuruan-tiantai/staging/art/R1/prompts.md)
+- [交件報告](/Volumes/hk6429/projects/liuruan-tiantai/logs/A-R1.md)
+
+未開 Unity；天空由 1774×887 放大至 2048×1024，法線為近似值，實景效果待 U 線驗收。
+本輪依限定寫入範圍，未另存 Obsidian。

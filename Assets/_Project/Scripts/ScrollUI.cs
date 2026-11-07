@@ -84,6 +84,7 @@ namespace Liuruan
         /// 線索演出進行中（鎖住玩家操作）
         public bool Cinematic;
         public bool ExternalUI;
+        public bool JourneyHud;
         public TMP_FontAsset Font => font;
         bool AnyPanel => scrollPanel.activeSelf || bookPanel.activeSelf || endingPanel.activeSelf || fullPanel.activeSelf || helpPanel.activeSelf;
         public bool IsBusy => Cinematic || ExternalUI || AnyPanel;
@@ -213,9 +214,9 @@ namespace Liuruan
             bool yapai = false;
             var hudGo = hudText.transform.parent.gameObject;
             // R18：演出中（兩種版面）與觸控版任何面板／外部 UI 開著時也收起 HUD（原本會從半透明底透出來）
-            bool hudOn = !yapai && !Cinematic && !(touchLayout && IsBusy);
+            bool hudOn = !JourneyHud && !yapai && !Cinematic && !(touchLayout && IsBusy);
             if (hudGo.activeSelf != hudOn) hudGo.SetActive(hudOn);
-            bool rowOn = !(touchLayout && PanelOpen) && !yapai;
+            bool rowOn = !JourneyHud && !(touchLayout && PanelOpen) && !yapai;
             foreach (var g in topRow) if (g.activeSelf != rowOn) g.SetActive(rowOn);
             bool showScore = rowOn && cm && cm.IsCollected(ClueManager.EndingId);
             if (scoreBtnGo && scoreBtnGo.activeSelf != showScore) scoreBtnGo.SetActive(showScore);
@@ -231,6 +232,7 @@ namespace Liuruan
 
         public void SetPrompt(string text)
         {
+            if (JourneyHud) { promptBox.SetActive(false); return; }
             promptBox.SetActive(!string.IsNullOrEmpty(text) && !IsBusy);
             if (promptBox.activeSelf) promptText.text = TouchInput.Enabled && text.StartsWith("E ") ? Txt.TouchPromptPrefix + text.Substring(2) : text;
         }

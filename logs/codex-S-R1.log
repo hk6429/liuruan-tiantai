@@ -1,0 +1,2682 @@
+OpenAI Codex v0.166.0
+--------
+workdir: /Volumes/hk6429/projects/liuruan-tiantai
+model: gpt-6.1-sol
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR]
+reasoning effort: medium
+reasoning summaries: none
+session id: 01a1b2ed-51e8-7382-8f86-eb6ff9c53f43
+--------
+user
+# S 線 R1：MinimapCam、ClimbZone、DriftPickup
+
+先讀 AGENTS.md、docs/plan.md 第三、四、六節、你上一輪的 staging/scripts/logs/S-R0.md 與 INTEGRATION.md。只能寫 staging/scripts/。不開 Unity。延續 R0 的模式：純 C# Core（不引用 UnityEngine）＋ MonoBehaviour 包裝＋測試。交件報告寫 staging/scripts/logs/S-R1.md。
+
+1. **MinimapCam**：正交俯視攝影機跟隨玩家（不旋轉、北朝上），輸出 256² RenderTexture；圖示層（玩家箭頭、阮肇點、當前目標點）；**第一幕迷霧**：MinimapFogCore 以 32×32 格記錄走過的格子，未探索格蓋霧（輸出 Texture2D 遮罩），Act2 起取消迷霧。Core 測試：揭露半徑、座標轉格、邊界。
+2. **ClimbZone**：攀藤段。玩家進入觸發區按互動 → 鎖定在藤蔓平面上，上下左右移動（速度 1.2m/s），到頂端自動翻上平台、到底自動放開；飢餓值 <1 格時攀爬速度減半。ClimbCore 測試狀態：Grounded→Attaching→Climbing→TopOut／Release。
+3. **DriftPickup**：溪中漂流物沿一條 waypoint 曲線緩慢往下游漂（循環），玩家靠近 2m 顯示提示、互動撿起，觸發事件帶 id（1 蕪菁葉／2 杯／3 胡麻飯糝）；三件都撿到發 OnAllCollected。DriftCore 測試：沿曲線取樣、循環、撿起後不再出現、全收集事件只發一次。
+4. 更新 INTEGRATION.md：三個元件掛哪裡、和 GameFlow 的介面（事件名稱與參數）。U 線本輪正在寫 GameFlow.cs，介面請寫成事件（C# event Action<int> 等），不要直接引用 GameFlow。
+5. run_core_tests.sh 加入新測試，實際跑過全綠，輸出貼報告。
+
+warning: Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.
+  user (/Users/naichengchen/.codex/config.toml): `features.rmcp_client` is ignored.
+  user (/Users/naichengchen/.codex/config.toml): `writable_roots` is ignored.
+warning: Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.
+  user (/Users/naichengchen/.codex/config.toml): `features.rmcp_client` is ignored.
+  user (/Users/naichengchen/.codex/config.toml): `writable_roots` is ignored.
+warning: Under-development features enabled: chronicle. Under-development features are incomplete and may behave unpredictably. To suppress this warning, set `suppress_unstable_features_warning = true` in /Users/naichengchen/.codex/config.toml.
+warning: Exceeded skills context budget. All skill descriptions were removed and 50 additional skills were not included in the model-visible skills list.
+hook: SessionStart
+hook: SessionStart
+hook: SessionStart Completed
+hook: SessionStart Completed
+hook: UserPromptSubmit
+hook: UserPromptSubmit
+hook: UserPromptSubmit Completed
+hook: UserPromptSubmit Completed
+codex
+我會先讀指定文件與 R0 的程式、測試模式，只修改 `staging/scripts/`，全程不開 Unity；完成後實跑 Core 測試，將輸出寫進交件報告。
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc 'ls -a; rg --files staging/scripts; cat AGENTS.md; cat RTK.md' in /Volumes/hk6429/projects/liuruan-tiantai
+ exited 1 in 0ms:
+.
+..
+.cf-branch
+.git
+.gitignore
+AGENTS.md
+Assets
+Library
+Packages
+ProjectSettings
+README.md
+Temp
+UserSettings
+briefs
+docs
+logs
+scripts
+sources
+staging
+staging/scripts/logs/S-R0.md
+staging/scripts/logs/core-tests.txt
+staging/scripts/Tests/Console/Runner.cs
+staging/scripts/Tests/run_core_tests.sh
+staging/scripts/Tests/EditMode/CoreTests.cs
+staging/scripts/Tests/EditMode/Liuruan.EditModeTests.asmdef
+staging/scripts/Runtime/HungerSystem.cs
+staging/scripts/Runtime/HungerCore.cs
+staging/scripts/Runtime/CompanionFollow.cs
+staging/scripts/Runtime/Liuruan.Runtime.asmdef
+staging/scripts/Runtime/CompanionCore.cs
+staging/scripts/INTEGRATION.md
+# 天台山・流杯記（liuruan-tiantai）— Codex 接手說明
+
+Unity 6000.3.27f1 URP WebGL 國文遊戲，題材《幽明錄》〈劉晨阮肇入天台〉。回覆一律繁體中文（台灣）。
+計劃書：docs/plan.md（五幕：迷山／攀桃／流杯／仙村／歸鄉；四線 U/S/A/C）。
+參考畫面：staging/ref/*.jpg（UE5 Q 版小勇者影片截圖，風格與 HUD 版面照它）。
+骨架來源：/Volumes/hk6429/projects/liulaolao-garden（劉姥姥，只讀，絕不修改該專案）。
+
+## 鐵律
+- 只寫自己這條線被指定的資料夾，不碰別線的檔案。
+- 只有 U 線可以操作 Unity（UnityMCP 或 batchmode），其他線不得開 Unity。
+- 台詞與原文只用 sources/liuruan_tw.txt 逐字，不准自編情節或台詞；自撰限簡短白話旁白。
+- 女子留宿段（「各就一帳宿」起至「遂停半年」前）整段略過，只用旁白「遂停半年」帶過。
+- 不做戰鬥。不推 GitHub、不推 Vercel。生成產物不放 iCloud。
+- 刪檔用 /bin/rm；Blender 只能 headless（-b --factory-startup）。
+- 完成時在 logs/<線>-R<輪>.md 寫交件報告：做了什麼、檔案清單、怎麼驗證的、沒做到什麼。不得謊報。
+cat: RTK.md: No such file or directory
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "rg -n 'liuruan|天台|S-R0' /Users/naichengchen/.codex/memories/MEMORY.md; cat /Users/naichengchen/.codex/plugins/cache/ponytail/ponytail/5.3.3/skills/ponytail/SKILL.md" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+---
+name: ponytail
+description: >
+  Lazy senior dev mode: the smallest change that fully solves the task, and a
+  reply a busy human understands in one read. Use on any coding task (writing,
+  fixing, refactoring, reviewing, choosing dependencies) and when the user says
+  "ponytail", "be lazy", "simplest solution", "yagni", or complains about
+  over-engineering or bloat. Levels: lite, full (default), ultra.
+argument-hint: "[lite|full|ultra|off]"
+license: MIT
+---
+
+# Ponytail
+
+You are a lazy senior developer. The best code is the code never written. You solve the whole problem with the least new code. End your reply with one or two lines: what you skipped or did not check, and any risk the user must know.
+
+Active for the whole session until the user says "stop ponytail" or "normal mode". Switch level: `/ponytail lite|full|ultra`.
+
+## Before you write
+
+Read the task and the code it touches. List every place your change must reach: callers, tests, fixtures, config, exports. Check what your change could break for users: data it would destroy or expose, callers that stop working. That is scope. Extra features are not.
+
+## The smallest complete change
+
+Take the first option that fully works:
+
+1. Does it need to exist? Skip features, options and flexibility nobody asked for, and name them in one line. A vague request ("build me X") gets the smallest version that does the core job.
+2. Already in this codebase (a helper, component, service, pattern)? Use it the way the surrounding code does.
+3. Standard library or a platform feature? Use it, unless the project has its own. A house component beats a native widget.
+4. An installed dependency? Use it. Never add a dependency for a few lines.
+5. Can it be one line a reader gets at a glance? One line.
+6. Otherwise: the minimum code that works.
+
+- Be lazy about the solution, never about the change itself: finish every part the task needs, including the callers, tests and fixtures your change breaks.
+- No abstraction, wrapper, type conversion, option, config, boilerplate or "for later" code nobody asked for. Keep values in the form the platform already gives you. Deletion beats addition. Keep the structure the codebase already has: its layers, interfaces and conventions.
+- The shortest working diff wins, once you know everything it must touch. A one-liner that needs decoding is not short.
+- Comment only the why the code cannot show, in one line.
+- Bug fix: before you edit, grep every caller of the function you touch, then fix the root cause once in the shared code.
+- Code you move or merge keeps its error handling and validation.
+- Between options of equal size, take the one that is correct on edge cases.
+- Lazy code without its check is unfinished: new non-trivial logic (a branch, a loop, a parser, money or security, or a whole new script or app) leaves one small test or an assert-based self-check. Trivial changes need none.
+- A shortcut with a known limit gets a code comment in this form: `shortcut: <the limit>, <when to upgrade>`.
+
+Never cut: validation at trust boundaries, error handling that prevents data loss, security, accessibility, the calibration real hardware needs, anything the user asked for.
+
+## Levels
+
+| Level | Behavior |
+|-------|----------|
+| **lite** | Build what was asked. Name the smaller option in one line and let the user pick. |
+| **full** | The rules above. Default. |
+| **ultra** | Also question the request: before building, push back on any part the need does not justify. |
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc 'pwd; cat docs/plan.md; cat staging/scripts/logs/S-R0.md; cat staging/scripts/INTEGRATION.md; cat staging/scripts/Runtime/*.cs; cat staging/scripts/Tests/run_core_tests.sh; cat staging/scripts/Tests/Console/Runner.cs; cat staging/scripts/Tests/EditMode/CoreTests.cs; cat staging/scripts/Runtime/*.asmdef; git status --short' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+---
+date: 2026-11-07
+type: 計劃書
+tags: [unity-webgl, 教育遊戲, 幽明錄, 劉晨阮肇, 桃花源記, 比較閱讀, 國文]
+---
+
+# 〈劉晨阮肇入天台〉Unity WebGL 教育遊戲計劃書（草案 v0.1）
+
+- 專案代號：`liuruan-tiantai`（實體路徑 `/Volumes/hk6429/projects/liuruan-tiantai`，`~/projects` 是 symlink，Codex 一律帶實體路徑）
+- 參考影片：`~/Downloads/F3-pUil44IpPP3fK.mp4`（UE5 Q 版小勇者，47 秒：帳篷村 → 開寶箱 → 木樁 → 光束森林小徑 → 營火帳篷）
+- 產線：沿用〈劉姥姥〉`~/projects/liulaolao-garden`（Unity 6000.3.27f1 URP WebGL＋Boot 場景包切塊＋R30 畫質工具）與 `/unity-webgl-edu-game` skill
+- 分工：**CC 規劃、寫任務書、驗收；Codex 執行**，每輪四線平行，只有 U 線碰 UnityMCP
+
+---
+
+## 一、教學目標
+
+| # | 目標 | 遊戲中怎麼學 |
+|---|---|---|
+| 1 | 讀懂志怪小說的敘事結構：入山 → 遇仙 → 留居 → 思歸 → 返鄉 | 五幕就是五段，每幕結束時解鎖原文 |
+| 2 | 抓線索推論：蕪菁葉、流杯、胡麻飯糝 →「此知去人徑不遠」 | 溪中漂流物三選一推論題 |
+| 3 | 「仙界一日，人間百年」的時間母題 | 結局村莊整個換樣，七世孫出場 |
+| 4 | 與〈桃花源記〉比較閱讀 | 結局比較表：入口、異境樣貌、離開方式、能否重返 |
+
+## 二、角色
+
+| 影片 | 本作 |
+|---|---|
+| 紅帽小勇者（玩家） | **劉晨**：Q 版漢代採藥人，頭巾、短褐、背簍、腰插小斧 |
+| 發光小象夥伴 | **阮肇**：AI 跟隨，會落後、會回頭催；左下頭像＝阮肇 |
+| 村民 | 二女子、三四十名仙女（遠景群像，用同一模型換色） |
+| 結局 NPC | 七世孫 |
+
+不做戰鬥。影片的劍盾改成小斧＋背簍；木樁靶場改成「取穀皮」的楮樹林。
+
+## 三、遊戲流程（五幕，約 15 分鐘，一節課可玩完＋討論）
+
+台詞與旁白**只引原文逐字**，自撰限簡短白話旁白，不加情節（劉姥姥鐵律沿用）。
+
+| 幕 | 影片對應段 | 原文情節 | 互動 | 考點 |
+|---|---|---|---|---|
+| 一、迷山 | 森林小徑＋光束 | 入天台山取穀皮，迷不得返，經十三日糧乏盡 | 剝 5 棵楮樹皮（＋穀皮計數）；HUD 5 格飢餓值隨時間遞減；小地圖逐漸起霧 | 「迷不得返」的處境 |
+| 二、攀桃 | 森林盡頭山壁 | 遙望山上桃樹，絕巖邃澗，攀援藤葛乃得至上，各噉數枚，飢止體充 | 沿藤蔓攀爬小段；摘桃，飢餓值回滿 | 困境轉折 |
+| 三、流杯 | 開寶箱 | 持杯取水，見蕪菁葉、一杯流出、有胡麻飯糝 →「此知去人徑不遠」 | 溪中三件漂流物＝三個寶箱，按 [E] 撿起；集滿後推論題；涉水逆流 | 線索推論 |
+| 四、仙村 | 帳篷村＋營火＋告示板 | 溪邊二女子喚「劉、阮二郎」；銅瓦屋、絳羅帳、帳角懸鈴；停半年，春時百鳥啼鳴，懷悲思求歸 | 村中任務告示板（原文段落卡）；季節由春轉春、鳥鳴；「求歸」選項 | 身在仙境的矛盾心理 |
+| 五、歸鄉 | （影片無，本作加碼） | 親舊零落，邑屋改異，無復相識；問訊得七世孫 | 回到第一幕起點的村子，整個換樣（同場景換一套建物＋陌生村民）；七世孫對話 | 時間母題＋比較閱讀 |
+
+結局：全文＋推論題（為什麼會是七世？）＋〈桃花源記〉比較表＋成績卡（沿用 QuizStats）。
+
+**待你決定**：原文中女子留宿的段落（「各就一帳宿」那段）國中不適合，建議**整段略過**，只用旁白「遂停半年」帶過。
+
+## 四、HUD（照影片版面）
+
+| 位置 | 影片 | 本作 |
+|---|---|---|
+| 左上 | 5 顆火焰＋「+25 Embers」 | 5 顆桃形飢餓值＋「穀皮 ×N」 |
+| 右上 | 3 個菱形技能格（G/R/F） | 剝皮／取水／呼喚阮肇（手機改成三顆圓鈕） |
+| 左下 | 小象頭像＋點狀冷卻環 | 阮肇頭像＋呼喚冷卻環 |
+| 右下 | 小地圖 | 小地圖（正交俯視 RenderTexture，第一幕會起霧） |
+| 中下 | `[E] Close the chest` | `[E] 撿起` 互動提示（手機改「互動」鈕） |
+
+## 五、美術定調
+
+- 整體：照影片的**風格化 Q 版＋暖陽光束**（頭身比約 1:2.5、飽和暖綠、強烈斜射陽光、柔和陰影）。跟劉姥姥的半寫實武俠不同，這次要可愛。
+- 天台山：松、竹、楮樹、藤蔓、絕巖、溪澗；光束用體積光假面片＋懸浮塵粒（不跑真體積光，WebGL 撐不住）。
+- 仙村：**銅瓦屋**（銅綠＋金邊屋瓦會反光）、絳紅羅帳、帳角懸鈴（風動＋音效）、桃花樹；比影片的帳篷村更夢幻。
+- 歸鄉村：同一塊地，換成破舊陌生的漢代民居、灰冷色調，與仙村形成反差。
+- 產線：codex-image2 概念圖 → **Dzine Normal**（10 點／件）轉 3D → headless Blender 瘦身 → Mixamo 自動綁骨 → Unity Humanoid。
+
+**Dzine 預算**：人物 4（劉晨、阮肇、仙女、七世孫）＋建物道具約 16 件 ≈ 20 件 × 10 點 ＝ 約 200 點。
+
+## 六、技術規劃（只列與劉姥姥不同處）
+
+| 項目 | 規劃 |
+|---|---|
+| 鏡頭 | 第三人稱跟隨＋碰撞縮距（沿用 CamOcclusion），比劉姥姥更低、更貼近，跟影片一樣 |
+| 場景 | 一個大地形分三區（森林／溪谷／村），Boot＋場景包切塊沿用 R30 |
+| 新系統 | `HungerSystem`、`CompanionFollow`（NavMesh 跟隨＋落後催促）、`MinimapCam`、`ClimbZone`、`DriftPickup`、`SeasonSwap`（歸鄉換景） |
+| 沿用 | BootLoader、PlayerController、TouchControls、QualityTier／QualityToggle、FontSubset（RebuildNoDialog）、ClueManager、QuizStats、EpilogueDirector、R30Lighting／R30Foliage、deploy.sh／verify.sh |
+| 包體 | data < 26,214,400 bytes；場景包每塊 20 MiB |
+| 部署 | CF Pages＋Netlify（不推 Vercel）；itch 等你說要再上；不推 GitHub（照劉姥姥） |
+
+## 七、四線分工與輪次
+
+| 線 | 負責 | 寫入範圍 | 工具 |
+|---|---|---|---|
+| **U** | Unity 組裝、建置 | `Assets/`、`ProjectSettings/` | Codex＋UnityMCP（唯一） |
+| **S** | 新系統 C# 原始碼（先在外部寫好、附 EditMode 測試） | `staging/scripts/` | Codex |
+| **A** | 美術：概念圖、天空、貼圖、草叢卡片 | `staging/art/` | Codex 生圖（codex-image2） |
+| **C** | 內容：原文校對、題目、比較表、教師手冊 | `sources/`、`Assets/_Project/Data/`、`docs/` | Codex |
+
+Dzine、Mixamo 要用瀏覽器，由 **CC 主線用 Chrome 操作**（Codex 碰不到你的 Chrome）。
+
+| 輪 | U | S | A | C | 驗收 |
+|---|---|---|---|---|---|
+| R0 開專案 | 從劉姥姥複製骨架、新建 Boot／Main、灰盒地形三區 | HungerSystem、CompanionFollow | 概念圖 6 張（森林、溪谷、仙村、歸鄉村、劉晨、阮肇） | 原文取得與校對（太平廣記卷 61 引幽明錄為底本）→ `sources/liuruan_tw.txt` | 你看概念圖定調 |
+| R1 白模可玩 | 灰盒走完五幕、HUD 版面 | MinimapCam、ClimbZone、DriftPickup | 天空全景、地面貼圖、草叢卡片 | clues.json＋題目＋比較表 | 瀏覽器實開灰盒版 |
+| R2 3D 生成 | 匯入 Dzine 模型 | SeasonSwap、EpilogueDirector 改寫 | 建物道具概念圖（單一主體淺灰底） | 教師手冊、學習單 | 主線跑 Dzine＋Mixamo |
+| R3 質感 | 地形、植被風動、光束、後製、仙村擺件密度 | 觸控三鈕、手機 HUD | 補圖、UI 圖示（桃、穀皮、頭像） | 字型子集字表、製作說明 | 改前改後對照圖 |
+| R4 審查 | 修正 | 修正 | 修正 | 四位專家走查（遊戲、國文、UX、效能） | 你說「全部修正」 |
+| R5 上線 | build＋場景包 | — | — | 上線文案 | deploy.sh＋verify.sh md5＋瀏覽器實開 |
+
+每輪派工規格（照劉姥姥）：任務書寫明寫入範圍、驗收條件、鐵律；`codex exec -C /Volumes/hk6429/projects/liuruan-tiantai -s workspace-write`；驗收看實際 diff 與檔案，不看回報文字；20 分鐘沒動靜視為卡住。
+
+## 八、需要你決定的事
+
+1. 女子留宿段：建議整段略過（見第三節）。
+2. 專案代號 `liuruan-tiantai`、遊戲名〈天台山・流杯記〉，可以嗎？
+3. Dzine 約 200 點，點數夠不夠？
+4. 上線範圍：只上 CF＋Netlify，還是比照劉姥姥也上 itch？
+
+## 九、風險
+
+| 風險 | 對策 |
+|---|---|
+| Q 版光束畫質在 WebGL 達不到影片水準 | 先做森林一區當樣板，你點頭再推其他區（skill 2.5 節） |
+| 原文版本差異（太平廣記／太平御覽／藝文類聚字句不同） | C 線列出異文表，以太平廣記為底本並註明 |
+| 阮肇 AI 跟隨卡地形 | NavMesh＋超距瞬移回身邊 |
+| UnityMCP 斷線（本 session 開頭就是 ECONNREFUSED） | 開工前請你開 Unity，Window → MCP for Unity → Start Server |
+# S 線 R0 交件報告
+
+日期：2026-11-07。範圍：僅 `staging/scripts/`；未開 Unity、未操作 batchmode、未修改別線、未推送。
+
+## 變更
+
+- HungerCore：預設 3/5 格、每 24 秒減 0.5、保留計時餘額的 Pause/Resume、Eat/FillAll、飢餓跨零事件與 0.6 移速倍率，無死亡機制。
+- HungerSystem：MonoBehaviour 包裝、HUD C# 與 Inspector 事件、飢餓 Toast 訊息事件。
+- CompanionCore：純 C# WorldPosition、距離四狀態、3 秒卡住判斷、玩家後方 2m 目標、8 秒呼喚冷卻與比例。呼喚成功後加速靠近，集合或瞬移後解除。
+- CompanionFollow：NavMeshAgent 跟隨，無有效 NavMesh 時 MoveTowards 備援；暴露實際位移 Speed、Call、CooldownRatio、State。
+- 共用 EditMode/console 測試、離線 console runner、兩個 asmdef、U 線掛載說明。
+
+## 檔案
+
+- `staging/scripts/INTEGRATION.md`
+- `staging/scripts/Runtime/CompanionCore.cs`
+- `staging/scripts/Runtime/CompanionFollow.cs`
+- `staging/scripts/Runtime/HungerCore.cs`
+- `staging/scripts/Runtime/HungerSystem.cs`
+- `staging/scripts/Runtime/Liuruan.Runtime.asmdef`
+- `staging/scripts/Tests/Console/Runner.cs`
+- `staging/scripts/Tests/EditMode/CoreTests.cs`
+- `staging/scripts/Tests/EditMode/Liuruan.EditModeTests.asmdef`
+- `staging/scripts/Tests/run_core_tests.sh`
+- `staging/scripts/logs/core-tests.txt`
+- `staging/scripts/logs/S-R0.md`（本報告）
+
+## 實際驗證
+
+- 執行 `staging/scripts/Tests/run_core_tests.sh`，exit code 0。
+- .NET SDK 10.0.402、C# 9.0、warnings as errors；零 NuGet 套件。使用最小 NUnit 屬性替身及反射 runner 執行同一份 EditMode 測試方法，並非 Unity Test Runner。
+- 40 個測試案例全數通過，包含四狀態全部 16 種距離轉換組合、2.5/12/30m 邊界、3 秒卡住與進度重設、呼喚及 8 秒邊界、飢餓／暫停／補食／事件／輸入驗證。
+- `sh -n` 檢查 shell 語法通過；asmdef JSON 解析通過；確認兩個 Core 沒有 UnityEngine/UnityEditor 引用。
+- 原始輸出有 macOS `CSSM_ModuleLoad` 訊息；未隱藏，編譯與全部測試仍成功。
+
+### 最終完整輸出
+
+```text
+/Volumes/hk6429/projects/liuruan-tiantai
+Compiler: .NET SDK 10.0.402; C# 9.0; no NuGet packages; shared EditMode test methods
+CSSM_ModuleLoad(): One or more parameters passed to a function were not valid.
+PASS HungerCoreTests.ClampsInitialValue(-1,0)
+PASS HungerCoreTests.ClampsInitialValue(0,0)
+PASS HungerCoreTests.ClampsInitialValue(5,5)
+PASS HungerCoreTests.ClampsInitialValue(6,5)
+PASS HungerCoreTests.DropsAtExactIntervalAndPreservesRemainder()
+PASS HungerCoreTests.EatClampFillAndChangeEvents()
+PASS HungerCoreTests.FoodWorksWhilePausedAndDoesNotResetActiveClock()
+PASS HungerCoreTests.LargeTickClampsAndRecoveryGetsFreshInterval()
+PASS HungerCoreTests.PauseResumeIsIdempotentAndKeepsRemainder()
+PASS HungerCoreTests.RejectsInvalidInputs()
+PASS HungerCoreTests.StartsWithThreeAndNormalSpeed()
+PASS HungerCoreTests.StarvesOncePerCrossingAndRecoversWithoutDying()
+PASS HungerCoreTests.SupportsCustomInterval()
+PASS HungerCoreTests.ZeroTickDoesNothing()
+PASS CompanionCoreTests.AllSixteenDistanceDrivenTransitions(0)
+PASS CompanionCoreTests.AllSixteenDistanceDrivenTransitions(1)
+PASS CompanionCoreTests.AllSixteenDistanceDrivenTransitions(2)
+PASS CompanionCoreTests.AllSixteenDistanceDrivenTransitions(3)
+PASS CompanionCoreTests.CallAcceleratesUntilReunion()
+PASS CompanionCoreTests.CallCooldownAndExactReadyBoundary()
+PASS CompanionCoreTests.CatchupCanAlsoGetStuck()
+PASS CompanionCoreTests.DistanceBoundaries(0,Idle)
+PASS CompanionCoreTests.DistanceBoundaries(2.499,Idle)
+PASS CompanionCoreTests.DistanceBoundaries(2.5,Follow)
+PASS CompanionCoreTests.DistanceBoundaries(12,Follow)
+PASS CompanionCoreTests.DistanceBoundaries(12.001,Catchup)
+PASS CompanionCoreTests.DistanceBoundaries(30,Catchup)
+PASS CompanionCoreTests.DistanceBoundaries(30.001,Teleport)
+PASS CompanionCoreTests.ExactStuckBoundary()
+PASS CompanionCoreTests.FiveCentimetresResetsStuckTimer()
+PASS CompanionCoreTests.IdleNeverCountsAsStuck()
+PASS CompanionCoreTests.MovesThroughEveryStateAndBack()
+PASS CompanionCoreTests.ProgressAndIdleResetStuckTimer()
+PASS CompanionCoreTests.RejectsInvalidTimeAndCoordinates()
+PASS CompanionCoreTests.SlowProgressAccumulatesAgainstAnchor()
+PASS CompanionCoreTests.StuckAtExactlyThreeSecondsTeleportsThenResets()
+PASS CompanionCoreTests.TeleportClearsCallButPreservesCooldown()
+PASS CompanionCoreTests.TeleportIsTwoMetresBehindNormalizedHorizontalForward()
+PASS CompanionCoreTests.UsesThreeDimensionalDistance()
+PASS CompanionCoreTests.ZeroForwardUsesWorldBack()
+RESULT: 40 passed, 0 failed
+```
+
+## 未做到與風險
+
+- 遵守 S 線限制，未在 Unity 6000.3 編譯或跑真正 NUnit EditMode；MonoBehaviour、HUD、PlayerController 接線與場景行為均待 U 線驗證。本報告不代表 Unity 驗收完成。
+- 無 NavMesh 備援不避障或貼地；瞬移優先取目標附近 2m NavMesh 落點，多層地形安全性待 U 線現場驗證。
+- 實際 PlayerController 尚未提供；INTEGRATION.md 給掛載位置與讀倍率的一行程式，但沒有修改或假稱核對過該控制器。
+- 本機已有 dotnet，未使用或驗證 mono/csc 備援。console runner 需 .NET SDK 8 以上。
+- `RTK.md` 在本專案根目錄不存在；已讀實際 AGENTS.md 與 docs/plan.md 第三、四、六節。
+- 任務同時要求只能寫 staging/scripts/ 與報告放 logs/S-R0.md；已提出唯一例外確認，尚未收到答覆，因此本報告暫放 staging/scripts/logs/S-R0.md，未寫根目錄 logs/。
+- Obsidian Vault 超出本輪允許寫入範圍，未儲存，也未宣稱已儲存。
+
+## 下一步
+
+U 線依 INTEGRATION.md 匯入指定兩個資料夾，跑 Unity EditMode，再驗證 HUD/Toast/移速、NavMesh/灰盒備援、卡住瞬移、動畫 Speed 與呼喚冷卻環。取得報告路徑例外授權後再搬到根目錄 logs/S-R0.md。
+# S 線 R0 掛載說明
+
+本批提供原始碼；S 線未開 Unity、未寫 Assets、未改 PlayerController。
+
+## 匯入位置
+
+由 U 線複製（保留隨附 asmdef）：
+
+- `Runtime/` → `Assets/_Project/Scripts/Liuruan/Runtime/`
+- `Tests/EditMode/` → `Assets/_Project/Tests/EditMode/Liuruan/`
+
+不要把 `Tests/Console/` 複製進 Assets，該處只含 console 測試用的 NUnit 屬性替身，匯入會與 Unity NUnit 衝突。不要把整個 staging/scripts 複製進 Assets。
+Runtime 無第三方套件。EditMode 需專案已有 Unity Test Framework（NUnit）；本批不新增或修改 Unity 套件。
+
+## 劉晨：HungerSystem
+
+1. 在玩家劉晨的 GameObject 加入 `Liuruan.HungerSystem`，第一幕 `Initial Value = 3`、`Interval Seconds = 24`。
+2. PlayerController 快取同物件元件：`hunger = GetComponent<Liuruan.HungerSystem>();`，並新增欄位 `private Liuruan.HungerSystem hunger;`。
+3. 在既有速度計算完成後、乘上移動向量之前，加這一行（`moveSpeed` 換成實際的每幀區域速度變數）：
+
+```csharp
+moveSpeed *= hunger != null ? hunger.SpeedMultiplier : 1f;
+```
+
+每幀由基礎速度重算 `moveSpeed`，不可反覆修改 Inspector 的基礎速度欄位，否則會累乘。此專案尚無 PlayerController 原始碼可核對，因此這是插入契約，不是已套用的 diff。
+
+4. HUD 啟用時先讀 `Value` 畫 5 格桃形圖示，再訂閱 `OnChanged(float)`；元件停用時解除訂閱。Inspector 也有 `On Changed` UnityEvent 可接 UI。
+5. `OnStarving` / Inspector `On Starving` 只在正值跨到 0 時通知一次；沒有死亡、扣血或結局處理。
+6. Toast UI 接 `OnToast(string)` 或 Inspector `On Toast`，顯示「肚子餓了，去找些食物吧。」；包裝層只發訊息，不建立 UI。
+7. 面板／演出開始呼叫 `Pause()`，全部結束後 `Resume()`。這是可重複呼叫的布林暫停；若多面板重疊，請由既有面板管理者彙整後再 Resume。暫停保留未滿 24 秒的餘額。
+8. 食物呼叫 `Eat(amount)`，攀桃完成呼叫 `FillAll()`。補食不重設仍在進行的計時；從飢餓恢復則重新計時。暫停期間仍可補食。重新開始第一幕時重新建立玩家物件，Core 沒有跨場景存檔。
+
+Core API：`HungerCore(initialValue = 3, intervalSeconds = 24)`、`Tick(deltaSeconds)`、`Value`、`SpeedMultiplier`、`IsPaused`、`Pause/Resume/Eat/FillAll`、`OnChanged/OnStarving`。輸入 NaN、無限值、負時間或負食物量會拋出 ArgumentOutOfRangeException；初始飢餓值夾在 0–5。
+
+## 阮肇：CompanionFollow
+
+1. 在阮肇的移動根物件加入 `Liuruan.CompanionFollow`，`Player` 指向劉晨。
+2. 可加 NavMeshAgent 並烘焙可行走範圍；建議基速 3、加速倍率 1.6。Agent 啟用且在 NavMesh 上時採 NavMesh 路徑；否則直接 MoveTowards。無 Agent 也能跑。
+3. 根物件的位移由此元件負責，動畫關閉 Root Motion；`Animator` 的 Speed 參數每幀讀 `CompanionFollow.Speed`（實際世界位移 m/s）。瞬移當幀為 0。NavMeshAgent 的停止距離由元件設成 2.4m，使它確實進入 `<2.5m` 的 Idle 範圍。
+4. 技能按鈕呼叫 `Call()`，回傳 true 才播放成功回饋；false 代表冷卻中，不延長冷卻。呼喚使阮肇維持 Catchup，直到 `<2.5m` 待機或觸發瞬移。
+5. 左下頭像環每幀讀 `CooldownRatio`：1＝剛呼喚、0＝可呼喚；8 秒後歸零。若 UI 要顯示完成比例，讀 `1f - CooldownRatio`。Time.timeScale = 0 時跟隨與冷卻一起停止；未指定 Player 時不更新 Core。
+6. 狀態距離採三維直線距離：`<2.5` Idle、`[2.5,12]` Follow、`(12,30]` Catchup、`>30` Teleport；呼喚中的 Catchup 優先於 Follow。
+7. 非 Idle 狀態先記錄位置，此後連續 3 秒未離開進度錨點 0.05m 即視為卡住；累積移動達 0.05m、Idle 或瞬移會重設計時。Core 回傳的瞬移目標是玩家水平朝向後方 2m，零水平朝向則用世界 -Z。
+8. Unity 包裝會在該目標附近 2m 取 NavMesh 落點（因此實際落點可能偏離恰好 2m），再 Warp；無有效落點或 Warp 失敗時直接設定位置。多層地形／山壁需要 U 線現場驗證安全落點。MoveTowards 不做避障與地面貼合，僅供沒有 NavMesh 的灰盒備援。
+
+純 Core 使用 `WorldPosition(X,Y,Z)`，不引用 UnityEngine。`CompanionCore.Tick(dt, player, companion, playerForward)` 回傳狀態，並更新 `Destination`；`Call()`、`CooldownRatio` 提供技能契約。
+
+## 驗證
+
+在專案根目錄執行：
+
+```sh
+staging/scripts/Tests/run_core_tests.sh
+```
+
+本機實際使用 .NET SDK 10.0.402，限定 C# 9，零 NuGet 套件，warnings 視為 errors。runner 在暫存目錄編譯兩個 Core 與同一份 EditMode 測試，反射呼叫 Test/TestCase；這是 console 斷言執行，不是啟動 Unity 的 NUnit runner。需 .NET SDK 8 以上；本機已有 dotnet，未使用 mono/csc 備援。測試產物離開時清除。
+
+U 線匯入後請在 Test Runner → EditMode 跑 `Liuruan.Tests`，再現場驗證：HUD 初始三格／歸零 Toast 與 60% 速度／暫停與補桃／NavMesh 跟隨／無 NavMesh 備援／卡住及超距瞬移／動畫 Speed／呼喚冷卻環。S 線未執行這些 Unity 驗證。
+using System;
+
+namespace Liuruan
+{
+    public readonly struct WorldPosition
+    {
+        public readonly float X, Y, Z;
+        public WorldPosition(float x, float y, float z)
+        {
+            HungerCore.RequireFinite(x, nameof(x));
+            HungerCore.RequireFinite(y, nameof(y));
+            HungerCore.RequireFinite(z, nameof(z));
+            X = x; Y = y; Z = z;
+        }
+        public static double Distance(WorldPosition a, WorldPosition b)
+        {
+            double x = (double)a.X - b.X, y = (double)a.Y - b.Y, z = (double)a.Z - b.Z;
+            return Math.Sqrt(x * x + y * y + z * z);
+        }
+    }
+
+    public enum CompanionState { Follow, Idle, Catchup, Teleport }
+
+    public sealed class CompanionCore
+    {
+        public const float CallCooldownSeconds = 8f;
+        public CompanionState State { get; private set; } = CompanionState.Idle;
+        public WorldPosition Destination { get; private set; }
+        public float CooldownRatio => (float)(cooldown / CallCooldownSeconds);
+        private double cooldown;
+        private double stuckSeconds;
+        private WorldPosition progressAnchor;
+        private bool trackingProgress;
+        private bool called;
+
+        public bool Call()
+        {
+            if (cooldown > 0) return false;
+            cooldown = CallCooldownSeconds;
+            called = true;
+            return true;
+        }
+
+        public CompanionState Tick(float deltaSeconds, WorldPosition player,
+            WorldPosition companion, WorldPosition playerForward)
+        {
+            HungerCore.RequireFinite(deltaSeconds, nameof(deltaSeconds));
+            if (deltaSeconds < 0) throw new ArgumentOutOfRangeException(nameof(deltaSeconds));
+            cooldown = Math.Max(0, cooldown - deltaSeconds);
+            double distance = WorldPosition.Distance(player, companion);
+            Destination = player;
+            if (distance < 2.5)
+            {
+                State = CompanionState.Idle;
+                called = false;
+                ResetProgress();
+                return State;
+            }
+
+            if (!trackingProgress || WorldPosition.Distance(progressAnchor, companion) >= 0.05)
+            {
+                progressAnchor = companion;
+                stuckSeconds = 0;
+                trackingProgress = true;
+            }
+            else stuckSeconds += deltaSeconds;
+
+            if (distance > 30 || stuckSeconds >= 3)
+            {
+                // 只取水平朝向，避免玩家上下坡時把夥伴放進地底。
+                double length = Math.Sqrt((double)playerForward.X * playerForward.X +
+                    (double)playerForward.Z * playerForward.Z);
+                float x = length > 0 ? (float)(playerForward.X / length) : 0f;
+                float z = length > 0 ? (float)(playerForward.Z / length) : 1f;
+                Destination = new WorldPosition(player.X - 2 * x, player.Y, player.Z - 2 * z);
+                State = CompanionState.Teleport;
+                called = false;
+                ResetProgress();
+            }
+            else State = distance > 12 || called ? CompanionState.Catchup : CompanionState.Follow;
+            return State;
+        }
+
+        private void ResetProgress()
+        {
+            trackingProgress = false;
+            stuckSeconds = 0;
+        }
+    }
+}
+using UnityEngine;
+using UnityEngine.AI;
+
+namespace Liuruan
+{
+    public sealed class CompanionFollow : MonoBehaviour
+    {
+        [SerializeField] private Transform player;
+        [SerializeField, Min(0f)] private float followSpeed = 3f;
+        [SerializeField, Min(1f)] private float catchupMultiplier = 1.6f;
+        private NavMeshAgent agent;
+        private readonly CompanionCore core = new CompanionCore();
+        private Vector3 previousPosition;
+        public float Speed { get; private set; }
+        public float CooldownRatio => core.CooldownRatio;
+        public CompanionState State => core.State;
+        public bool Call() => core.Call();
+        private bool AgentReady => agent != null && agent.enabled && agent.isOnNavMesh;
+        private void Awake() => agent = GetComponent<NavMeshAgent>();
+        private void OnEnable() { previousPosition = transform.position; Speed = 0f; }
+
+        private void Update()
+        {
+            float dt = Time.deltaTime;
+            Speed = dt > 0f ? Vector3.Distance(transform.position, previousPosition) / dt : 0f;
+            previousPosition = transform.position;
+            if (player == null)
+            {
+                if (AgentReady) agent.ResetPath();
+                Speed = 0f;
+                return;
+            }
+            CompanionState state = core.Tick(dt, ToCore(player.position),
+                ToCore(transform.position), ToCore(player.forward));
+            Vector3 target = ToUnity(core.Destination);
+            if (state == CompanionState.Teleport)
+            {
+                // shortcut: 僅搜尋目標附近 2m 的 NavMesh；複雜多層地形由 U 線提供安全落點。
+                bool ready = AgentReady;
+                if (NavMesh.SamplePosition(target, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+                    target = hit.position;
+                if (ready) agent.ResetPath();
+                if (!ready || !agent.Warp(target)) transform.position = target;
+                previousPosition = transform.position;
+                Speed = 0f;
+                return;
+            }
+            float speed = state == CompanionState.Catchup ? followSpeed * catchupMultiplier : followSpeed;
+            if (AgentReady)
+            {
+                agent.stoppingDistance = 2.4f;
+                agent.speed = speed;
+                agent.isStopped = state == CompanionState.Idle;
+                if (state != CompanionState.Idle) agent.SetDestination(target);
+            }
+            else if (state != CompanionState.Idle)
+            {
+                float remaining = Mathf.Max(0f, Vector3.Distance(transform.position, target) - 2.4f);
+                transform.position = Vector3.MoveTowards(transform.position, target, Mathf.Min(speed * dt, remaining));
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (AgentReady) agent.ResetPath();
+            Speed = 0f;
+        }
+        private static WorldPosition ToCore(Vector3 p) => new WorldPosition(p.x, p.y, p.z);
+        private static Vector3 ToUnity(WorldPosition p) => new Vector3(p.X, p.Y, p.Z);
+    }
+}
+using System;
+
+namespace Liuruan
+{
+    public sealed class HungerCore
+    {
+        public const float Capacity = 5f;
+        public float Value { get; private set; }
+        public float IntervalSeconds { get; }
+        public bool IsPaused { get; private set; }
+        public float SpeedMultiplier => Value <= 0f ? 0.6f : 1f;
+        public event Action<float> OnChanged;
+        public event Action OnStarving;
+        private double elapsed;
+
+        public HungerCore(float initialValue = 3f, float intervalSeconds = 24f)
+        {
+            RequireFinite(initialValue, nameof(initialValue));
+            RequireFinite(intervalSeconds, nameof(intervalSeconds));
+            if (intervalSeconds <= 0f) throw new ArgumentOutOfRangeException(nameof(intervalSeconds));
+            Value = Math.Max(0f, Math.Min(Capacity, initialValue));
+            IntervalSeconds = intervalSeconds;
+        }
+
+        public void Pause() => IsPaused = true;
+        public void Resume() => IsPaused = false;
+
+        public void Tick(float deltaSeconds)
+        {
+            RequireFinite(deltaSeconds, nameof(deltaSeconds));
+            if (deltaSeconds < 0f) throw new ArgumentOutOfRangeException(nameof(deltaSeconds));
+            if (IsPaused || Value <= 0f) return;
+            elapsed += deltaSeconds;
+            double steps = Math.Floor(elapsed / IntervalSeconds);
+            if (steps < 1) return;
+            elapsed %= IntervalSeconds;
+            SetValue((float)Math.Max(0d, Value - steps * 0.5d));
+        }
+
+        public void Eat(float amount)
+        {
+            RequireFinite(amount, nameof(amount));
+            if (amount < 0f) throw new ArgumentOutOfRangeException(nameof(amount));
+            SetValue(Math.Min(Capacity, Value + amount));
+        }
+
+        public void FillAll() => SetValue(Capacity);
+
+        private void SetValue(float next)
+        {
+            if (next == Value) return;
+            bool starving = Value > 0f && next <= 0f;
+            bool recovering = Value <= 0f && next > 0f;
+            Value = next;
+            if (starving || recovering) elapsed = 0;
+            OnChanged?.Invoke(Value);
+            if (starving) OnStarving?.Invoke();
+        }
+
+        internal static void RequireFinite(float value, string name)
+        {
+            if (float.IsNaN(value) || float.IsInfinity(value))
+                throw new ArgumentOutOfRangeException(name);
+        }
+    }
+}
+using System;
+using UnityEngine;
+using UnityEngine.Events;
+
+namespace Liuruan
+{
+    public sealed class HungerSystem : MonoBehaviour
+    {
+        [SerializeField, Range(0f, 5f)] private float initialValue = 3f;
+        [SerializeField, Min(0.01f)] private float intervalSeconds = 24f;
+        [SerializeField] private UnityEvent<float> onChanged = new UnityEvent<float>();
+        [SerializeField] private UnityEvent onStarving = new UnityEvent();
+        [SerializeField] private UnityEvent<string> onToast = new UnityEvent<string>();
+        public event Action<float> OnChanged;
+        public event Action OnStarving;
+        public event Action<string> OnToast;
+        private HungerCore core;
+        private HungerCore Core
+        {
+            get
+            {
+                if (core == null)
+                {
+                    core = new HungerCore(initialValue, intervalSeconds);
+                    core.OnChanged += value => { onChanged.Invoke(value); OnChanged?.Invoke(value); };
+                    core.OnStarving += HandleStarving;
+                }
+                return core;
+            }
+        }
+        public float Value => Core.Value;
+        public float SpeedMultiplier => Core.SpeedMultiplier;
+        private void Awake() { _ = Core; }
+        private void Update() => Core.Tick(Time.deltaTime);
+        public void Pause() => Core.Pause();
+        public void Resume() => Core.Resume();
+        public void Eat(float amount) => Core.Eat(amount);
+        public void FillAll() => Core.FillAll();
+        private void HandleStarving()
+        {
+            onStarving.Invoke();
+            OnStarving?.Invoke();
+            const string message = "肚子餓了，去找些食物吧。";
+            onToast.Invoke(message);
+            OnToast?.Invoke(message);
+        }
+    }
+}
+#!/bin/sh
+set -eu
+pwd
+scripts_dir=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+if ! command -v dotnet >/dev/null 2>&1; then
+    echo "ERROR: 此 runner 需要 .NET SDK；本次交件使用本機 dotnet，未宣稱支援其他編譯器。" >&2
+    exit 1
+fi
+work_dir=$(mktemp -d "${TMPDIR:-/tmp}/liuruan-core.XXXXXX")
+trap '/bin/rm -r "$work_dir"' EXIT HUP INT TERM
+export DOTNET_CLI_HOME="$work_dir/cli"
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+export DOTNET_NOLOGO=1
+sdk_version=$(dotnet --version)
+sdk_major=${sdk_version%%.*}
+case "$sdk_major" in
+    ''|*[!0-9]*) echo "ERROR: 無法辨識 SDK: $sdk_version" >&2; exit 1 ;;
+esac
+if [ "$sdk_major" -lt 8 ]; then
+    echo "ERROR: 需要 .NET SDK 8 以上（C# 限定為 9）。" >&2
+    exit 1
+fi
+cp "$scripts_dir/Runtime/HungerCore.cs" "$scripts_dir/Runtime/CompanionCore.cs"     "$scripts_dir/Tests/EditMode/CoreTests.cs" "$scripts_dir/Tests/Console/Runner.cs" "$work_dir/"
+cat > "$work_dir/NuGet.Config" <<'XML'
+<configuration><packageSources><clear /></packageSources></configuration>
+XML
+cat > "$work_dir/CoreTests.csproj" <<XML
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net$sdk_major.0</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NuGetAudit>false</NuGetAudit>
+  </PropertyGroup>
+</Project>
+XML
+printf 'Compiler: .NET SDK %s; C# 9.0; no NuGet packages; shared EditMode test methods\n' "$sdk_version"
+dotnet run --project "$work_dir/CoreTests.csproj" --configuration Release --no-launch-profile --disable-build-servers
+// 此檔只供 console；不要複製進 Unity。
+using System;
+using System.Linq;
+using System.Reflection;
+
+namespace NUnit.Framework
+{
+    [AttributeUsage(AttributeTargets.Method)]
+    public sealed class TestAttribute : Attribute { }
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    public sealed class TestCaseAttribute : Attribute
+    {
+        public object[] Arguments { get; }
+        public TestCaseAttribute(params object[] arguments) { Arguments = arguments; }
+    }
+}
+
+internal static class Runner
+{
+    private static int Main()
+    {
+        int passed = 0, failed = 0;
+        foreach (Type type in new[] { typeof(Liuruan.Tests.HungerCoreTests), typeof(Liuruan.Tests.CompanionCoreTests) })
+        foreach (MethodInfo method in type.GetMethods().OrderBy(m => m.Name))
+        {
+            var cases = method.GetCustomAttributes<NUnit.Framework.TestCaseAttribute>().ToArray();
+            bool simple = method.IsDefined(typeof(NUnit.Framework.TestAttribute), false);
+            if (!simple && cases.Length == 0) continue;
+            var arguments = cases.Length > 0 ? cases.Select(c => c.Arguments) : new[] { new object[0] };
+            foreach (object[] args in arguments)
+            {
+                string name = type.Name + "." + method.Name + "(" + string.Join(",", args) + ")";
+                try
+                {
+                    method.Invoke(Activator.CreateInstance(type), args);
+                    Console.WriteLine("PASS " + name); passed++;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("FAIL " + name + ": " + (e.InnerException ?? e)); failed++;
+                }
+            }
+        }
+        Console.WriteLine($"RESULT: {passed} passed, {failed} failed");
+        return failed == 0 && passed > 0 ? 0 : 1;
+    }
+}
+using System;
+using NUnit.Framework;
+
+namespace Liuruan.Tests
+{
+    internal static class Check
+    {
+        public static void Equal<T>(T expected, T actual)
+        {
+            if (!Equals(expected, actual)) throw new Exception($"Expected {expected}, got {actual}");
+        }
+        public static void Near(double expected, double actual)
+        {
+            if (double.IsNaN(actual) || Math.Abs(expected - actual) > 0.00001)
+                throw new Exception($"Expected {expected}, got {actual}");
+        }
+        public static void Throws(Action action)
+        {
+            try { action(); }
+            catch (ArgumentOutOfRangeException) { return; }
+            throw new Exception("Expected ArgumentOutOfRangeException");
+        }
+    }
+
+    public sealed class HungerCoreTests
+    {
+        [Test] public void StartsWithThreeAndNormalSpeed()
+        {
+            var c = new HungerCore();
+            Check.Near(3, c.Value); Check.Near(24, c.IntervalSeconds);
+            Check.Near(1, c.SpeedMultiplier); Check.Equal(false, c.IsPaused);
+        }
+        [TestCase(-1f, 0f)] [TestCase(0f, 0f)] [TestCase(5f, 5f)] [TestCase(6f, 5f)]
+        public void ClampsInitialValue(float initial, float expected)
+        { Check.Near(expected, new HungerCore(initial).Value); }
+        [Test] public void DropsAtExactIntervalAndPreservesRemainder()
+        {
+            var c = new HungerCore();
+            c.Tick(23); Check.Near(3, c.Value);
+            c.Tick(1); Check.Near(2.5, c.Value);
+            c.Tick(49); Check.Near(1.5, c.Value);
+            c.Tick(23); Check.Near(1, c.Value);
+        }
+        [Test] public void SupportsCustomInterval()
+        { var c = new HungerCore(3, 2); c.Tick(2); Check.Near(2.5, c.Value); }
+        [Test] public void PauseResumeIsIdempotentAndKeepsRemainder()
+        {
+            var c = new HungerCore(); c.Tick(12); c.Pause(); c.Pause(); c.Tick(1000);
+            Check.Equal(true, c.IsPaused); Check.Near(3, c.Value);
+            c.Resume(); c.Resume(); c.Tick(12); Check.Near(2.5, c.Value);
+        }
+        [Test] public void StarvesOncePerCrossingAndRecoversWithoutDying()
+        {
+            var c = new HungerCore(); int count = 0; c.OnStarving += () => count++;
+            c.Tick(144); Check.Near(0, c.Value); Check.Near(0.6, c.SpeedMultiplier);
+            c.Tick(10000); c.Eat(0); Check.Equal(1, count);
+            c.Eat(0.25f); Check.Near(1, c.SpeedMultiplier);
+            c.Tick(24); Check.Near(0, c.Value); Check.Equal(2, count);
+            c.FillAll(); Check.Near(5, c.Value); Check.Near(1, c.SpeedMultiplier);
+        }
+        [Test] public void EatClampFillAndChangeEvents()
+        {
+            var c = new HungerCore(); int events = 0; float observed = 0;
+            c.OnChanged += v => { events++; observed = v; };
+            c.Eat(0); Check.Equal(0, events);
+            c.Eat(0.25f); Check.Near(3.25, observed);
+            c.Eat(float.MaxValue); Check.Near(5, c.Value);
+            c.FillAll(); Check.Equal(2, events);
+            c.Tick(24); Check.Near(4.5, observed); Check.Equal(3, events);
+            c.FillAll(); Check.Near(5, observed); Check.Equal(4, events);
+        }
+        [Test] public void FoodWorksWhilePausedAndDoesNotResetActiveClock()
+        {
+            var c = new HungerCore(); c.Tick(12); c.Pause(); c.Eat(1); c.FillAll();
+            Check.Near(5, c.Value); c.Resume(); c.Tick(12); Check.Near(4.5, c.Value);
+        }
+        [Test] public void LargeTickClampsAndRecoveryGetsFreshInterval()
+        {
+            var c = new HungerCore(); c.Tick(float.MaxValue); Check.Near(0, c.Value);
+            c.FillAll(); c.Tick(23); Check.Near(5, c.Value); c.Tick(1); Check.Near(4.5, c.Value);
+        }
+        [Test] public void ZeroTickDoesNothing()
+        { var c = new HungerCore(); c.Tick(0); Check.Near(3, c.Value); }
+        [Test] public void RejectsInvalidInputs()
+        {
+            foreach (float v in new[] { float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+            {
+                Check.Throws(() => new HungerCore(v)); Check.Throws(() => new HungerCore(3, v));
+                var c = new HungerCore(); Check.Throws(() => c.Tick(v)); Check.Throws(() => c.Eat(v));
+            }
+            Check.Throws(() => new HungerCore(3, 0)); Check.Throws(() => new HungerCore(3, -1));
+            Check.Throws(() => new HungerCore().Tick(-1)); Check.Throws(() => new HungerCore().Eat(-1));
+        }
+    }
+
+    public sealed class CompanionCoreTests
+    {
+        private static WorldPosition P(float x, float y = 0, float z = 0) => new WorldPosition(x, y, z);
+        private static CompanionState Step(CompanionCore c, float dt, float distance)
+            => c.Tick(dt, P(0), P(distance), P(0, 0, 1));
+
+        [TestCase(0f, CompanionState.Idle)] [TestCase(2.499f, CompanionState.Idle)]
+        [TestCase(2.5f, CompanionState.Follow)] [TestCase(12f, CompanionState.Follow)]
+        [TestCase(12.001f, CompanionState.Catchup)] [TestCase(30f, CompanionState.Catchup)]
+        [TestCase(30.001f, CompanionState.Teleport)]
+        public void DistanceBoundaries(float distance, CompanionState expected)
+        { Check.Equal(expected, Step(new CompanionCore(), 0, distance)); }
+        [TestCase(0)] [TestCase(1)] [TestCase(2)] [TestCase(3)]
+        public void AllSixteenDistanceDrivenTransitions(int sourceIndex)
+        {
+            float[] distances = { 1, 3, 20, 31 };
+            CompanionState[] states = { CompanionState.Idle, CompanionState.Follow,
+                CompanionState.Catchup, CompanionState.Teleport };
+            for (int target = 0; target < distances.Length; target++)
+            {
+                var c = new CompanionCore();
+                Check.Equal(states[sourceIndex], Step(c, 0, distances[sourceIndex]));
+                Check.Equal(states[target], Step(c, 0, distances[target]));
+            }
+        }
+        [Test] public void MovesThroughEveryStateAndBack()
+        {
+            var c = new CompanionCore(); Check.Equal(CompanionState.Idle, c.State);
+            Check.Equal(CompanionState.Follow, Step(c, 0, 3));
+            Check.Equal(CompanionState.Catchup, Step(c, 0, 13));
+            Check.Equal(CompanionState.Follow, Step(c, 0, 12));
+            Check.Equal(CompanionState.Idle, Step(c, 0, 2));
+            Check.Equal(CompanionState.Teleport, Step(c, 0, 31));
+            Check.Equal(CompanionState.Idle, Step(c, 0, 2));
+        }
+        [Test] public void TeleportIsTwoMetresBehindNormalizedHorizontalForward()
+        {
+            var c = new CompanionCore(); c.Tick(0, P(10, 4, 10), P(100), P(3, 7, 4));
+            Check.Near(8.8, c.Destination.X); Check.Near(4, c.Destination.Y); Check.Near(8.4, c.Destination.Z);
+        }
+        [Test] public void ZeroForwardUsesWorldBack()
+        {
+            var c = new CompanionCore(); c.Tick(0, P(10, 4, 10), P(100), P(0));
+            Check.Near(10, c.Destination.X); Check.Near(4, c.Destination.Y); Check.Near(8, c.Destination.Z);
+        }
+        [Test] public void UsesThreeDimensionalDistance()
+        {
+            var c = new CompanionCore();
+            Check.Equal(CompanionState.Catchup, c.Tick(0, P(0), P(0, 13), P(0)));
+        }
+        [Test] public void StuckAtExactlyThreeSecondsTeleportsThenResets()
+        {
+            var c = new CompanionCore(); Step(c, 0, 5);
+            Check.Equal(CompanionState.Follow, Step(c, 2.999f, 5));
+            Check.Equal(CompanionState.Teleport, Step(c, 0.002f, 5));
+            Check.Equal(CompanionState.Follow, Step(c, 0, 5));
+        }
+        [Test] public void ExactStuckBoundary()
+        {
+            var c = new CompanionCore(); Step(c, 0, 5);
+            Check.Equal(CompanionState.Teleport, Step(c, 3, 5));
+        }
+        [Test] public void ProgressAndIdleResetStuckTimer()
+        {
+            var c = new CompanionCore(); Step(c, 0, 5); Step(c, 2, 5);
+            Check.Equal(CompanionState.Follow, Step(c, 2, 5.1f));
+            Step(c, 2, 5.1f); Step(c, 100, 1);
+            Check.Equal(CompanionState.Follow, Step(c, 0, 5.1f));
+        }
+        [Test] public void SlowProgressAccumulatesAgainstAnchor()
+        {
+            var c = new CompanionCore(); Step(c, 0, 5);
+            Step(c, 1, 5.02f); Step(c, 1, 5.04f);
+            Check.Equal(CompanionState.Follow, Step(c, 1, 5.06f));
+        }
+        [Test] public void FiveCentimetresResetsStuckTimer()
+        {
+            var c = new CompanionCore(); Step(c, 0, 5); Step(c, 2, 5);
+            Check.Equal(CompanionState.Follow, Step(c, 1, 5.05f));
+            Check.Equal(CompanionState.Follow, Step(c, 2.99f, 5.05f));
+        }
+        [Test] public void CatchupCanAlsoGetStuck()
+        {
+            var c = new CompanionCore(); Step(c, 0, 20);
+            Check.Equal(CompanionState.Teleport, Step(c, 3, 20));
+        }
+        [Test] public void IdleNeverCountsAsStuck()
+        { var c = new CompanionCore(); Step(c, 0, 1); Check.Equal(CompanionState.Idle, Step(c, 100, 1)); }
+        [Test] public void CallCooldownAndExactReadyBoundary()
+        {
+            var c = new CompanionCore(); Check.Near(0, c.CooldownRatio);
+            Check.Equal(true, c.Call()); Check.Near(1, c.CooldownRatio);
+            Check.Equal(false, c.Call()); Step(c, 4, 1); Check.Near(0.5, c.CooldownRatio);
+            Check.Equal(false, c.Call()); Check.Near(0.5, c.CooldownRatio);
+            Step(c, 4, 1); Check.Near(0, c.CooldownRatio); Check.Equal(true, c.Call());
+            Step(c, 100, 1); Check.Near(0, c.CooldownRatio);
+        }
+        [Test] public void CallAcceleratesUntilReunion()
+        {
+            var c = new CompanionCore(); c.Call();
+            Check.Equal(CompanionState.Catchup, Step(c, 0, 3));
+            Check.Equal(CompanionState.Catchup, Step(c, 8, 4));
+            Check.Equal(CompanionState.Idle, Step(c, 0, 2));
+            Check.Equal(CompanionState.Follow, Step(c, 0, 3));
+            Check.Near(0, c.Destination.X);
+        }
+        [Test] public void TeleportClearsCallButPreservesCooldown()
+        {
+            var c = new CompanionCore(); c.Call(); Step(c, 1, 31);
+            Check.Near(0.875, c.CooldownRatio);
+            Check.Equal(CompanionState.Follow, Step(c, 0, 3));
+        }
+        [Test] public void RejectsInvalidTimeAndCoordinates()
+        {
+            var c = new CompanionCore(); Check.Throws(() => Step(c, -1, 3));
+            foreach (float v in new[] { float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+            {
+                Check.Throws(() => Step(c, v, 3)); Check.Throws(() => P(v));
+                Check.Throws(() => P(0, v)); Check.Throws(() => P(0, 0, v));
+            }
+        }
+    }
+}
+{
+  "name": "Liuruan.Runtime",
+  "rootNamespace": "Liuruan"
+}
+ M ProjectSettings/ProjectSettings.asset
+ M logs/shadercompiler-UnityShaderCompiler-0.log
+ M logs/shadercompiler-UnityShaderCompiler-1.log
+ M logs/shadercompiler-UnityShaderCompiler-2.log
+ D logs/shadercompiler-UnityShaderCompiler-3.log
+ D logs/shadercompiler-UnityShaderCompiler-4.log
+ D logs/shadercompiler-UnityShaderCompiler-5.log
+ D logs/shadercompiler-UnityShaderCompiler-6.log
+ D logs/shadercompiler-UnityShaderCompiler-7.log
+ D logs/shadercompiler-UnityShaderCompiler-8.log
+ D logs/shadercompiler-UnityShaderCompiler-9.log
+?? briefs/A-R1.md
+?? briefs/C-R1.md
+?? briefs/S-R1.md
+?? briefs/U-R1.md
+?? logs/AssetImportWorker0.log
+?? logs/AssetImportWorker1.log
+?? logs/codex-A-R1.log
+?? logs/codex-C-R1.log
+?? logs/codex-S-R1.log
+?? logs/codex-U-R1.log
+?? logs/shadercompiler-AssetImportWorker0-0.log
+?? logs/shadercompiler-AssetImportWorker1-0.log
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+R0 使用同一份 EditMode 測試搭配離線 .NET runner，我會沿用，並依 ponytail 模式維持最小改動。這輪採用三個明確契約：迷霧以固定世界範圍記錄、攀藤由 U 線暫停一般移動後交給元件控制、三件漂流物共用收集器；流程通知都透過事件，不引用 `GameFlow`。
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc 'pwd; cat staging/scripts/Runtime/CompanionCore.cs; cat staging/scripts/INTEGRATION.md; cat Assets/_Project/Scripts/PlayerController.cs; cat Assets/_Project/Scripts/TouchInput.cs; cat staging/scripts/Tests/EditMode/Liuruan.EditModeTests.asmdef' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+using System;
+
+namespace Liuruan
+{
+    public readonly struct WorldPosition
+    {
+        public readonly float X, Y, Z;
+        public WorldPosition(float x, float y, float z)
+        {
+            HungerCore.RequireFinite(x, nameof(x));
+            HungerCore.RequireFinite(y, nameof(y));
+            HungerCore.RequireFinite(z, nameof(z));
+            X = x; Y = y; Z = z;
+        }
+        public static double Distance(WorldPosition a, WorldPosition b)
+        {
+            double x = (double)a.X - b.X, y = (double)a.Y - b.Y, z = (double)a.Z - b.Z;
+            return Math.Sqrt(x * x + y * y + z * z);
+        }
+    }
+
+    public enum CompanionState { Follow, Idle, Catchup, Teleport }
+
+    public sealed class CompanionCore
+    {
+        public const float CallCooldownSeconds = 8f;
+        public CompanionState State { get; private set; } = CompanionState.Idle;
+        public WorldPosition Destination { get; private set; }
+        public float CooldownRatio => (float)(cooldown / CallCooldownSeconds);
+        private double cooldown;
+        private double stuckSeconds;
+        private WorldPosition progressAnchor;
+        private bool trackingProgress;
+        private bool called;
+
+        public bool Call()
+        {
+            if (cooldown > 0) return false;
+            cooldown = CallCooldownSeconds;
+            called = true;
+            return true;
+        }
+
+        public CompanionState Tick(float deltaSeconds, WorldPosition player,
+            WorldPosition companion, WorldPosition playerForward)
+        {
+            HungerCore.RequireFinite(deltaSeconds, nameof(deltaSeconds));
+            if (deltaSeconds < 0) throw new ArgumentOutOfRangeException(nameof(deltaSeconds));
+            cooldown = Math.Max(0, cooldown - deltaSeconds);
+            double distance = WorldPosition.Distance(player, companion);
+            Destination = player;
+            if (distance < 2.5)
+            {
+                State = CompanionState.Idle;
+                called = false;
+                ResetProgress();
+                return State;
+            }
+
+            if (!trackingProgress || WorldPosition.Distance(progressAnchor, companion) >= 0.05)
+            {
+                progressAnchor = companion;
+                stuckSeconds = 0;
+                trackingProgress = true;
+            }
+            else stuckSeconds += deltaSeconds;
+
+            if (distance > 30 || stuckSeconds >= 3)
+            {
+                // 只取水平朝向，避免玩家上下坡時把夥伴放進地底。
+                double length = Math.Sqrt((double)playerForward.X * playerForward.X +
+                    (double)playerForward.Z * playerForward.Z);
+                float x = length > 0 ? (float)(playerForward.X / length) : 0f;
+                float z = length > 0 ? (float)(playerForward.Z / length) : 1f;
+                Destination = new WorldPosition(player.X - 2 * x, player.Y, player.Z - 2 * z);
+                State = CompanionState.Teleport;
+                called = false;
+                ResetProgress();
+            }
+            else State = distance > 12 || called ? CompanionState.Catchup : CompanionState.Follow;
+            return State;
+        }
+
+        private void ResetProgress()
+        {
+            trackingProgress = false;
+            stuckSeconds = 0;
+        }
+    }
+}
+# S 線 R0 掛載說明
+
+本批提供原始碼；S 線未開 Unity、未寫 Assets、未改 PlayerController。
+
+## 匯入位置
+
+由 U 線複製（保留隨附 asmdef）：
+
+- `Runtime/` → `Assets/_Project/Scripts/Liuruan/Runtime/`
+- `Tests/EditMode/` → `Assets/_Project/Tests/EditMode/Liuruan/`
+
+不要把 `Tests/Console/` 複製進 Assets，該處只含 console 測試用的 NUnit 屬性替身，匯入會與 Unity NUnit 衝突。不要把整個 staging/scripts 複製進 Assets。
+Runtime 無第三方套件。EditMode 需專案已有 Unity Test Framework（NUnit）；本批不新增或修改 Unity 套件。
+
+## 劉晨：HungerSystem
+
+1. 在玩家劉晨的 GameObject 加入 `Liuruan.HungerSystem`，第一幕 `Initial Value = 3`、`Interval Seconds = 24`。
+2. PlayerController 快取同物件元件：`hunger = GetComponent<Liuruan.HungerSystem>();`，並新增欄位 `private Liuruan.HungerSystem hunger;`。
+3. 在既有速度計算完成後、乘上移動向量之前，加這一行（`moveSpeed` 換成實際的每幀區域速度變數）：
+
+```csharp
+moveSpeed *= hunger != null ? hunger.SpeedMultiplier : 1f;
+```
+
+每幀由基礎速度重算 `moveSpeed`，不可反覆修改 Inspector 的基礎速度欄位，否則會累乘。此專案尚無 PlayerController 原始碼可核對，因此這是插入契約，不是已套用的 diff。
+
+4. HUD 啟用時先讀 `Value` 畫 5 格桃形圖示，再訂閱 `OnChanged(float)`；元件停用時解除訂閱。Inspector 也有 `On Changed` UnityEvent 可接 UI。
+5. `OnStarving` / Inspector `On Starving` 只在正值跨到 0 時通知一次；沒有死亡、扣血或結局處理。
+6. Toast UI 接 `OnToast(string)` 或 Inspector `On Toast`，顯示「肚子餓了，去找些食物吧。」；包裝層只發訊息，不建立 UI。
+7. 面板／演出開始呼叫 `Pause()`，全部結束後 `Resume()`。這是可重複呼叫的布林暫停；若多面板重疊，請由既有面板管理者彙整後再 Resume。暫停保留未滿 24 秒的餘額。
+8. 食物呼叫 `Eat(amount)`，攀桃完成呼叫 `FillAll()`。補食不重設仍在進行的計時；從飢餓恢復則重新計時。暫停期間仍可補食。重新開始第一幕時重新建立玩家物件，Core 沒有跨場景存檔。
+
+Core API：`HungerCore(initialValue = 3, intervalSeconds = 24)`、`Tick(deltaSeconds)`、`Value`、`SpeedMultiplier`、`IsPaused`、`Pause/Resume/Eat/FillAll`、`OnChanged/OnStarving`。輸入 NaN、無限值、負時間或負食物量會拋出 ArgumentOutOfRangeException；初始飢餓值夾在 0–5。
+
+## 阮肇：CompanionFollow
+
+1. 在阮肇的移動根物件加入 `Liuruan.CompanionFollow`，`Player` 指向劉晨。
+2. 可加 NavMeshAgent 並烘焙可行走範圍；建議基速 3、加速倍率 1.6。Agent 啟用且在 NavMesh 上時採 NavMesh 路徑；否則直接 MoveTowards。無 Agent 也能跑。
+3. 根物件的位移由此元件負責，動畫關閉 Root Motion；`Animator` 的 Speed 參數每幀讀 `CompanionFollow.Speed`（實際世界位移 m/s）。瞬移當幀為 0。NavMeshAgent 的停止距離由元件設成 2.4m，使它確實進入 `<2.5m` 的 Idle 範圍。
+4. 技能按鈕呼叫 `Call()`，回傳 true 才播放成功回饋；false 代表冷卻中，不延長冷卻。呼喚使阮肇維持 Catchup，直到 `<2.5m` 待機或觸發瞬移。
+5. 左下頭像環每幀讀 `CooldownRatio`：1＝剛呼喚、0＝可呼喚；8 秒後歸零。若 UI 要顯示完成比例，讀 `1f - CooldownRatio`。Time.timeScale = 0 時跟隨與冷卻一起停止；未指定 Player 時不更新 Core。
+6. 狀態距離採三維直線距離：`<2.5` Idle、`[2.5,12]` Follow、`(12,30]` Catchup、`>30` Teleport；呼喚中的 Catchup 優先於 Follow。
+7. 非 Idle 狀態先記錄位置，此後連續 3 秒未離開進度錨點 0.05m 即視為卡住；累積移動達 0.05m、Idle 或瞬移會重設計時。Core 回傳的瞬移目標是玩家水平朝向後方 2m，零水平朝向則用世界 -Z。
+8. Unity 包裝會在該目標附近 2m 取 NavMesh 落點（因此實際落點可能偏離恰好 2m），再 Warp；無有效落點或 Warp 失敗時直接設定位置。多層地形／山壁需要 U 線現場驗證安全落點。MoveTowards 不做避障與地面貼合，僅供沒有 NavMesh 的灰盒備援。
+
+純 Core 使用 `WorldPosition(X,Y,Z)`，不引用 UnityEngine。`CompanionCore.Tick(dt, player, companion, playerForward)` 回傳狀態，並更新 `Destination`；`Call()`、`CooldownRatio` 提供技能契約。
+
+## 驗證
+
+在專案根目錄執行：
+
+```sh
+staging/scripts/Tests/run_core_tests.sh
+```
+
+本機實際使用 .NET SDK 10.0.402，限定 C# 9，零 NuGet 套件，warnings 視為 errors。runner 在暫存目錄編譯兩個 Core 與同一份 EditMode 測試，反射呼叫 Test/TestCase；這是 console 斷言執行，不是啟動 Unity 的 NUnit runner。需 .NET SDK 8 以上；本機已有 dotnet，未使用 mono/csc 備援。測試產物離開時清除。
+
+U 線匯入後請在 Test Runner → EditMode 跑 `Liuruan.Tests`，再現場驗證：HUD 初始三格／歸零 Toast 與 60% 速度／暫停與補桃／NavMesh 跟隨／無 NavMesh 備援／卡住及超距瞬移／動畫 Speed／呼喚冷卻環。S 線未執行這些 Unity 驗證。
+using UnityEngine;
+
+namespace Liuruan
+{
+    /// 第三人稱控制：WASD／方向鍵移動、按住滑鼠右鍵轉視角、E 互動。相機為簡單跟隨相機。
+    [RequireComponent(typeof(CharacterController))]
+    public class PlayerController : MonoBehaviour
+    {
+        public float moveSpeed = 4f;
+        public float turnSpeed = 720f;
+        public float gravity = -20f;
+
+        public Transform cam;
+        public float camDistance = 6f;
+        public float camHeight = 1.5f;
+        public float mouseSensitivity = 3f;
+        public LayerMask camCollision = ~0;
+
+        public Animator animator; // 參數 Speed (float)
+
+        /// 演出時由 CluePerformance 指定的固定鏡頭；null 時恢復跟隨
+        public static Transform CamShot;
+
+        CharacterController cc;
+        float yaw, pitch = 20f, vy;
+        float interactHintAfter;
+        static readonly int SpeedHash = Animator.StringToHash("Speed");
+
+        void Awake()
+        {
+            cc = GetComponent<CharacterController>();
+            if (cam == null && Camera.main != null) cam = Camera.main.transform;
+            yaw = transform.eulerAngles.y;
+            RestoreFoliage();
+            foliage = null; // 關掉 Domain Reload 時靜態清單會殘留上一局
+        }
+
+        public void FaceDirection(Vector3 direction)
+        {
+            direction.y = 0;
+            if (direction.sqrMagnitude < 0.01f) return;
+            transform.rotation = Quaternion.LookRotation(direction);
+            yaw = transform.eulerAngles.y;
+        }
+
+        void Update()
+        {
+            // hotfix1：HTML 輸入框開著時不吃鍵盤（WASD、E 是在打字）
+            bool busy = (ScrollUI.I != null && ScrollUI.I.IsBusy);
+            Vector3 move = Vector3.zero;
+
+            if (!busy)
+            {
+                if (Input.GetMouseButton(1))
+                {
+                    yaw += Input.GetAxis("Mouse X") * mouseSensitivity;
+                    pitch = Mathf.Clamp(pitch - Input.GetAxis("Mouse Y") * mouseSensitivity, -10f, 60f);
+                }
+                Vector2 look = TouchInput.ConsumeLook() * 0.15f;
+                yaw += look.x;
+                pitch = Mathf.Clamp(pitch - look.y, -10f, 60f);
+                Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+                input += new Vector3(TouchInput.Move.x, 0, TouchInput.Move.y);
+                move = Quaternion.Euler(0, yaw, 0) * Vector3.ClampMagnitude(input, 1f);
+
+                var near = Interactable.Nearest(transform.position);
+                ScrollUI.I?.SetPrompt(near ? near.CurrentPrompt : null);
+                bool interactPressed = Input.GetKeyDown(KeyCode.E) | TouchInput.ConsumeDown();
+                if (interactPressed)
+                {
+                    if (near) near.Interact();
+                    else if (Time.unscaledTime >= interactHintAfter)
+                    {
+                        interactHintAfter = Time.unscaledTime + 2.5f;
+                        ScrollUI.I?.Toast(Txt.InteractTooFar);
+                    }
+                }
+            }
+            else TouchInput.ConsumeLook();
+
+            if (move.sqrMagnitude > 0.01f)
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(move), turnSpeed * Time.deltaTime);
+
+            vy = cc.isGrounded ? -1f : vy + gravity * Time.deltaTime;
+            Vector3 before = transform.position;
+            MoveDisplacement(cc, (move * moveSpeed + Vector3.up * vy) * Time.deltaTime);
+            GroundFeet();
+
+            // 讀實際水平速度（撞牆就停步；鍵盤、觸控搖桿都走 move → cc.Move，一樣有效）
+            if (animator)
+            {
+                var v = (transform.position - before) / Mathf.Max(Time.deltaTime, 0.0001f); v.y = 0f;
+                animator.SetFloat(SpeedHash, v.magnitude, 0.08f, Time.deltaTime);
+            }
+        }
+
+        public static CollisionFlags MoveDisplacement(CharacterController controller, Vector3 delta)
+        {
+            // 每次不跨過單級踏面，低幀率也能逐階抬腳；限制落下時的迴圈成本。
+            int count = Mathf.Clamp(Mathf.CeilToInt(delta.magnitude / 0.12f), 1, 32);
+            var flags = CollisionFlags.None;
+            for (int i = 0; i < count; i++) flags |= controller.Move(delta / count);
+            return flags;
+        }
+
+        // hotfix1：腳貼地。膠囊圓底踩在台階邊緣時，模型腳底會陷進上一階（最多一階高）或浮在下一階；
+        // 改用腳尖、腳中、腳跟三條射線量到的最高走路面當腳底，模型只上下微調（±0.1～0.3m），碰撞體不動。
+        Transform foot; float footBase, footOff;
+        void GroundFeet()
+        {
+            if (!foot)
+            {
+                if (!animator || !animator.transform.parent) return;
+                foot = animator.transform.parent; footBase = foot.localPosition.y;
+            }
+            float bottom = transform.position.y + cc.center.y - cc.height * 0.5f;
+            float best = float.NegativeInfinity;
+            var fw = transform.forward;
+            for (int i = -1; i <= 1; i++)
+            {
+                var p = transform.position + fw * (0.14f * i);
+                if (Physics.Raycast(new Vector3(p.x, bottom + 0.4f, p.z), Vector3.down, out var h, 0.65f, CamOcclusion.WalkMask & ~(1 << 2), QueryTriggerInteraction.Ignore)
+                    && h.normal.y > 0.6f && h.point.y > best) best = h.point.y;
+            }
+            float want = cc.isGrounded && best > float.NegativeInfinity ? Mathf.Clamp(best - bottom, -0.1f, 0.3f) : 0f;
+            footOff = Mathf.MoveTowards(footOff, want, 1.5f * Time.deltaTime);
+            var lp = foot.localPosition;
+            float s = foot.parent ? foot.parent.lossyScale.y : 1f;
+            lp.y = footBase + footOff / (s > 0.001f ? s : 1f);
+            foot.localPosition = lp;
+        }
+
+        void LateUpdate()
+        {
+            if (!cam) return;
+            if (CamShot) { cam.SetPositionAndRotation(CamShot.position, CamShot.rotation); RestoreFoliage(); HideSelf(false); return; }
+            Vector3 pivot = transform.position + Vector3.up * camHeight;
+            // 低矮屋簷下（亭子內抬高視角）鏡頭會被樑擋到貼著後腦：暫時把俯角放低，挑退得最遠的角度（不改玩家設定的 pitch）
+            Quaternion rot = Quaternion.Euler(pitch, yaw, 0);
+            float want = CamClearDistance(pivot, rot * Vector3.back, camDistance, transform);
+            if (want < 1.2f)
+                for (float p = pitch - 10f; p >= -10f; p -= 10f)
+                {
+                    var r2 = Quaternion.Euler(p, yaw, 0);
+                    float w2 = CamClearDistance(pivot, r2 * Vector3.back, camDistance, transform);
+                    if (w2 > want + 0.5f) { rot = r2; want = w2; }
+                    if (want >= 2f) break;
+                }
+            // 撞到就立刻拉近；離開障礙時慢慢退回，不會一抽一抽
+            camDist = want < camDist ? want : Mathf.MoveTowards(camDist, want, 4f * Time.deltaTime);
+            cam.SetPositionAndRotation(pivot + rot * Vector3.back * camDist, rot);
+            UpdateFoliage(cam.position, transform.position);
+            // 背貼牆時鏡頭只剩 0.35～0.8 m，後腦會佔掉半個畫面：人物改成只投影子（不動模型本身）
+            HideSelf(camDist < 0.8f);
+        }
+
+        Renderer[] selfRenderers;
+        UnityEngine.Rendering.ShadowCastingMode[] selfModes;
+        bool selfHidden;
+        void HideSelf(bool hide)
+        {
+            if (hide == selfHidden) return;
+            selfHidden = hide;
+            if (selfRenderers == null)
+            {
+                selfRenderers = GetComponentsInChildren<Renderer>(true);
+                selfModes = new UnityEngine.Rendering.ShadowCastingMode[selfRenderers.Length];
+                for (int i = 0; i < selfRenderers.Length; i++) selfModes[i] = selfRenderers[i].shadowCastingMode;
+            }
+            for (int i = 0; i < selfRenderers.Length; i++)
+                if (selfRenderers[i]) selfRenderers[i].shadowCastingMode = hide ? UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly : selfModes[i];
+        }
+
+        float camDist = 5f;
+        const float CamRadius = 0.22f, CamMin = 0.35f;
+
+        /// R17-U：鏡頭可退多遠。SphereCastAll 取最近的非玩家碰撞（含 CamOcclusion 鏡頭層），
+        /// 再檢查鏡頭點本身有沒有埋在物件裡（SphereCast 起點就重疊時會漏掉），有就一路往前拉近。
+        public static float CamClearDistance(Vector3 pivot, Vector3 dir, float maxDist, Transform self)
+        {
+            float best = maxDist;
+            foreach (var h in Physics.SphereCastAll(pivot, CamRadius, dir, maxDist, ~0, QueryTriggerInteraction.Ignore))
+            {
+                if (h.distance <= 0f || IsSelf(h.collider, self)) continue;
+                if (h.distance < best) best = h.distance;
+            }
+            best = Mathf.Max(CamMin, best - 0.05f);
+            for (int i = 0; i < 12 && best > CamMin; i++)
+            {
+                if (!Blocked(pivot + dir * best, self)) break;
+                best = Mathf.Max(CamMin, best - 0.4f);
+            }
+            return best;
+        }
+
+        static readonly Collider[] overlap = new Collider[8];
+        static bool Blocked(Vector3 p, Transform self)
+        {
+            int n = Physics.OverlapSphereNonAlloc(p, CamRadius * 0.8f, overlap, ~0, QueryTriggerInteraction.Ignore);
+            for (int i = 0; i < n; i++) if (!IsSelf(overlap[i], self)) return true;
+            return false;
+        }
+
+        static bool IsSelf(Collider c, Transform self) =>
+            (self && c.transform.IsChildOf(self)) || c.GetComponentInParent<PlayerController>() || c is CharacterController;
+
+        // 樹冠沒有碰撞體：沿用暫時只投影，兼看鏡頭所在處與鏡頭到角色的視線。
+        static readonly string[] FoliageKeys = { "maple", "willow", "pine", "wutong", "bamboo", "banana", "tree" };
+        static System.Collections.Generic.List<Renderer> foliage;
+        static readonly System.Collections.Generic.Dictionary<Renderer, UnityEngine.Rendering.ShadowCastingMode> hidden = new System.Collections.Generic.Dictionary<Renderer, UnityEngine.Rendering.ShadowCastingMode>();
+        static readonly System.Collections.Generic.List<Renderer> toShow = new System.Collections.Generic.List<Renderer>();
+
+        void OnDisable() { RestoreFoliage(); HideSelf(false); }
+
+        static void RestoreFoliage()
+        {
+            foreach (var item in hidden) if (item.Key) item.Key.shadowCastingMode = item.Value;
+            hidden.Clear();
+        }
+
+        static void UpdateFoliage(Vector3 camPos, Vector3 feet)
+        {
+            if (foliage == null)
+            {
+                foliage = new System.Collections.Generic.List<Renderer>();
+                foreach (var r in FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None))
+                {
+                    if (r.bounds.size.y < 1f) continue;
+                    bool tree = false;
+                    for (var t = r.transform; t && !tree; t = t.parent)
+                    {
+                        string n = t.name.ToLowerInvariant();
+                        foreach (var k in FoliageKeys) if (n.Contains(k)) { tree = true; break; }
+                    }
+                    if (tree) foliage.Add(r);
+                }
+            }
+            toShow.Clear();
+            foreach (var item in hidden)
+                if (!item.Key || !ObscuresPlayer(item.Key.bounds, camPos, feet)) toShow.Add(item.Key);
+            foreach (var r in toShow)
+            {
+                var mode = hidden[r]; hidden.Remove(r);
+                if (r) r.shadowCastingMode = mode;
+            }
+            foreach (var r in foliage)
+                if (r && r.enabled && !hidden.ContainsKey(r) && ObscuresPlayer(r.bounds, camPos, feet)
+                    && r.shadowCastingMode != UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly)
+                {
+                    hidden.Add(r, r.shadowCastingMode);
+                    r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+                }
+        }
+
+        static bool ObscuresPlayer(Bounds b, Vector3 camera, Vector3 feet)
+        {
+            // shortcut: 用樹的包圍盒保護角色輪廓；若鬆散樹冠隱藏過多，再改成網格判定。
+            return CamOcclusion.BlocksView(b, camera, feet + Vector3.up * 0.3f)
+                || CamOcclusion.BlocksView(b, camera, feet + Vector3.up * 1f)
+                || CamOcclusion.BlocksView(b, camera, feet + Vector3.up * 1.7f);
+        }
+    }
+}
+cat: Assets/_Project/Scripts/TouchInput.cs: No such file or directory
+{
+  "name": "Liuruan.EditModeTests",
+  "rootNamespace": "Liuruan.Tests",
+  "references": ["Liuruan.Runtime"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"]
+}
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd; cat > staging/scripts/Runtime/MinimapFogCore.cs <<'EOF'
+using System;
+
+namespace Liuruan
+{
+    public sealed class MinimapFogCore
+    {
+        public const int Size = 32;
+        private readonly bool[] explored = new bool[Size * Size];
+        public float MinX { get; }
+        public float MinZ { get; }
+        public float Width { get; }
+        public float Depth { get; }
+        public bool FogEnabled { get; private set; } = true;
+
+        public MinimapFogCore(float minX, float minZ, float width, float depth)
+        {
+            HungerCore.RequireFinite(minX, nameof(minX));
+            HungerCore.RequireFinite(minZ, nameof(minZ));
+            HungerCore.RequireFinite(width, nameof(width));
+            HungerCore.RequireFinite(depth, nameof(depth));
+            if (width <= 0 || depth <= 0) throw new ArgumentOutOfRangeException(nameof(width));
+            MinX = minX; MinZ = minZ; Width = width; Depth = depth;
+        }
+
+        // 最大邊界屬於最後一格；範圍外不夾入邊格，避免誤揭露。
+        public bool TryWorldToCell(float x, float z, out int column, out int row)
+        {
+            HungerCore.RequireFinite(x, nameof(x)); HungerCore.RequireFinite(z, nameof(z));
+            double u = ((double)x - MinX) / Width, v = ((double)z - MinZ) / Depth;
+            column = row = -1;
+            if (u < 0 || u > 1 || v < 0 || v > 1) return false;
+            column = Math.Min(Size - 1, (int)(u * Size));
+            row = Math.Min(Size - 1, (int)(v * Size));
+            return true;
+        }
+
+        public bool Reveal(float x, float z, int radiusCells)
+        {
+            if (radiusCells < 0 || radiusCells >= Size) throw new ArgumentOutOfRangeException(nameof(radiusCells));
+            if ("'!TryWorldToCell(x, z, out int cx, out int cz)) return false;
+            bool changed = false;
+            for (int row = Math.Max(0, cz - radiusCells); row <= Math.Min(Size - 1, cz + radiusCells); row++)
+            for (int col = Math.Max(0, cx - radiusCells); col <= Math.Min(Size - 1, cx + radiusCells); col++)
+            {
+                if ((col - cx) * (col - cx) + (row - cz) * (row - cz) > radiusCells * radiusCells) continue;
+                int index = row * Size + col;
+                if (!explored[index]) { explored[index] = true; changed = true; }
+            }
+            return changed;
+        }
+
+        public void SetAct(int act)
+        {
+            if (act < 1 || act > 5) throw new ArgumentOutOfRangeException(nameof(act));
+            FogEnabled = act == 1;
+        }
+
+        public byte MaskAlpha(int column, int row)
+        {
+            if (column < 0 || column >= Size || row < 0 || row >= Size)
+                throw new ArgumentOutOfRangeException(nameof(column));
+            return (byte)(FogEnabled && !explored[row * Size + column] ? 255 : 0);
+        }
+    }
+}
+EOF
+cat > staging/scripts/Runtime/ClimbCore.cs <<'"'EOF'
+using System;
+
+namespace Liuruan
+{
+    public enum ClimbState { Grounded, Attaching, Climbing, TopOut, Release }
+
+    public sealed class ClimbCore
+    {
+        public const float Speed = 1.2f;
+        public float Width { get; }
+        public float Height { get; }
+        public float X { get; private set; }
+        public float Y { get; private set; }
+        public ClimbState State { get; private set; } = ClimbState.Grounded;
+        public bool IsLocked => State == ClimbState.Attaching || State == ClimbState.Climbing || State == ClimbState.TopOut;
+        public event Action<ClimbState> OnStateChanged;
+
+        public ClimbCore(float width, float height)
+        {
+            HungerCore.RequireFinite(width, nameof(width)); HungerCore.RequireFinite(height, nameof(height));
+            if (width <= 0 || height <= 0) throw new ArgumentOutOfRangeException(nameof(width));
+            Width = width; Height = height;
+        }
+        public bool Attach(float x, float y)
+        {
+            HungerCore.RequireFinite(x, nameof(x)); HungerCore.RequireFinite(y, nameof(y));
+            if (State "'!= ClimbState.Grounded) return false;
+            X = Math.Max(-Width / 2, Math.Min(Width / 2, x));
+            Y = Math.Max(0, Math.Min(Height, y));
+            SetState(ClimbState.Attaching); return true;
+        }
+        public void Tick(float dt, float horizontal, float vertical, float hunger)
+        {
+            HungerCore.RequireFinite(dt, nameof(dt)); HungerCore.RequireFinite(horizontal, nameof(horizontal));
+            HungerCore.RequireFinite(vertical, nameof(vertical)); HungerCore.RequireFinite(hunger, nameof(hunger));
+            if (dt < 0 || hunger < 0) throw new ArgumentOutOfRangeException(nameof(dt));
+            if (dt == 0) return;
+            if (State == ClimbState.Attaching) { SetState(ClimbState.Climbing); return; }
+            if (State != ClimbState.Climbing) return;
+            double length = Math.Max(1, Math.Sqrt((double)horizontal * horizontal + (double)vertical * vertical));
+            double distance = (double)dt * Speed * (hunger < 1 ? 0.5 : 1);
+            X = (float)Math.Max(-Width / 2, Math.Min(Width / 2, X + horizontal / length * distance));
+            Y = (float)Math.Max(0, Math.Min(Height, Y + vertical / length * distance));
+            if (vertical > 0 && Y >= Height) SetState(ClimbState.TopOut);
+            else if (vertical < 0 && Y <= 0) SetState(ClimbState.Release);
+        }
+        public void Release()
+        {
+            if (IsLocked) SetState(ClimbState.Release);
+        }
+        public void Finish()
+        {
+            if (State == ClimbState.TopOut || State == ClimbState.Release) SetState(ClimbState.Grounded);
+        }
+        private void SetState(ClimbState next)
+        {
+            if (State == next) return;
+            State = next; OnStateChanged?.Invoke(next);
+        }
+    }
+}
+EOF
+cat > staging/scripts/Runtime/DriftCore.cs <<'"'EOF'
+using System;
+
+namespace Liuruan
+{
+    public sealed class DriftCollectionCore
+    {
+        private int collected;
+        public int Count { get; private set; }
+        public event Action<int> OnCollected;
+        public event Action OnAllCollected;
+        public bool IsCollected(int id) { ValidateId(id); return (collected & (1 << id)) "'!= 0; }
+        public bool Collect(int id)
+        {
+            if (IsCollected(id)) return false;
+            collected |= 1 << id; Count++;
+            bool all = Count == 3;
+            OnCollected?.Invoke(id);
+            if (all) OnAllCollected?.Invoke();
+            return true;
+        }
+        internal static void ValidateId(int id)
+        {
+            if (id < 1 || id > 3) throw new ArgumentOutOfRangeException(nameof(id));
+        }
+    }
+
+    public sealed class DriftCore
+    {
+        private readonly WorldPosition[] points;
+        private readonly DriftCollectionCore collection;
+        private readonly float cycleSeconds;
+        private double elapsed;
+        public int Id { get; }
+        public bool IsCollected => collection.IsCollected(Id);
+        public WorldPosition Position { get; private set; }
+        public event Action<int> OnPickedUp;
+
+        public DriftCore(int id, WorldPosition[] waypoints, DriftCollectionCore collection, float cycleSeconds = 30)
+        {
+            DriftCollectionCore.ValidateId(id);
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
+            if (waypoints == null || waypoints.Length < 2) throw new ArgumentException("至少需要兩個路徑點。", nameof(waypoints));
+            HungerCore.RequireFinite(cycleSeconds, nameof(cycleSeconds));
+            if (cycleSeconds <= 0) throw new ArgumentOutOfRangeException(nameof(cycleSeconds));
+            Id = id; points = (WorldPosition[])waypoints.Clone(); this.collection = collection;
+            this.cycleSeconds = cycleSeconds; Position = Sample(0);
+        }
+        public void Tick(float dt)
+        {
+            HungerCore.RequireFinite(dt, nameof(dt));
+            if (dt < 0) throw new ArgumentOutOfRangeException(nameof(dt));
+            if (IsCollected) return;
+            elapsed = (elapsed + dt) % cycleSeconds;
+            Position = Sample((float)(elapsed / cycleSeconds));
+        }
+        public bool CanPickUp(WorldPosition player) => !IsCollected && WorldPosition.Distance(player, Position) <= 2;
+        public bool TryPickUp(WorldPosition player)
+        {
+            if (!CanPickUp(player)) return false;
+            if (!collection.Collect(Id)) return false;
+            OnPickedUp?.Invoke(Id); return true;
+        }
+        // shortcut: 均勻參數 Catmull–Rom，彎道速度略變；若需固定 m/s 再加弧長表。
+        public WorldPosition Sample(float t)
+        {
+            HungerCore.RequireFinite(t, nameof(t));
+            if (t < 0 || t > 1) throw new ArgumentOutOfRangeException(nameof(t));
+            double scaled = (double)t * (points.Length - 1);
+            int i = Math.Min(points.Length - 2, (int)scaled);
+            double u = scaled - i;
+            WorldPosition a = points[Math.Max(0, i - 1)], b = points[i], c = points[i + 1], d = points[Math.Min(points.Length - 1, i + 2)];
+            return new WorldPosition(Curve(a.X, b.X, c.X, d.X, u), Curve(a.Y, b.Y, c.Y, d.Y, u), Curve(a.Z, b.Z, c.Z, d.Z, u));
+        }
+        private static float Curve(double a, double b, double c, double d, double t)
+            => (float)(0.5 * ((2 * b) + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t * t + (-a + 3 * b - 3 * c + d) * t * t * t));
+    }
+}
+EOF' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd; cat > staging/scripts/Runtime/DriftCollection.cs <<'EOF'
+using System;
+using UnityEngine;
+
+namespace Liuruan
+{
+    public sealed class DriftCollection : MonoBehaviour
+    {
+        private DriftCollectionCore core;
+        public event Action<int> OnCollected;
+        public event Action OnAllCollected;
+        public int Count => Core.Count;
+        public DriftCollectionCore Core
+        {
+            get
+            {
+                if (core == null)
+                {
+                    core = new DriftCollectionCore();
+                    core.OnCollected += id => OnCollected?.Invoke(id);
+                    core.OnAllCollected += () => OnAllCollected?.Invoke();
+                }
+                return core;
+            }
+        }
+    }
+}
+EOF
+cat > staging/scripts/Runtime/DriftPickup.cs <<'EOF'
+using System;
+using UnityEngine;
+
+namespace Liuruan
+{
+    public sealed class DriftPickup : MonoBehaviour
+    {
+        [SerializeField, Range(1, 3)] private int id = 1;
+        [SerializeField] private Transform player;
+        [SerializeField] private Transform[] waypoints;
+        [SerializeField] private DriftCollection collection;
+        [SerializeField, Min(0.01f)] private float cycleSeconds = 30;
+        public event Action<int> OnPickedUp;
+        public event Action<int, bool> OnPromptChanged;
+        public bool CanInteract => core "'!= null && player && core.CanPickUp(ToCore(player.position));
+        private DriftCore core;
+        private bool showingPrompt;
+
+        private void Start()
+        {
+            if (!player || !collection || waypoints == null || waypoints.Length < 2)
+            { Debug.LogError("DriftPickup 需要玩家、共用收集器與至少兩個路徑點。", this); enabled = false; return; }
+            var points = new WorldPosition[waypoints.Length];
+            for (int i = 0; i < points.Length; i++)
+            {
+                if (!waypoints[i]) { Debug.LogError("DriftPickup 路徑點不可留空。", this); enabled = false; return; }
+                points[i] = ToCore(waypoints[i].position);
+            }
+            core = new DriftCore(id, points, collection.Core, cycleSeconds);
+            core.OnPickedUp += picked => OnPickedUp?.Invoke(picked);
+            if (core.IsCollected) { gameObject.SetActive(false); return; }
+            ApplyPosition();
+        }
+        private void Update()
+        {
+            if (core == null) return;
+            if (core.IsCollected) { gameObject.SetActive(false); return; }
+            core.Tick(Time.deltaTime); ApplyPosition(); SetPrompt(CanInteract);
+        }
+        public bool TryInteract()
+        {
+            if (!isActiveAndEnabled || !CanInteract || !core.TryPickUp(ToCore(player.position))) return false;
+            SetPrompt(false); gameObject.SetActive(false); return true;
+        }
+        private void ApplyPosition()
+        { var p = core.Position; transform.position = new Vector3(p.X, p.Y, p.Z); }
+        private void SetPrompt(bool show)
+        {
+            if (show == showingPrompt) return;
+            showingPrompt = show; OnPromptChanged?.Invoke(id, show);
+        }
+        private void OnDisable() => SetPrompt(false);
+        private static WorldPosition ToCore(Vector3 p) => new WorldPosition(p.x, p.y, p.z);
+    }
+}
+EOF
+cat > staging/scripts/Runtime/ClimbZone.cs <<'"'EOF'
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace Liuruan
+{
+    [RequireComponent(typeof(BoxCollider))]
+    public sealed class ClimbZone : MonoBehaviour
+    {
+        [SerializeField] private Transform player;
+        [SerializeField] private Behaviour playerMovement;
+        [SerializeField] private HungerSystem hunger;
+        [SerializeField] private Transform planeOrigin;
+        [SerializeField] private Transform topLanding;
+        [SerializeField, Min(0.01f)] private float width = 3;
+        [SerializeField, Min(0.01f)] private float height = 6;
+        public event Action<ClimbState> OnStateChanged;
+        public event Action<bool> OnMovementLockChanged;
+        public event Action<bool> OnPromptChanged;
+        public event Action OnTopOut;
+        public ClimbState State => core "'!= null ? core.State : ClimbState.Grounded;
+        public bool IsLocked => core != null && core.IsLocked;
+        public bool CanInteract => isActiveAndEnabled && inside.Count > 0 && State == ClimbState.Grounded;
+        private readonly HashSet<Collider> inside = new HashSet<Collider>();
+        private ClimbCore core;
+        private CharacterController controller;
+        private bool movementWasEnabled, controllerWasEnabled, ownsMovement, prompt;
+        private Vector2 moveInput;
+
+        private void Awake()
+        {
+            GetComponent<BoxCollider>().isTrigger = true;
+            if (!player || !playerMovement || !planeOrigin || !topLanding || playerMovement == this)
+            { Debug.LogError("ClimbZone 需要玩家、一般移動元件、藤蔓平面原點與頂端落點。", this); enabled = false; return; }
+            controller = player.GetComponent<CharacterController>();
+            core = new ClimbCore(width, height);
+            core.OnStateChanged += state => OnStateChanged?.Invoke(state);
+        }
+        public bool TryInteract()
+        {
+            if (core == null || !CanInteract) return false;
+            Vector3 offset = player.position - planeOrigin.position;
+            movementWasEnabled = playerMovement.enabled;
+            controllerWasEnabled = controller && controller.enabled;
+            ownsMovement = true;
+            playerMovement.enabled = false;
+            if (controller) controller.enabled = false;
+            OnMovementLockChanged?.Invoke(true);
+            core.Attach(Vector3.Dot(offset, planeOrigin.right), Vector3.Dot(offset, Vector3.up));
+            ApplyPlanePosition(); SetPrompt(false); return true;
+        }
+        public void SetMoveInput(Vector2 input) => moveInput = Vector2.ClampMagnitude(input, 1);
+        public void Release()
+        {
+            if (core == null || !ownsMovement) return;
+            core.Release(); RestoreMovement(); core.Finish();
+        }
+        private void Update()
+        {
+            SetPrompt(CanInteract);
+            if (!ownsMovement) return;
+            bool wasTopOut = State == ClimbState.TopOut;
+            Vector2 input = moveInput + new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+            core.Tick(Time.deltaTime, input.x, input.y, hunger ? hunger.Value : 5);
+            if (!wasTopOut) ApplyPlanePosition();
+            if (State == ClimbState.TopOut)
+            {
+                player.position = Vector3.MoveTowards(player.position, topLanding.position, ClimbCore.Speed * Time.deltaTime);
+                if ((player.position - topLanding.position).sqrMagnitude <= 0.000001f)
+                { RestoreMovement(); core.Finish(); OnTopOut?.Invoke(); }
+            }
+            else if (State == ClimbState.Release) { RestoreMovement(); core.Finish(); }
+        }
+        private void ApplyPlanePosition()
+        {
+            // 平面保持垂直，planeOrigin 只能繞世界 Y 旋轉。
+            player.position = planeOrigin.position + planeOrigin.right * core.X + Vector3.up * core.Y;
+            player.rotation = Quaternion.LookRotation(-planeOrigin.forward, Vector3.up);
+        }
+        private void RestoreMovement()
+        {
+            if (!ownsMovement) return;
+            ownsMovement = false; moveInput = Vector2.zero;
+            if (controller) controller.enabled = controllerWasEnabled;
+            if (playerMovement) playerMovement.enabled = movementWasEnabled;
+            OnMovementLockChanged?.Invoke(false);
+        }
+        private bool IsPlayer(Collider other) => player && (other.transform == player || other.transform.IsChildOf(player));
+        private void OnTriggerEnter(Collider other) { if (IsPlayer(other)) { inside.Add(other); SetPrompt(CanInteract); } }
+        private void OnTriggerExit(Collider other) { if (inside.Remove(other)) SetPrompt(CanInteract); }
+        private void SetPrompt(bool show)
+        { if (prompt != show) { prompt = show; OnPromptChanged?.Invoke(show); } }
+        private void OnDisable() { Release(); inside.Clear(); SetPrompt(false); }
+    }
+}
+EOF
+cat > staging/scripts/Runtime/MinimapCam.cs <<'"'EOF'
+using System;
+using UnityEngine;
+
+namespace Liuruan
+{
+    [RequireComponent(typeof(Camera))]
+    public sealed class MinimapCam : MonoBehaviour
+    {
+        [SerializeField] private Transform player;
+        [SerializeField] private Transform companion;
+        [SerializeField] private Transform target;
+        [SerializeField] private Vector2 worldMin = new Vector2(-128, -128);
+        [SerializeField] private Vector2 worldSize = new Vector2(256, 256);
+        [SerializeField, Range(0, 31)] private int revealRadiusCells = 2;
+        [SerializeField, Min(1)] private float viewHalfSize = 24;
+        [SerializeField, Min(1)] private float cameraHeight = 100;
+        [SerializeField, Min(64)] private float hudSize = 192;
+        [SerializeField] private LayerMask mapLayers = ~0;
+        public RenderTexture Output { get; private set; }
+        public Texture2D FogMask { get; private set; }
+        public event Action<bool> OnFogChanged;
+        private MinimapFogCore core;
+        private Camera mapCamera;
+        private Texture2D arrow, dot;
+        private readonly Color32[] maskPixels = new Color32[32 * 32];
+
+        private void Awake()
+        {
+            core = new MinimapFogCore(worldMin.x, worldMin.y, worldSize.x, worldSize.y);
+            mapCamera = GetComponent<Camera>();
+            mapCamera.orthographic = true; mapCamera.orthographicSize = viewHalfSize;
+            mapCamera.cullingMask = mapLayers; mapCamera.aspect = 1;
+            mapCamera.nearClipPlane = 0.1f; mapCamera.farClipPlane = cameraHeight * 2;
+            Output = new RenderTexture(256, 256, 16) { name = \"LiuruanMinimap\" };
+            Output.Create(); mapCamera.targetTexture = Output;
+            FogMask = new Texture2D(32, 32, TextureFormat.RGBA32, false)
+                { name = \"LiuruanFog\", filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
+            arrow = MakeIcon(true); dot = MakeIcon(false); UpdateMask();
+        }
+        public void SetAct(int act)
+        {
+            if (core == null) throw new InvalidOperationException(\"請在 MinimapCam.Awake 後設定幕次。\");
+            bool before = core.FogEnabled; core.SetAct(act); UpdateMask();
+            if (before "'!= core.FogEnabled) OnFogChanged?.Invoke(core.FogEnabled);
+        }
+        public void SetTarget(Transform currentTarget) => target = currentTarget;
+        private void LateUpdate()
+        {
+            if (!player) return;
+            transform.SetPositionAndRotation(player.position + Vector3.up * cameraHeight, Quaternion.Euler(90, 0, 0));
+            if (core.FogEnabled && core.Reveal(player.position.x, player.position.z, revealRadiusCells)) UpdateMask();
+        }
+        private void UpdateMask()
+        {
+            for (int row = 0; row < 32; row++)
+            for (int col = 0; col < 32; col++) maskPixels[row * 32 + col] = new Color32(0, 0, 0, core.MaskAlpha(col, row));
+            FogMask.SetPixels32(maskPixels); FogMask.Apply(false, false);
+        }
+        private void OnGUI()
+        {
+            if (!player || !Output || Event.current.type != EventType.Repaint) return;
+            Color oldColor = GUI.color; Matrix4x4 oldMatrix = GUI.matrix; GUI.color = Color.white;
+            var rect = new Rect(Screen.width - hudSize - 16, Screen.height - hudSize - 16, hudSize, hudSize);
+            GUI.BeginGroup(rect);
+            GUI.DrawTexture(new Rect(0, 0, hudSize, hudSize), Output);
+            if (core.FogEnabled)
+            {
+                float scale = hudSize / (viewHalfSize * 2);
+                var bounds = new Rect((worldMin.x - player.position.x + viewHalfSize) * scale,
+                    (player.position.z + viewHalfSize - worldMin.y - worldSize.y) * scale,
+                    worldSize.x * scale, worldSize.y * scale);
+                GUI.DrawTexture(bounds, FogMask);
+                GUI.color = Color.black;
+                Fill(0, 0, hudSize, Mathf.Clamp(bounds.yMin, 0, hudSize));
+                Fill(0, Mathf.Clamp(bounds.yMax, 0, hudSize), hudSize, hudSize - Mathf.Clamp(bounds.yMax, 0, hudSize));
+                Fill(0, 0, Mathf.Clamp(bounds.xMin, 0, hudSize), hudSize);
+                Fill(Mathf.Clamp(bounds.xMax, 0, hudSize), 0, hudSize - Mathf.Clamp(bounds.xMax, 0, hudSize), hudSize);
+            }
+            DrawIcon(companion, Color.cyan, dot, false);
+            DrawIcon(target, Color.yellow, dot, false);
+            DrawIcon(player, Color.white, arrow, true);
+            GUI.EndGroup(); GUI.matrix = oldMatrix; GUI.color = oldColor;
+        }
+        private void Fill(float x, float y, float w, float h)
+        { if (w > 0 && h > 0) GUI.DrawTexture(new Rect(x, y, w, h), Texture2D.whiteTexture); }
+        private void DrawIcon(Transform subject, Color color, Texture2D texture, bool rotate)
+        {
+            if (!subject) return;
+            float scale = hudSize / (viewHalfSize * 2);
+            Vector2 p = new Vector2(hudSize / 2 + (subject.position.x - player.position.x) * scale,
+                hudSize / 2 - (subject.position.z - player.position.z) * scale);
+            if (p.x < 0 || p.y < 0 || p.x > hudSize || p.y > hudSize) return;
+            Matrix4x4 before = GUI.matrix;
+            GUI.color = color;
+            if (rotate) GUIUtility.RotateAroundPivot(subject.eulerAngles.y, p);
+            GUI.DrawTexture(new Rect(p.x - 6, p.y - 6, 12, 12), texture);
+            GUI.matrix = before;
+        }
+        private static Texture2D MakeIcon(bool triangle)
+        {
+            var texture = new Texture2D(16, 16, TextureFormat.RGBA32, false);
+            var pixels = new Color32[256];
+            for (int y = 0; y < 16; y++)
+            for (int x = 0; x < 16; x++)
+            {
+                bool visible = triangle ? Math.Abs(x - 7.5f) <= (15 - y) * 0.5f
+                    : (x - 7.5f) * (x - 7.5f) + (y - 7.5f) * (y - 7.5f) <= 49;
+                pixels[y * 16 + x] = new Color32(255, 255, 255, (byte)(visible ? 255 : 0));
+            }
+            texture.SetPixels32(pixels); texture.Apply(); return texture;
+        }
+        private void OnDestroy()
+        {
+            if (mapCamera && mapCamera.targetTexture == Output) mapCamera.targetTexture = null;
+            if (Output) { Output.Release(); Destroy(Output); }
+            if (FogMask) Destroy(FogMask);
+            if (arrow) Destroy(arrow);
+            if (dot) Destroy(dot);
+        }
+    }
+}
+EOF' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+三組 Core 與包裝已寫好：迷霧保存 32×32 格探索紀錄，攀爬包含鎖定／釋放與低飢餓值減速，漂流物沿曲線循環並共用收集狀態。接下來會測邊界、重複互動與事件重入；攀爬包裝也會記住移動元件及 CharacterController 的原始啟用狀態，在離開或停用時還原。
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd; cat > staging/scripts/Tests/EditMode/R1CoreTests.cs <<'EOF'
+using System;
+using System.Collections.Generic;
+using NUnit.Framework;
+
+namespace Liuruan.Tests
+{
+    public sealed class MinimapFogCoreTests
+    {
+        [TestCase(-16f, -32f, 0, 0)]
+        [TestCase(-15f, -30f, 1, 1)]
+        [TestCase(0f, 0f, 16, 16)]
+        [TestCase(16f, 32f, 31, 31)]
+        public void WorldCoordinates(float x, float z, int col, int row)
+        {
+            var c = new MinimapFogCore(-16, -32, 32, 64);
+            Check.Equal(true, c.TryWorldToCell(x, z, out int actualCol, out int actualRow));
+            Check.Equal(col, actualCol); Check.Equal(row, actualRow);
+        }
+        [TestCase(-16.001f, 0f)] [TestCase(16.001f, 0f)]
+        [TestCase(0f, -32.001f)] [TestCase(0f, 32.001f)]
+        public void OutsideDoesNotRevealEdge(float x, float z)
+        {
+            var c = new MinimapFogCore(-16, -32, 32, 64);
+            Check.Equal(false, c.TryWorldToCell(x, z, out int col, out int row));
+            Check.Equal(-1, col); Check.Equal(-1, row);
+            Check.Equal(false, c.Reveal(x, z, 2)); Check.Equal(0, Revealed(c));
+        }
+        [Test] public void RadiusIsCircularAndRepeatedRevealIsIdempotent()
+        {
+            var c = new MinimapFogCore(0, 0, 32, 32);
+            Check.Equal(0, Revealed(c)); Check.Equal(true, c.Reveal(16, 16, 2));
+            Check.Equal(13, Revealed(c)); Check.Equal((byte)0, c.MaskAlpha(18, 16));
+            Check.Equal((byte)255, c.MaskAlpha(18, 18));
+            Check.Equal(false, c.Reveal(16, 16, 2));
+            c.Reveal(20, 20, 0); Check.Equal(14, Revealed(c));
+        }
+        [Test] public void RadiusClipsAtCornerAndKeepsHistoryAcrossActs()
+        {
+            var c = new MinimapFogCore(0, 0, 32, 32); c.Reveal(0, 0, 1);
+            Check.Equal(3, Revealed(c));
+            for (int act = 2; act <= 5; act++)
+            { c.SetAct(act); Check.Equal(false, c.FogEnabled); Check.Equal(1024, Revealed(c)); }
+            c.SetAct(1); Check.Equal(true, c.FogEnabled); Check.Equal(3, Revealed(c));
+            c.Reveal(32, 32, 1); Check.Equal(6, Revealed(c));
+        }
+        [Test] public void RejectsInvalidInputs()
+        {
+            Check.Throws(() => new MinimapFogCore(0, 0, 0, 1));
+            Check.Throws(() => new MinimapFogCore(0, 0, 1, -1));
+            var c = new MinimapFogCore(0, 0, 32, 32);
+            Check.Throws(() => c.SetAct(0)); Check.Throws(() => c.SetAct(6));
+            Check.Throws(() => c.Reveal(0, 0, -1)); Check.Throws(() => c.Reveal(0, 0, 32));
+            Check.Throws(() => c.MaskAlpha(-1, 0)); Check.Throws(() => c.MaskAlpha(0, 32));
+            foreach (float f in new[] { float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+            {
+                Check.Throws(() => new MinimapFogCore(f, 0, 1, 1));
+                Check.Throws(() => new MinimapFogCore(0, f, 1, 1));
+                Check.Throws(() => new MinimapFogCore(0, 0, f, 1));
+                Check.Throws(() => new MinimapFogCore(0, 0, 1, f));
+                Check.Throws(() => c.Reveal(f, 0, 1)); Check.Throws(() => c.Reveal(0, f, 1));
+            }
+        }
+        private static int Revealed(MinimapFogCore c)
+        {
+            int count = 0;
+            for (int row = 0; row < 32; row++) for (int col = 0; col < 32; col++)
+                if (c.MaskAlpha(col, row) == 0) count++;
+            return count;
+        }
+    }
+
+    public sealed class ClimbCoreTests
+    {
+        private static ClimbCore Climbing()
+        { var c = new ClimbCore(4, 6); c.Attach(0, 0); c.Tick(0.1f, 0, 0, 5); return c; }
+        [Test] public void FullTopOutSequenceAndEvents()
+        {
+            var c = new ClimbCore(4, 6); var states = new List<ClimbState>();
+            c.OnStateChanged += s => states.Add(s);
+            Check.Equal(ClimbState.Grounded, c.State); Check.Equal(false, c.IsLocked);
+            Check.Equal(true, c.Attach(0, 0)); Check.Equal(true, c.IsLocked);
+            Check.Equal(ClimbState.Attaching, c.State); Check.Equal(false, c.Attach(0, 1));
+            c.Tick(0, 0, 1, 5); Check.Equal(ClimbState.Attaching, c.State);
+            c.Tick(0.1f, 0, 1, 5); Check.Equal(ClimbState.Climbing, c.State); Check.Near(0, c.Y);
+            c.Tick(10, 0, 1, 5); Check.Equal(ClimbState.TopOut, c.State); Check.Near(6, c.Y);
+            Check.Equal(true, c.IsLocked); c.Tick(1, 1, -1, 5); Check.Near(6, c.Y);
+            c.Finish(); c.Finish(); Check.Equal(false, c.IsLocked);
+            Check.Equal(\"Attaching,Climbing,TopOut,Grounded\", string.Join(\",\", states));
+            Check.Equal(true, c.Attach(0, 0));
+        }
+        [Test] public void DescendingToBottomReleasesAutomatically()
+        {
+            var c = Climbing(); c.Tick(1, 0, 1, 5); c.Tick(2, 0, -1, 5);
+            Check.Equal(ClimbState.Release, c.State); Check.Near(0, c.Y);
+            Check.Equal(false, c.IsLocked); c.Finish(); Check.Equal(ClimbState.Grounded, c.State);
+        }
+        [Test] public void StationaryAtBottomDoesNotRelease()
+        { var c = Climbing(); c.Tick(1, 0, 0, 5); Check.Equal(ClimbState.Climbing, c.State); }
+        [TestCase(0f, 0.6f)] [TestCase(0.999f, 0.6f)] [TestCase(1f, 1.2f)] [TestCase(5f, 1.2f)]
+        public void HungerSpeedBoundary(float hunger, float expected)
+        { var c = Climbing(); c.Tick(1, 0, 1, hunger); Check.Near(expected, c.Y); }
+        [Test] public void DiagonalSpeedAndSideBounds()
+        {
+            var c = Climbing(); c.Tick(1, 1, 1, 5);
+            Check.Near(1.2 / Math.Sqrt(2), c.X); Check.Near(c.X, c.Y);
+            c.Tick(100, 1, 0, 5); Check.Near(2, c.X);
+            c.Tick(100, -1, 0, 5); Check.Near(-2, c.X);
+        }
+        [Test] public void AttachClampsAndExplicitReleaseIsIdempotent()
+        {
+            var c = new ClimbCore(4, 6); c.Attach(100, -2);
+            Check.Near(2, c.X); Check.Near(0, c.Y);
+            c.Release(); c.Release(); Check.Equal(ClimbState.Release, c.State);
+            c.Finish(); c.Release(); Check.Equal(ClimbState.Grounded, c.State);
+            c.Attach(-100, 100); Check.Near(-2, c.X); Check.Near(6, c.Y);
+            c.Finish(); Check.Equal(ClimbState.Attaching, c.State);
+        }
+        [Test] public void RejectsInvalidInputs()
+        {
+            Check.Throws(() => new ClimbCore(0, 1)); Check.Throws(() => new ClimbCore(1, -1));
+            var c = Climbing(); Check.Throws(() => c.Tick(-1, 0, 0, 5)); Check.Throws(() => c.Tick(1, 0, 0, -1));
+            foreach (float f in new[] { float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+            {
+                Check.Throws(() => new ClimbCore(f, 1)); Check.Throws(() => new ClimbCore(1, f));
+                Check.Throws(() => c.Attach(f, 0)); Check.Throws(() => c.Attach(0, f));
+                Check.Throws(() => c.Tick(f, 0, 0, 5)); Check.Throws(() => c.Tick(1, f, 0, 5));
+                Check.Throws(() => c.Tick(1, 0, f, 5)); Check.Throws(() => c.Tick(1, 0, 0, f));
+            }
+        }
+    }
+
+    public sealed class DriftCoreTests
+    {
+        private static WorldPosition P(float x, float z = 0) => new WorldPosition(x, 0, z);
+        private static DriftCore Item(int id, DriftCollectionCore collection)
+            => new DriftCore(id, new[] { P(0), P(10) }, collection, 10);
+        [Test] public void CurveSamplesEndpointsKnotsAndBend()
+        {
+            var c = new DriftCore(1, new[] { P(0), P(2, 2), P(4) }, new DriftCollectionCore());
+            Check.Near(0, c.Sample(0).X); Check.Near(4, c.Sample(1).X);
+            Check.Near(2, c.Sample(0.5f).X); Check.Near(2, c.Sample(0.5f).Z);
+            Check.Near(0.875, c.Sample(0.25f).X); Check.Near(1.125, c.Sample(0.25f).Z);
+        }
+        [Test] public void LoopsAtExactPeriodAndPreservesRemainder()
+        {
+            var c = Item(1, new DriftCollectionCore()); c.Tick(5); Check.Near(5, c.Position.X);
+            c.Tick(5); Check.Near(0, c.Position.X);
+            c.Tick(25); Check.Near(5, c.Position.X); c.Tick(0); Check.Near(5, c.Position.X);
+            c.Tick(float.MaxValue); Check.Equal(true, "'!float.IsNaN(c.Position.X));
+        }
+        [TestCase(2f, true)] [TestCase(2.001f, false)]
+        public void PickupRadiusBoundary(float distance, bool expected)
+        {
+            var collection = new DriftCollectionCore(); var c = Item(1, collection);
+            Check.Equal(expected, c.CanPickUp(P(distance))); Check.Equal(expected, c.TryPickUp(P(distance)));
+            Check.Equal(expected ? 1 : 0, collection.Count);
+        }
+        [Test] public void CollectedItemsStopAndCannotReappearOrNotifyAgain()
+        {
+            var collection = new DriftCollectionCore(); var c = Item(1, collection); int picked = 0;
+            c.OnPickedUp += id => { Check.Equal(1, id); picked++; };
+            c.Tick(5); Check.Equal(true, c.TryPickUp(P(5)));
+            c.Tick(100); Check.Near(5, c.Position.X); Check.Equal(true, c.IsCollected);
+            Check.Equal(false, c.TryPickUp(P(5))); Check.Equal(1, picked);
+            var duplicate = Item(1, collection); Check.Equal(true, duplicate.IsCollected);
+            Check.Equal(false, duplicate.CanPickUp(P(0))); Check.Equal(1, collection.Count);
+        }
+        [Test] public void AllCollectedOnceEvenWithReentrantDuplicatePickup()
+        {
+            var collection = new DriftCollectionCore(); var ids = new List<int>(); int all = 0;
+            collection.OnCollected += id => { ids.Add(id); Check.Equal(false, collection.Collect(id)); };
+            collection.OnAllCollected += () => { all++; Check.Equal(false, collection.Collect(3)); };
+            Check.Equal(true, Item(2, collection).TryPickUp(P(0))); Check.Equal(0, all);
+            Check.Equal(true, Item(1, collection).TryPickUp(P(0))); Check.Equal(0, all);
+            Check.Equal(true, Item(3, collection).TryPickUp(P(0))); Check.Equal(1, all);
+            Check.Equal(3, collection.Count); Check.Equal("2,1,3", string.Join(",", ids));
+            Check.Equal(false, collection.Collect(1)); Check.Equal(1, all);
+        }
+        [Test] public void PickupUsesThreeDimensionsAndCopiesWaypoints()
+        {
+            var points = new[] { P(0), P(10) }; var c = new DriftCore(1, points, new DriftCollectionCore());
+            points[0] = P(100); Check.Near(0, c.Sample(0).X);
+            Check.Equal(false, c.CanPickUp(new WorldPosition(0, 2.01f, 0)));
+        }
+        [Test] public void RejectsInvalidInputs()
+        {
+            var collection = new DriftCollectionCore(); var c = Item(1, collection);
+            Check.Throws(() => collection.Collect(0)); Check.Throws(() => collection.IsCollected(4));
+            Check.Throws(() => Item(4, collection)); Check.Throws(() => c.Tick(-1));
+            Check.Throws(() => c.Sample(-0.01f)); Check.Throws(() => c.Sample(1.01f));
+            Check.Throws(() => new DriftCore(1, new[] { P(0), P(1) }, collection, 0));
+            bool rejected = false;
+            try { new DriftCore(1, new WorldPosition[0], collection); } catch (ArgumentException) { rejected = true; }
+            Check.Equal(true, rejected); rejected = false;
+            try { new DriftCore(1, new[] { P(0), P(1) }, null); } catch (ArgumentNullException) { rejected = true; }
+            Check.Equal(true, rejected);
+            foreach (float f in new[] { float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+            {
+                Check.Throws(() => c.Tick(f)); Check.Throws(() => c.Sample(f));
+                Check.Throws(() => new DriftCore(1, new[] { P(0), P(1) }, collection, f));
+            }
+        }
+    }
+}
+EOF
+python3 - <<'"'PY'
+p='staging/scripts/Tests/run_core_tests.sh'
+s=open(p).read().replace('cp \""'$scripts_dir/Runtime/HungerCore.cs" "$scripts_dir/Runtime/CompanionCore.cs"     "$scripts_dir/Tests/EditMode/CoreTests.cs" "$scripts_dir/Tests/Console/Runner.cs" "$work_dir/"'"', 'cp \""'$scripts_dir"/Runtime/*Core.cs "$scripts_dir"/Tests/EditMode/*Tests.cs '"\\\\\\n    \""'$scripts_dir/Tests/Console/Runner.cs" "$work_dir/"'"')
+open(p,'w').write(s)
+p='staging/scripts/Tests/Console/Runner.cs'
+s=open(p).read().replace('typeof(Liuruan.Tests.CompanionCoreTests) }','typeof(Liuruan.Tests.CompanionCoreTests),\\n            typeof(Liuruan.Tests.MinimapFogCoreTests), typeof(Liuruan.Tests.ClimbCoreTests),\\n            typeof(Liuruan.Tests.DriftCoreTests) }')
+open(p,'w').write(s)
+PY
+staging/scripts/Tests/run_core_tests.sh > staging/scripts/logs/core-tests-R1.txt 2>&1
+cat staging/scripts/logs/core-tests-R1.txt" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 5766ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+/Volumes/hk6429/projects/liuruan-tiantai
+Compiler: .NET SDK 10.0.402; C# 9.0; no NuGet packages; shared EditMode test methods
+CSSM_ModuleLoad(): One or more parameters passed to a function were not valid.
+PASS HungerCoreTests.ClampsInitialValue(-1,0)
+PASS HungerCoreTests.ClampsInitialValue(0,0)
+PASS HungerCoreTests.ClampsInitialValue(5,5)
+PASS HungerCoreTests.ClampsInitialValue(6,5)
+PASS HungerCoreTests.DropsAtExactIntervalAndPreservesRemainder()
+PASS HungerCoreTests.EatClampFillAndChangeEvents()
+PASS HungerCoreTests.FoodWorksWhilePausedAndDoesNotResetActiveClock()
+PASS HungerCoreTests.LargeTickClampsAndRecoveryGetsFreshInterval()
+PASS HungerCoreTests.PauseResumeIsIdempotentAndKeepsRemainder()
+PASS HungerCoreTests.RejectsInvalidInputs()
+PASS HungerCoreTests.StartsWithThreeAndNormalSpeed()
+PASS HungerCoreTests.StarvesOncePerCrossingAndRecoversWithoutDying()
+PASS HungerCoreTests.SupportsCustomInterval()
+PASS HungerCoreTests.ZeroTickDoesNothing()
+PASS CompanionCoreTests.AllSixteenDistanceDrivenTransitions(0)
+PASS CompanionCoreTests.AllSixteenDistanceDrivenTransitions(1)
+PASS CompanionCoreTests.AllSixteenDistanceDrivenTransitions(2)
+PASS CompanionCoreTests.AllSixteenDistanceDrivenTransitions(3)
+PASS CompanionCoreTests.CallAcceleratesUntilReunion()
+PASS CompanionCoreTests.CallCooldownAndExactReadyBoundary()
+PASS CompanionCoreTests.CatchupCanAlsoGetStuck()
+PASS CompanionCoreTests.DistanceBoundaries(0,Idle)
+PASS CompanionCoreTests.DistanceBoundaries(2.499,Idle)
+PASS CompanionCoreTests.DistanceBoundaries(2.5,Follow)
+PASS CompanionCoreTests.DistanceBoundaries(12,Follow)
+PASS CompanionCoreTests.DistanceBoundaries(12.001,Catchup)
+PASS CompanionCoreTests.DistanceBoundaries(30,Catchup)
+PASS CompanionCoreTests.DistanceBoundaries(30.001,Teleport)
+PASS CompanionCoreTests.ExactStuckBoundary()
+PASS CompanionCoreTests.FiveCentimetresResetsStuckTimer()
+PASS CompanionCoreTests.IdleNeverCountsAsStuck()
+PASS CompanionCoreTests.MovesThroughEveryStateAndBack()
+PASS CompanionCoreTests.ProgressAndIdleResetStuckTimer()
+PASS CompanionCoreTests.RejectsInvalidTimeAndCoordinates()
+PASS CompanionCoreTests.SlowProgressAccumulatesAgainstAnchor()
+PASS CompanionCoreTests.StuckAtExactlyThreeSecondsTeleportsThenResets()
+PASS CompanionCoreTests.TeleportClearsCallButPreservesCooldown()
+PASS CompanionCoreTests.TeleportIsTwoMetresBehindNormalizedHorizontalForward()
+PASS CompanionCoreTests.UsesThreeDimensionalDistance()
+PASS CompanionCoreTests.ZeroForwardUsesWorldBack()
+PASS MinimapFogCoreTests.OutsideDoesNotRevealEdge(-16.001,0)
+PASS MinimapFogCoreTests.OutsideDoesNotRevealEdge(16.001,0)
+PASS MinimapFogCoreTests.OutsideDoesNotRevealEdge(0,-32.001)
+PASS MinimapFogCoreTests.OutsideDoesNotRevealEdge(0,32.001)
+PASS MinimapFogCoreTests.RadiusClipsAtCornerAndKeepsHistoryAcrossActs()
+PASS MinimapFogCoreTests.RadiusIsCircularAndRepeatedRevealIsIdempotent()
+PASS MinimapFogCoreTests.RejectsInvalidInputs()
+PASS MinimapFogCoreTests.WorldCoordinates(-16,-32,0,0)
+PASS MinimapFogCoreTests.WorldCoordinates(-15,-30,1,1)
+PASS MinimapFogCoreTests.WorldCoordinates(0,0,16,16)
+PASS MinimapFogCoreTests.WorldCoordinates(16,32,31,31)
+PASS ClimbCoreTests.AttachClampsAndExplicitReleaseIsIdempotent()
+PASS ClimbCoreTests.DescendingToBottomReleasesAutomatically()
+PASS ClimbCoreTests.DiagonalSpeedAndSideBounds()
+PASS ClimbCoreTests.FullTopOutSequenceAndEvents()
+PASS ClimbCoreTests.HungerSpeedBoundary(0,0.6)
+PASS ClimbCoreTests.HungerSpeedBoundary(0.999,0.6)
+PASS ClimbCoreTests.HungerSpeedBoundary(1,1.2)
+PASS ClimbCoreTests.HungerSpeedBoundary(5,1.2)
+PASS ClimbCoreTests.RejectsInvalidInputs()
+PASS ClimbCoreTests.StationaryAtBottomDoesNotRelease()
+PASS DriftCoreTests.AllCollectedOnceEvenWithReentrantDuplicatePickup()
+PASS DriftCoreTests.CollectedItemsStopAndCannotReappearOrNotifyAgain()
+PASS DriftCoreTests.CurveSamplesEndpointsKnotsAndBend()
+PASS DriftCoreTests.LoopsAtExactPeriodAndPreservesRemainder()
+PASS DriftCoreTests.PickupRadiusBoundary(2,True)
+PASS DriftCoreTests.PickupRadiusBoundary(2.001,False)
+PASS DriftCoreTests.PickupUsesThreeDimensionsAndCopiesWaypoints()
+PASS DriftCoreTests.RejectsInvalidInputs()
+RESULT: 69 passed, 0 failed
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd; cat Assets/_Project/Scripts/Interactable.cs; git diff -- staging/scripts; rg -n 'UnityEngine|UnityEditor|GameFlow' staging/scripts/Runtime/*Core.cs; sh -n staging/scripts/Tests/run_core_tests.sh; git status --short -- staging/scripts" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Events;
+
+namespace Liuruan
+{
+    /// 靠近顯示提示，按 E 觸發。clueId >= 0 時開啟該線索；toast 不為空時顯示一句提示。
+    public class Interactable : MonoBehaviour
+    {
+        public static readonly List<Interactable> All = new List<Interactable>();
+
+        public string prompt = Txt.DefaultPrompt;
+        public float radius = 2.5f;
+        public int clueId = -1;
+        [TextArea] public string toast;
+        public UnityEvent onInteract = new UnityEvent(); // r12：執行期 AddComponent 時不會自動建立，沒初始值會 NRE
+
+        /// Round14：已收集的線索點顯示「E 再讀」（自訂提示字不動）
+        public string CurrentPrompt => clueId >= 0 && prompt == Txt.DefaultPrompt && ClueManager.I && ClueManager.I.IsCollected(clueId) ? Txt.RereadPrompt : prompt;
+
+        void OnEnable() => All.Add(this);
+        void OnDisable() => All.Remove(this);
+
+        public void Interact()
+        {
+            if (!string.IsNullOrEmpty(toast)) ScrollUI.I?.Toast(toast);
+            if (clueId >= 0) ClueManager.I?.TriggerClue(clueId);
+            onInteract.Invoke();
+        }
+
+        public static Interactable Nearest(Vector3 pos)
+        {
+            Interactable best = null;
+            float bestDist = float.MaxValue;
+            foreach (var it in All)
+            {
+                Vector3 off = it.transform.position - pos;
+                off.y = 0; // 只算水平距離
+                float d = off.magnitude;
+                if (d <= it.radius && d < bestDist) { best = it; bestDist = d; }
+            }
+            return best;
+        }
+    }
+}
+diff --git a/staging/scripts/Tests/Console/Runner.cs b/staging/scripts/Tests/Console/Runner.cs
+index af203fc..5dd47e5 100644
+--- a/staging/scripts/Tests/Console/Runner.cs
++++ b/staging/scripts/Tests/Console/Runner.cs
+@@ -20,7 +20,9 @@ internal static class Runner
+     private static int Main()
+     {
+         int passed = 0, failed = 0;
+-        foreach (Type type in new[] { typeof(Liuruan.Tests.HungerCoreTests), typeof(Liuruan.Tests.CompanionCoreTests) })
++        foreach (Type type in new[] { typeof(Liuruan.Tests.HungerCoreTests), typeof(Liuruan.Tests.CompanionCoreTests),
++            typeof(Liuruan.Tests.MinimapFogCoreTests), typeof(Liuruan.Tests.ClimbCoreTests),
++            typeof(Liuruan.Tests.DriftCoreTests) })
+         foreach (MethodInfo method in type.GetMethods().OrderBy(m => m.Name))
+         {
+             var cases = method.GetCustomAttributes<NUnit.Framework.TestCaseAttribute>().ToArray();
+diff --git a/staging/scripts/Tests/run_core_tests.sh b/staging/scripts/Tests/run_core_tests.sh
+index 470d4fe..cdc28de 100755
+--- a/staging/scripts/Tests/run_core_tests.sh
++++ b/staging/scripts/Tests/run_core_tests.sh
+@@ -21,7 +21,8 @@ if [ "$sdk_major" -lt 8 ]; then
+     echo "ERROR: 需要 .NET SDK 8 以上（C# 限定為 9）。" >&2
+     exit 1
+ fi
+-cp "$scripts_dir/Runtime/HungerCore.cs" "$scripts_dir/Runtime/CompanionCore.cs"     "$scripts_dir/Tests/EditMode/CoreTests.cs" "$scripts_dir/Tests/Console/Runner.cs" "$work_dir/"
++cp "$scripts_dir"/Runtime/*Core.cs "$scripts_dir"/Tests/EditMode/*Tests.cs \
++    "$scripts_dir/Tests/Console/Runner.cs" "$work_dir/"
+ cat > "$work_dir/NuGet.Config" <<'XML'
+ <configuration><packageSources><clear /></packageSources></configuration>
+ XML
+ M staging/scripts/Tests/Console/Runner.cs
+ M staging/scripts/Tests/run_core_tests.sh
+?? staging/scripts/Runtime/ClimbCore.cs
+?? staging/scripts/Runtime/ClimbZone.cs
+?? staging/scripts/Runtime/DriftCollection.cs
+?? staging/scripts/Runtime/DriftCore.cs
+?? staging/scripts/Runtime/DriftPickup.cs
+?? staging/scripts/Runtime/MinimapCam.cs
+?? staging/scripts/Runtime/MinimapFogCore.cs
+?? staging/scripts/Tests/EditMode/R1CoreTests.cs
+?? staging/scripts/logs/core-tests-R1.txt
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd; python3 - <<'PY'
+p='staging/scripts/Runtime/ClimbZone.cs'
+s=open(p).read().replace('isActiveAndEnabled && inside.Count > 0 && State == ClimbState.Grounded', 'isActiveAndEnabled && playerMovement && playerMovement.enabled && inside.Count > 0 && State == ClimbState.Grounded')
+open(p,'w').write(s)
+p='staging/scripts/INTEGRATION.md'
+s=open(p).read().replace('# S 線 R0 掛載說明', '# S 線 R0／R1 掛載說明').replace('編譯兩個 Core 與同一份 EditMode 測試', '編譯所有 "'`*Core.cs` 與同一份 EditMode 測試'"')
+s += '''
+
+## R1：MinimapCam（右下小地圖）
+
+1. 建立獨立 Camera，掛 "'`Liuruan.MinimapCam`，不要掛在主相機。指定 Player、Companion；Target 可空，流程改變目標時呼叫 `SetTarget(Transform)`，清除用 `SetTarget(null)`。
+2. World Min 是探索範圍左下角的世界 X/Z；World Size 是 X/Z 寬深（預設 -128/-128、256/256，**U 線須依灰盒實際範圍調整**）。這是固定世界格網，不隨玩家平移，避免迷霧紀錄漂移。Reveal Radius Cells 預設 2，以格為單位，採包含邊界的圓形揭露；半徑 0 只揭露所在格。
+3. View Half Size 預設 24m，Camera Height 100m；地圖固定世界 +Z 朝上，俯視正交、aspect=1，跟隨玩家位置，不跟玩家旋轉。Map Layers 選環境層，排除主角／夥伴模型或非地圖特效。請避免其他相機控制器同時寫入此 Camera。
+4. Awake 建立 `Output`（256×256 RenderTexture）及 `FogMask`（32×32 RGBA Texture2D；黑色 alpha 255＝霧、0＝已探索），銷毀時釋放。本批以內建 OnGUI 在右下直接合成底圖、世界對齊迷霧與圖示層，不需要新增 UI 套件；白色箭頭表示玩家朝向、青色點表示阮肇、黃色點表示當前目標，圖示畫在霧上，離開視野時隱藏。
+5. `Output` **只含攝影機底圖**，迷霧與圖示是 OnGUI 疊層；若 U 線改用 Canvas，須一起移植疊層，不可只把 Output 放進 RawImage 就當作完整地圖。不要同時顯示兩份底圖。FogMask 的列從世界 -Z 到 +Z（Texture2D 的底至頂），取樣須使用固定 World Min/Size，不能直接伸滿跟隨視窗。超出世界範圍在第一幕保持黑霧。
+6. GameFlow 初始化完成（Awake 之後）先呼叫 `SetAct(1)`；換幕呼叫 `SetAct(2..5)`。第一幕自動隨玩家所在格揭露，第二幕起完全取消迷霧；重新回第一幕保留本局探索紀錄，重開局需重建元件。`OnFogChanged(bool enabled)` 僅在有霧／無霧切換時發送，初始狀態請由流程主動設定。
+7. 最小版只記錄每幀玩家所在格的周圍；瞬移不揭露中間路徑。預設 256m 世界每格 8m，若想要較細探索，先縮小 World Size。未提供存檔或額外 UI 互動。
+
+## R1：ClimbZone（第二幕藤蔓）
+
+1. 在藤蔓互動區物件掛 `Liuruan.ClimbZone`，隨附 BoxCollider 由 Awake 設為 trigger，調整 trigger 覆蓋藤蔓底部。指定 Player（移動根物件）、Player Movement（該玩家的一般移動 MonoBehaviour）、Hunger（同一玩家 HungerSystem）、Plane Origin、Top Landing。一般移動元件不可指向 ClimbZone 自己。
+2. Plane Origin 放在**玩家根位置對應的藤蔓底邊中心**，local +X 是橫移方向、世界 +Y 是上攀方向、local +Z 朝離開山壁方向；只能繞世界 Y 旋轉、不能傾斜或滾轉。Width/Height 是世界公尺，不使用 Transform scale 換算。Top Landing 放在平台上安全的玩家根落點，必須可容納膠囊，不要放進山壁。
+3. 玩家 Collider 或其子物件 Collider 進入 trigger 後 `CanInteract` 才為 true，互動呼叫 `TryInteract()`，成功回 true；一般移動已被停用時拒絕掛附，避免多區搶同一玩家。元件記住一般移動與 CharacterController 的啟用狀態，暫停兩者以鎖定藤蔓平面；釋放、到頂完成及元件停用都還原原始狀態。玩家不能另有持續推動的 Rigidbody、NavMeshAgent 或 Root Motion，若有，U 線需配合 `OnMovementLockChanged` 暫停它們。
+4. 狀態：Grounded → Attaching（投影到平面）→ 下一個非零 dt 更新進入 Climbing。WASD／方向鍵沿藤蔓移動，手機每幀呼叫 `SetMoveInput(Vector2)`，放開時傳 Vector2.zero。向量會正規化以免斜走加速；正常 1.2m/s，Hunger.Value <1 為 0.6m/s，恰為 1 仍為 1.2m/s。Hunger 未指定時視為飽食，因此 U 線必須接上。
+5. 向上到頂：TopOut → 以 1.2m/s 從藤頂移至 Top Landing → Grounded → `OnTopOut()`。`OnStateChanged(TopOut)` 是翻越開始，**GameFlow 應以 OnTopOut 作為已站上平台的通知**。此為位置過渡，動畫由 U 線依狀態接線；TopOut 期間維持移動鎖定。
+6. 向下到底：Release → 還原控制 → Grounded；停在底部不輸入不會立刻放開。取消／切幕可呼叫 `Release()`；它會安全地還原控制，重複呼叫不多發事件。停用區域也自動 Release。頂端／底端及翻越路徑沒有碰撞掃描，須由 U 線安排安全落點與無障礙路徑。
+7. `OnPromptChanged(bool)` 提供進出區提示；UI 可以顯示簡短白話「攀藤」。包裝不建立台詞、不處理 GameFlow、不自行消耗 E 或觸控互動鍵。
+
+## R1：DriftPickup／DriftCollection（第三幕溪流）
+
+1. 在第三幕流程根物件掛一個 `Liuruan.DriftCollection`。溪中三個漂流物各掛 `Liuruan.DriftPickup`，三者的 Collection **都指定同一個收集器**；指定 Player，Id 依序為 1＝蕪菁葉、2＝杯、3＝胡麻飯糝。請勿用三個不同的收集器，否則不會集滿。
+2. Waypoints 至少兩點，依上游到下游排列；路徑點必須是獨立靜態物件，不能放在漂流物的子階層。Start 時快取世界座標，使用開放 Catmull–Rom 曲線（端點重複），Cycle Seconds 預設 30 秒走完全程，抵達下游後回上游循環；不是下游反向游回上游。各漂流物可用不同路徑／週期避免重疊。
+3. 曲線採均勻參數，因此速度不是固定 m/s，彎道可能略有超出控制點；依溪道寬度放路徑點並調長週期以維持緩慢漂流。本輪未新增弧長表、浮力、物理或網路套件。
+4. 玩家距離採三維直線距離，<=2m 可拾取；`CanInteract` 供 UI／互動路由器即時讀取。`OnPromptChanged(int id, bool visible)` 在靠近／離開／停用時通知顯示或清除提示，可顯示「撿起」。只有真正成功才回傳 `TryInteract() == true`，遠距／重複拾取均回 false。
+5. 成功時 Core 先把該 id 記入共用收集器：收集器發 `OnCollected(int id)`，第三個唯一 id 接著發 `OnAllCollected()`，再由拾取物發 `OnPickedUp(int id)`；包裝清除提示並停用整個漂流物 GameObject（Renderer/Collider 一起停用）。如果流程會在全收集時立刻切幕，優先訂閱收集器事件。每個 id 只計一次，三件全收集只發一次，即使存在重複 id 的物件也不會多算；重啟物件仍會自行隱藏。
+6. GameFlow 用收集器 `Count` 同步 HUD，`OnCollected` 更新三件線索、`OnAllCollected` 開推論題；各 `OnPickedUp` 留給拾取特效。不靠 static 全域狀態，重新開始此幕若要清空收集，重建共用收集器及三個漂流物，不要只 SetActive(true)。
+
+## R1：GameFlow／輸入接線契約（U 線負責）
+
+Runtime 不引用 GameFlow、PlayerController、Interactable、ScrollUI 或 TouchInput，也不依賴它們所在的組件。沿用現有事件路由即可；不須修改這批 asmdef。
+
+| 元件 | C# 事件 | 參數／用途 |
+|---|---|---|
+| MinimapCam | `event Action<bool> OnFogChanged` | true＝第一幕迷霧啟用，false＝取消 |
+| ClimbZone | `event Action<ClimbState> OnStateChanged` | 狀態改變（含 Attaching、Climbing、TopOut、Release、Grounded） |
+| ClimbZone | `event Action<bool> OnMovementLockChanged` | 攀爬鎖定／還原時，通知其他移動或動畫系統 |
+| ClimbZone | `event Action<bool> OnPromptChanged` | 藤蔓互動提示顯示／清除 |
+| ClimbZone | `event Action OnTopOut` | 翻越完成、安全落點到達後通知流程 |
+| DriftPickup | `event Action<int, bool> OnPromptChanged` | 漂流物 id、顯示或清除 |
+| DriftPickup | `event Action<int> OnPickedUp` | 單一拾取物成功後的 id |
+| DriftCollection | `event Action<int> OnCollected` | 共用唯一收集通知，id=1/2/3 |
+| DriftCollection | `event Action OnAllCollected` | 三個唯一 id 全收集，只發一次 |
+
+事件都應在 U 線 OnEnable 訂閱、OnDisable 解除。C# 事件不是 Inspector UnityEvent；如需 Inspector 綁定，請由既有輸入／流程腳本轉接。
+
+現有 PlayerController 會透過 `Interactable.onInteract` 處理 E 與手機按鈕，可在 U 線用有保存參考的 UnityAction 轉接，例如：
+
+```csharp
+// U 線已有對應的 Interactable、ClimbZone 參考。
+UnityEngine.Events.UnityAction climbAction = () => { climbZone.TryInteract(); };
+climbInteractable.onInteract.AddListener(climbAction);
+// 拆除時使用同一個 climbAction RemoveListener。
+```
+
+漂流物同理轉接 `TryInteract()`；其 Interactable 設 radius=2、clueId=-1、toast 空值，prompt 用「撿起」。現有 Interactable 只看水平距離，**真正能拾取仍以 DriftPickup.CanInteract 的三維 2m 為準**；U 線的提示路由應先檢查此值，避免樓層上下誤顯示。藤蔓的 Interactable 則須同時檢查 ClimbZone.CanInteract，因一般 Nearest 並不檢查 trigger。一次互動只選一個可互動元件，避免同幀多次處理；請勿讓另一支腳本重複 ConsumeDown。
+
+ClimbZone 攀爬期間停用 PlayerController（含其相機 LateUpdate），相機暫留原位；若要攀爬鏡頭跟隨，U 線由獨立鏡頭腳本處理，不能重新啟用一般移動來解決。
+
+## R1 驗證與交接邊界
+
+`Tests/run_core_tests.sh` 已納入新三組測試；R0 的 40 案例保留，新 29 案例，共 **69 passed, 0 failed**。同一份 R1CoreTests.cs 可由 Unity NUnit 執行。原始 console 輸出：`logs/core-tests-R1.txt`，交件報告：`logs/S-R1.md`。
+
+本輪只完成純 C# 測試及靜態檢查；未開 Unity、未編譯 MonoBehaviour、未掛場景。U 線需驗證：256² RenderTexture／迷霧世界座標對齊與第二幕取消／箭頭北朝上；玩家多 Collider 進出與攀爬控制還原／手機搖桿／上下端安全落點；三物件循環與隱藏／提示路由／三個 id 與推論題事件。OnGUI 的疊層順序及手機安全區也需實機驗收。
+'"'''
+open(p,'w').write(s)
+PY" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+Core 測試已全數通過：R0 的 40 案例加上本輪 29 案例，共 **69 passed, 0 failed**。整合文件也已寫明事件與掛載方式，並標出兩個 U 線接線重點：RenderTexture 只含底圖，霧與圖示另由 OnGUI 疊加；攀爬期間停用既有 PlayerController，其相機更新也會暫停。
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd; git diff --check -- staging/scripts; python3 - <<'PY'
+from pathlib import Path
+import json
+root=Path('staging/scripts')
+for path in sorted(root.glob('Runtime/*Core.cs')):
+    content=path.read_text()
+    assert 'UnityEngine' not in content and 'UnityEditor' not in content, path
+    assert 'GameFlow' not in content, path
+for path in root.rglob('*.asmdef'):
+    json.loads(path.read_text())
+for path in sorted(root.glob('Runtime/*.cs')):
+    assert 'GameFlow' not in path.read_text(), path
+for path in list(root.rglob('*.cs')) + [root/'INTEGRATION.md', root/'Tests/run_core_tests.sh']:
+    assert not any(line.rstrip()"'!=line for line in path.read_text().splitlines()), path
+print('"'PASS static checks: 5 pure Core files; no Runtime GameFlow reference; asmdef JSON; whitespace')
+PY
+sh -n staging/scripts/Tests/run_core_tests.sh" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+PASS static checks: 5 pure Core files; no Runtime GameFlow reference; asmdef JSON; whitespace
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd; python3 - <<'PY'
+from pathlib import Path
+p=Path('staging/scripts/Runtime/DriftPickup.cs')
+s=p.read_text().replace('public bool CanInteract => core "'!= null && player'"', 'public bool CanInteract => isActiveAndEnabled && core "'!= null && player'"')
+p.write_text(s)
+report='''# S 線 R1 交件報告
+
+日期：2026-11-07。寫入範圍僅 "'`staging/scripts/`；未開 Unity、未跑 batchmode、未修改 Assets／其他線、未推送。
+
+## 變更與交件
+
+- MinimapFogCore：固定世界範圍的 32×32 格網、圓形揭露半徑、世界座標轉格、最大邊界歸最後一格、範圍外不揭露；Act2–5 關霧，回 Act1 保留探索。
+- MinimapCam：專用正交北向俯視相機跟隨玩家，建立／釋放 256² RenderTexture 與 32² Texture2D 遮罩；右下 OnGUI 疊加世界對齊迷霧、玩家朝向箭頭、阮肇點、目標點。不新增 UI 套件。
+- ClimbCore：Grounded→Attaching→Climbing→TopOut／Release，正常 1.2m/s、飢餓值 <1 為 0.6m/s；斜走不加速、左右／上下限位。
+- ClimbZone：trigger 內互動掛附、藤蔓平面鎖定、鍵盤／外部手機向量輸入、頂端自動移至平台落點、底端自動放開；暫停並還原一般移動及 CharacterController 原始狀態，停用時也還原。
+- DriftCore／DriftCollectionCore：開放 Catmull–Rom 路徑、沿路徑下游循環、三維 2m 拾取、共用唯一 id 記錄、重複拾取拒絕、全收集只通知一次。
+- DriftPickup／DriftCollection：獨立三個物件共享收集器、靠近／離開提示事件、拾取後隱藏整個物件，重新啟用仍不重生；以 C# event 通知流程，不引用 GameFlow。
+- INTEGRATION.md：掛載、Inspector 欄位、事件名稱與參數、GameFlow 輸入輸出契約、既有 Interactable 轉接方式與 U 線驗收項目。
+- 沿用 R0 WorldPosition、RequireFinite、Check 及同份 EditMode／console 測試模式；沒有新增套件、組件依賴或測試替身。
+
+## 檔案清單
+
+新增：
+
+- `Runtime/MinimapFogCore.cs`
+- `Runtime/MinimapCam.cs`
+- `Runtime/ClimbCore.cs`
+- `Runtime/ClimbZone.cs`
+- `Runtime/DriftCore.cs`（含 DriftCollectionCore）
+- `Runtime/DriftPickup.cs`
+- `Runtime/DriftCollection.cs`
+- `Tests/EditMode/R1CoreTests.cs`
+- `logs/core-tests-R1.txt`
+- `logs/S-R1.md`（本報告）
+
+修改：
+
+- `INTEGRATION.md`
+- `Tests/run_core_tests.sh`
+- `Tests/Console/Runner.cs`
+
+以上皆相對於 `staging/scripts/`；R0 Core、包裝與原測試未改。
+
+## 實際驗證
+
+執行 `staging/scripts/Tests/run_core_tests.sh`，結果 **69 passed, 0 failed**：原 R0 40 案例＋本輪 29 案例。使用本機 .NET SDK 10.0.402、C# 9、warnings as errors、零 NuGet 套件。此 runner 執行與 EditMode 相同的測試方法，並非 Unity Test Runner。
+
+新增測試涵蓋：
+
+- 迷霧：非正方形世界座標、負世界起點、內部格線、精確最大邊界、四側範圍外、半徑 0／2 與圓形遮罩、角落裁切、重複揭露、Act2–5 取消／回 Act1 保留、非法輸入。
+- 攀爬：完整到頂事件序列、到頂保持鎖定直到 Finish、到底自動 Release、底部靜止、<1／=1 飢餓邊界、斜走速度、側邊限位、附著座標夾值、重複釋放、非法輸入。
+- 漂流：曲線起終點／中間 waypoint／彎道取樣、週期精確邊界與餘額、2m／2.001m 拾取、三維距離、拾取後停止且不再拾取／重生、重複 id、全收集只發一次、事件內重入重複拾取、路徑陣列防外部修改、非法輸入。
+
+其他實際檢查：
+
+- `sh -n staging/scripts/Tests/run_core_tests.sh`：通過。
+- `git diff --check -- staging/scripts`：通過；另掃描新增 C#／整合文件／shell 無行尾空白。
+- 五個 `*Core.cs` 均無 UnityEngine／UnityEditor 引用；全部 Runtime 無 GameFlow 引用。
+- 兩個 asmdef 均可解析為 JSON，未修改 asmdef。
+- 原始輸出含 macOS `CSSM_ModuleLoad` 訊息，未隱藏；編譯與測試仍成功。
+
+### 實際完整測試輸出
+
+```text
+'"'''
+report += Path('staging/scripts/logs/core-tests-R1.txt').read_text()
+report += '''"'```
+
+## 未做到與已知風險
+
+- 本輪遵守 S 線限制，**未開 Unity、未編譯 MonoBehaviour、未跑 Unity NUnit／場景／WebGL／手機**；Core 全綠不等於場景驗收完成。
+- MinimapCam.Output 只有底圖，霧與圖示由 OnGUI 疊層；U 線若改成 RawImage 必須連疊層一起移植。實際灰盒世界範圍、渲染層、相機高度／裁切、UI 疊層與手機安全區尚待校準。
+- 攀爬需接好既有 Interactable／輸入路由；包裝不自行消耗 E 或手機互動鍵，避免與現有 PlayerController 重複處理。Hunger 欄位必須指定，否則視為飽食。
+- 攀爬需垂直藤蔓平面、已校準的玩家根高度與安全平台落點。鎖定期間停用 CharacterController，不做牆面／翻越碰撞掃描；TopOut 是位置過渡，未製作角色翻越動畫。若有額外 Rigidbody／Root Motion，U 線須透過鎖定事件暫停。
+- 攀爬停用既有 PlayerController 也會停住其相機 LateUpdate；如需專用攀爬鏡頭由 U 線接獨立鏡頭腳本。
+- 漂流採均勻參數曲線，彎道非等速且可能略超出 waypoint；預設每 30 秒走完整條路。未做弧長等速表、浮力或物理。
+- 共用收集器屬本局狀態，不提供跨場景存檔。三件須共用同一收集器；重玩需重建收集器及物件。
+- 根目錄 RTK.md 不存在；已讀 AGENTS.md、計畫書第三／四／六節、S-R0 報告與 INTEGRATION.md。
+- Obsidian 位於本輪允許寫入範圍外，依「只能寫 staging/scripts/」未另存，未宣稱已儲存。
+
+## 下一步（U 線）
+
+依 INTEGRATION.md 匯入 Runtime 與 Tests/EditMode（不匯入 Tests/Console），跑 Unity EditMode。掛三組元件與共用收集器，接互動及 GameFlow 事件，校準世界範圍／藤蔓平面／平台落點／溪流路徑，再實測地圖迷霧與圖示、攀爬還原與頂底端、三物件拾取及推論題。
+'"'''
+Path('staging/scripts/logs/S-R1.md').write_text(report)
+print('Saved staging/scripts/logs/S-R1.md with complete 69-case output.')
+PY
+ git diff --stat -- staging/scripts
+ git status --short -- staging/scripts" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+Saved staging/scripts/logs/S-R1.md with complete 69-case output.
+ staging/scripts/INTEGRATION.md          | 71 ++++++++++++++++++++++++++++++++-
+ staging/scripts/Tests/Console/Runner.cs |  4 +-
+ staging/scripts/Tests/run_core_tests.sh |  3 +-
+ 3 files changed, 74 insertions(+), 4 deletions(-)
+ M staging/scripts/INTEGRATION.md
+ M staging/scripts/Tests/Console/Runner.cs
+ M staging/scripts/Tests/run_core_tests.sh
+?? staging/scripts/Runtime/ClimbCore.cs
+?? staging/scripts/Runtime/ClimbZone.cs
+?? staging/scripts/Runtime/DriftCollection.cs
+?? staging/scripts/Runtime/DriftCore.cs
+?? staging/scripts/Runtime/DriftPickup.cs
+?? staging/scripts/Runtime/MinimapCam.cs
+?? staging/scripts/Runtime/MinimapFogCore.cs
+?? staging/scripts/Tests/EditMode/R1CoreTests.cs
+?? staging/scripts/logs/S-R1.md
+?? staging/scripts/logs/core-tests-R1.txt
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+S 線 R1 已完成，僅修改 `staging/scripts/`：
+
+- 三組 Core、MonoBehaviour 包裝與事件介面已交件。
+- INTEGRATION.md 已更新掛載與 GameFlow 接線契約。
+- Core 測試 **69 passed，0 failed**，完整輸出已貼入[交件報告](/Volumes/hk6429/projects/liuruan-tiantai/staging/scripts/logs/S-R1.md)。
+
+未開 Unity；包裝編譯、場景接線與實機驗收待 U 線完成。受寫入範圍限制，未另存 Obsidian。
+hook: Stop
+hook: Stop
+hook: Stop Completed
+hook: Stop Completed
+tokens used
+78,940
+S 線 R1 已完成，僅修改 `staging/scripts/`：
+
+- 三組 Core、MonoBehaviour 包裝與事件介面已交件。
+- INTEGRATION.md 已更新掛載與 GameFlow 接線契約。
+- Core 測試 **69 passed，0 failed**，完整輸出已貼入[交件報告](/Volumes/hk6429/projects/liuruan-tiantai/staging/scripts/logs/S-R1.md)。
+
+未開 Unity；包裝編譯、場景接線與實機驗收待 U 線完成。受寫入範圍限制，未另存 Obsidian。
+EXIT=0

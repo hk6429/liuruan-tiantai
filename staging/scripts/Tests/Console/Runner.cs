@@ -20,7 +20,9 @@ internal static class Runner
     private static int Main()
     {
         int passed = 0, failed = 0;
-        foreach (Type type in new[] { typeof(Liuruan.Tests.HungerCoreTests), typeof(Liuruan.Tests.CompanionCoreTests) })
+        foreach (Type type in new[] { typeof(Liuruan.Tests.HungerCoreTests), typeof(Liuruan.Tests.CompanionCoreTests),
+            typeof(Liuruan.Tests.MinimapFogCoreTests), typeof(Liuruan.Tests.ClimbCoreTests),
+            typeof(Liuruan.Tests.DriftCoreTests) })
         foreach (MethodInfo method in type.GetMethods().OrderBy(m => m.Name))
         {
             var cases = method.GetCustomAttributes<NUnit.Framework.TestCaseAttribute>().ToArray();

@@ -1,0 +1,43 @@
+# EditMode Test Runner
+
+Passed=40 Failed=0 Skipped=0 Duration=0.0350818
+- Liuruan.Tests.CompanionCoreTests.AllSixteenDistanceDrivenTransitions(0)：Passed 
+- Liuruan.Tests.CompanionCoreTests.AllSixteenDistanceDrivenTransitions(1)：Passed 
+- Liuruan.Tests.CompanionCoreTests.AllSixteenDistanceDrivenTransitions(2)：Passed 
+- Liuruan.Tests.CompanionCoreTests.AllSixteenDistanceDrivenTransitions(3)：Passed 
+- Liuruan.Tests.CompanionCoreTests.CallAcceleratesUntilReunion：Passed 
+- Liuruan.Tests.CompanionCoreTests.CallCooldownAndExactReadyBoundary：Passed 
+- Liuruan.Tests.CompanionCoreTests.CatchupCanAlsoGetStuck：Passed 
+- Liuruan.Tests.CompanionCoreTests.DistanceBoundaries(0.0f,Idle)：Passed 
+- Liuruan.Tests.CompanionCoreTests.DistanceBoundaries(2.499f,Idle)：Passed 
+- Liuruan.Tests.CompanionCoreTests.DistanceBoundaries(2.5f,Follow)：Passed 
+- Liuruan.Tests.CompanionCoreTests.DistanceBoundaries(12.0f,Follow)：Passed 
+- Liuruan.Tests.CompanionCoreTests.DistanceBoundaries(12.001f,Catchup)：Passed 
+- Liuruan.Tests.CompanionCoreTests.DistanceBoundaries(30.0f,Catchup)：Passed 
+- Liuruan.Tests.CompanionCoreTests.DistanceBoundaries(30.001f,Teleport)：Passed 
+- Liuruan.Tests.CompanionCoreTests.ExactStuckBoundary：Passed 
+- Liuruan.Tests.CompanionCoreTests.FiveCentimetresResetsStuckTimer：Passed 
+- Liuruan.Tests.CompanionCoreTests.IdleNeverCountsAsStuck：Passed 
+- Liuruan.Tests.CompanionCoreTests.MovesThroughEveryStateAndBack：Passed 
+- Liuruan.Tests.CompanionCoreTests.ProgressAndIdleResetStuckTimer：Passed 
+- Liuruan.Tests.CompanionCoreTests.RejectsInvalidTimeAndCoordinates：Passed 
+- Liuruan.Tests.CompanionCoreTests.SlowProgressAccumulatesAgainstAnchor：Passed 
+- Liuruan.Tests.CompanionCoreTests.StuckAtExactlyThreeSecondsTeleportsThenResets：Passed 
+- Liuruan.Tests.CompanionCoreTests.TeleportClearsCallButPreservesCooldown：Passed 
+- Liuruan.Tests.CompanionCoreTests.TeleportIsTwoMetresBehindNormalizedHorizontalForward：Passed 
+- Liuruan.Tests.CompanionCoreTests.UsesThreeDimensionalDistance：Passed 
+- Liuruan.Tests.CompanionCoreTests.ZeroForwardUsesWorldBack：Passed 
+- Liuruan.Tests.HungerCoreTests.ClampsInitialValue(-1.0f,0.0f)：Passed 
+- Liuruan.Tests.HungerCoreTests.ClampsInitialValue(0.0f,0.0f)：Passed 
+- Liuruan.Tests.HungerCoreTests.ClampsInitialValue(5.0f,5.0f)：Passed 
+- Liuruan.Tests.HungerCoreTests.ClampsInitialValue(6.0f,5.0f)：Passed 
+- Liuruan.Tests.HungerCoreTests.DropsAtExactIntervalAndPreservesRemainder：Passed 
+- Liuruan.Tests.HungerCoreTests.EatClampFillAndChangeEvents：Passed 
+- Liuruan.Tests.HungerCoreTests.FoodWorksWhilePausedAndDoesNotResetActiveClock：Passed 
+- Liuruan.Tests.HungerCoreTests.LargeTickClampsAndRecoveryGetsFreshInterval：Passed 
+- Liuruan.Tests.HungerCoreTests.PauseResumeIsIdempotentAndKeepsRemainder：Passed 
+- Liuruan.Tests.HungerCoreTests.RejectsInvalidInputs：Passed 
+- Liuruan.Tests.HungerCoreTests.StartsWithThreeAndNormalSpeed：Passed 
+- Liuruan.Tests.HungerCoreTests.StarvesOncePerCrossingAndRecoversWithoutDying：Passed 
+- Liuruan.Tests.HungerCoreTests.SupportsCustomInterval：Passed 
+- Liuruan.Tests.HungerCoreTests.ZeroTickDoesNothing：Passed 

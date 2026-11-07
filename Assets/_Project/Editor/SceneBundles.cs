@@ -44,6 +44,7 @@ namespace Liuruan
                     locationPathName = PlayerDir,
                     target = BuildTarget.WebGL,
                     targetGroup = BuildTargetGroup.WebGL,
+                    options = EditorUserBuildSettings.development ? BuildOptions.Development : BuildOptions.None,
                     assetBundleManifestPath = $"{OutDir}/{Path.GetFileName(OutDir)}.manifest", // 只在 bundle 用到的型別／引擎模組不被裁掉
                 });
                 ok = report.summary.result == BuildResult.Succeeded;

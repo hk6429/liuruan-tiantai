@@ -1,0 +1,17 @@
+已完成御覽底本、R0 典藏、7 題題庫、五幕詞注與旁白、桃花源比較表。
+
+[交件報告與完整檢查輸出](/Volumes/hk6429/projects/liuruan-tiantai/logs/C-R1.md)｜[檢查腳本](/Volumes/hk6429/projects/liuruan-tiantai/tools/check_clues.py)
+
+```text
+PASS 底本：7段；與御覽證據字序一致
+PASS clues.json：7題格式、幕次、選項、答案及提示
+PASS original：7/7 嚴格連續子字串
+PASS 結局：刪節全文、唯一結局、未含留宿段
+PASS compare.json：8列引文及文件一致
+PASS narration.json：五幕句數、字數合規
+PASS acts.md／glossary.md：引文逐字相符
+PASS 檢查器自檢；另6/6錯誤反例成功攔截
+```
+
+未操作或實測 Unity；`act`、第三幕加題觸發及比較面板仍須 U／S 線接入。
+Obsidian 未儲存：Vault 不在本輪可寫範圍。

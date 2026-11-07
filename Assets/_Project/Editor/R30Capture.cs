@@ -20,7 +20,7 @@ namespace Liuruan
 
         public static string Run(string tag)
         {
-            string dir = Path.GetFullPath(Path.Combine(Application.dataPath, "../Captures/r30"));
+            string dir = Path.GetFullPath(Path.Combine(Application.dataPath, tag == "r1" ? "../Captures/r1" : "../Captures/r30"));
             Directory.CreateDirectory(dir);
             foreach (var ps in Object.FindObjectsByType<ParticleSystem>(FindObjectsSortMode.None)) ps.Simulate(10f, true, true);
             var go = new GameObject("_R30CaptureCam") { hideFlags = HideFlags.HideAndDontSave };

@@ -1,0 +1,7 @@
+{
+  "name": "Liuruan.EditModeTests",
+  "rootNamespace": "Liuruan.Tests",
+  "references": ["Liuruan.Runtime"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"]
+}

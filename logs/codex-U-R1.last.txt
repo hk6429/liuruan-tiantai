@@ -1,0 +1,6 @@
+五幕、HUD 與 Editor 備援入口已備妥；靜態編譯 0 error，Core 主控台測試 **40／40 通過**。[交件報告](logs/U-R1.md)
+
+請在已開啟的 Unity 執行 **Assets → Refresh**，即可啟動安裝、測試與建置流程。
+
+尚未驗證：Main 仍為 R0；NavMesh、Play、截圖與 WebGL 均無成功證據，R1 尚不能放行。
+環境核准政策拒絕 Unity 操作，沙盒也禁止本機連接埠；Obsidian 因寫入限制未同步。

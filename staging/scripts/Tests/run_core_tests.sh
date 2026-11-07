@@ -21,7 +21,8 @@ if [ "$sdk_major" -lt 8 ]; then
     echo "ERROR: 需要 .NET SDK 8 以上（C# 限定為 9）。" >&2
     exit 1
 fi
-cp "$scripts_dir/Runtime/HungerCore.cs" "$scripts_dir/Runtime/CompanionCore.cs"     "$scripts_dir/Tests/EditMode/CoreTests.cs" "$scripts_dir/Tests/Console/Runner.cs" "$work_dir/"
+cp "$scripts_dir"/Runtime/*Core.cs "$scripts_dir"/Tests/EditMode/*Tests.cs \
+    "$scripts_dir/Tests/Console/Runner.cs" "$work_dir/"
 cat > "$work_dir/NuGet.Config" <<'XML'
 <configuration><packageSources><clear /></packageSources></configuration>
 XML

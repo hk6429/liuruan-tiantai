@@ -1,0 +1,1944 @@
+OpenAI Codex v0.166.0
+--------
+workdir: /Volumes/hk6429/projects/liuruan-tiantai
+model: gpt-6.1-sol
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR] (network access enabled)
+reasoning effort: medium
+reasoning summaries: none
+session id: 01a1b2ed-51e9-7b00-b92c-6ea787b62e25
+--------
+user
+# C 線 R1：改底本為《太平御覽》引《幽明錄》＋題庫
+
+先讀 AGENTS.md、docs/plan.md 第一、三節、你上一輪的 logs/C-R0.md 與 sources/*。可寫：sources/、docs/content/、Assets/_Project/Data/（只有這個 Unity 資料夾）。交件報告寫 logs/C-R1.md。
+
+## 決定（主線已拍板）
+- **底本改為《太平御覽》卷四十一引《幽明錄》**（你 R0 的 Y 本）。理由：遊戲情節（取穀皮、筒瓦屋、遂停半年、七世孫）全依《幽明錄》系統。太平廣記〈天台二女〉（出《神仙記》）改為對校本，在 variants.md 說明。
+- 屋瓦用底本「筒瓦屋」。留宿段照舊整段〔略〕。
+
+## 任務
+1. 重做 sources/liuruan_tw.txt（御覽為底本、一段一行、全形標點、台灣教科書慣例）、variants.md、provenance.md；舊版另存 sources/_R0_guangji/。御覽電子本若有明顯誤字，可據他本校改，但每一處都要在 variants.md 記錄「底本作某，據某本改」。
+2. 重做 docs/content/acts.md、glossary.md 對應新底本。
+3. 新增 Assets/_Project/Data/clues.json：格式照 Assets/_Project/Scripts/ClueManager.cs 的 ClueList／ClueData（只讀程式，不准改）。每筆多一個 int 欄位 act（1–5）。內容：
+   - 每幕 1 張原文卷軸（original 逐字取自 liuruan_tw.txt、plain 白話、question 選擇題 4 選項、answer、feedback、wrongHints 2 條）。
+   - 第三幕另加推論題：三件漂流物（蕪菁葉、杯、胡麻飯糝）→「此知去人徑不遠」的推論。
+   - 結局：isEnding=true，原文全文（留宿段以「……」省略並在 feedback 不提），推論題「為什麼回家已是七世？」。
+   - 題目要有誘答力、選項長度相近，國中程度。
+4. docs/content/compare_taohuayuan.md：〈劉晨阮肇〉與〈桃花源記〉比較表（入口、異境樣貌、居民、停留、離開方式、回去後、能否重返、作者寓意），每格引原文；〈桃花源記〉原文也要附來源網址。結局面板會用這張表，另出一份 Assets/_Project/Data/compare.json（rows: [{aspect, liuruan, taohua}]）。
+5. Assets/_Project/Data/narration.json：五幕的簡短白話旁白（每幕 ≤3 句、每句 ≤25 字），**只能描述原文已有的事**，不加情節、不寫人物台詞。
+
+驗收：clues.json 用 python json 解析通過；每個 original 字串都是 liuruan_tw.txt 的子字串（寫一支 tools/check_clues.py 自動檢查並貼輸出）。
+
+warning: Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.
+  user (/Users/naichengchen/.codex/config.toml): `features.rmcp_client` is ignored.
+  user (/Users/naichengchen/.codex/config.toml): `writable_roots` is ignored.
+warning: Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.
+  user (/Users/naichengchen/.codex/config.toml): `features.rmcp_client` is ignored.
+  user (/Users/naichengchen/.codex/config.toml): `writable_roots` is ignored.
+warning: Under-development features enabled: chronicle. Under-development features are incomplete and may behave unpredictably. To suppress this warning, set `suppress_unstable_features_warning = true` in /Users/naichengchen/.codex/config.toml.
+warning: Exceeded skills context budget. All skill descriptions were removed and 50 additional skills were not included in the model-visible skills list.
+hook: SessionStart
+hook: SessionStart
+hook: SessionStart Completed
+hook: SessionStart Completed
+hook: UserPromptSubmit
+hook: UserPromptSubmit
+hook: UserPromptSubmit Completed
+hook: UserPromptSubmit Completed
+codex
+我會先核對 R0 校勘紀錄、內容規格與題庫程式格式，再重做底本及五幕資料，最後用檢查腳本驗證 JSON 與原文逐字對應。
+
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "rg -n 'liuruan|天台|御覽' /Users/naichengchen/.codex/memories/MEMORY.md" in /Volumes/hk6429/projects/liuruan-tiantai
+ exited 1 in 0ms:
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "ls -a; cat AGENTS.md; cat RTK.md; cat logs/C-R0.md; ls sources; sed -n '1,240p' docs/plan.md" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+.
+..
+.cf-branch
+.git
+.gitignore
+AGENTS.md
+Assets
+Library
+Packages
+ProjectSettings
+README.md
+Temp
+UserSettings
+briefs
+docs
+logs
+scripts
+sources
+staging
+# 天台山・流杯記（liuruan-tiantai）— Codex 接手說明
+
+Unity 6000.3.27f1 URP WebGL 國文遊戲，題材《幽明錄》〈劉晨阮肇入天台〉。回覆一律繁體中文（台灣）。
+計劃書：docs/plan.md（五幕：迷山／攀桃／流杯／仙村／歸鄉；四線 U/S/A/C）。
+參考畫面：staging/ref/*.jpg（UE5 Q 版小勇者影片截圖，風格與 HUD 版面照它）。
+骨架來源：/Volumes/hk6429/projects/liulaolao-garden（劉姥姥，只讀，絕不修改該專案）。
+
+## 鐵律
+- 只寫自己這條線被指定的資料夾，不碰別線的檔案。
+- 只有 U 線可以操作 Unity（UnityMCP 或 batchmode），其他線不得開 Unity。
+- 台詞與原文只用 sources/liuruan_tw.txt 逐字，不准自編情節或台詞；自撰限簡短白話旁白。
+- 女子留宿段（「各就一帳宿」起至「遂停半年」前）整段略過，只用旁白「遂停半年」帶過。
+- 不做戰鬥。不推 GitHub、不推 Vercel。生成產物不放 iCloud。
+- 刪檔用 /bin/rm；Blender 只能 headless（-b --factory-startup）。
+- 完成時在 logs/<線>-R<輪>.md 寫交件報告：做了什麼、檔案清單、怎麼驗證的、沒做到什麼。不得謊報。
+cat: RTK.md: No such file or directory
+# C 線 R0 交件報告
+
+日期：2026-11-07。狀態：內容骨架與電子文本對校已交；魯迅輯本印刷影像核字、底本與 plan 的規格衝突仍待處理，不能當作無疑義的定稿放行。
+
+## 做了什麼
+
+- 讀取根目錄 AGENTS.md、docs/plan.md 第一、三節，並確認本輪寫入界線。只編輯 sources/、docs/content/，另依任務明訂交件要求新增本報告單檔；未操作 Unity、未改其他線檔案、未推 GitHub 或部署。
+- 以維基文庫《太平廣記》卷六十一〈天台二女〉電子轉錄為底本，保留原字，台灣慣用全形標點，一段一行，共九段。逐段來源網址列於 provenance.md。
+- 讀得《太平御覽》卷四十一與《藝文類聚》卷七相應引文；取得 ctext《古小說鉤沉》第 182 段搜尋回傳全文並保留缺字。以電子見證建立異文表，不冒稱完成原刻校勘。
+- 建立五幕原文起訖、完整顯示引文、國中程度翻譯、plan 第三節位置與衝突說明；建立底本及他本字詞注釋。
+- 留宿整段只在底本典藏檔／讀取證據保存，五幕標〔略〕、無翻譯、無演出。遊戲僅顯示八段；轉場「遂停半年」依專案指示另列，未冒充 G 原句。
+
+## 檔案清單
+
+| 檔案 | 用途 |
+|---|---|
+| sources/liuruan_tw.txt | 底本全文，九段，含典藏用禁顯示 P07 |
+| sources/variants.md | 字句、增省、出處與情節差異；不確定處待人工判斷 |
+| sources/provenance.md | 來源網址、日期、修訂資訊、取得限制、逐段索引及顯示界線 |
+| sources/evidence/guangji.txt | G 網頁回傳段落，含原電子校注 |
+| sources/evidence/yulan.txt | Y 網頁回傳之引《幽明錄》段落 |
+| sources/evidence/leiju.txt | E 網頁回傳之引《幽明錄》節錄 |
+| sources/evidence/luxun.txt | L 搜尋回傳第 182 段，缺字及錯誤標點原樣保留 |
+| docs/content/acts.md | 五幕內容契約與忠實翻譯 |
+| docs/content/glossary.md | 字詞注釋、例句及來源代號連結 |
+| logs/C-R0.md | 本報告；任務明訂交件路徑的單檔例外 |
+
+## 怎麼驗證
+
+1. 網頁實際讀取 G 全文與篇末出處，確認標「出《神仙記》」，並有明抄本作《搜神記》的校注；沒有擅改標《幽明錄》。Y、E 都明引《幽明錄》。
+2. 以 Python 標準函式庫執行聚焦檢查：去掉 G 證據〈…〉夾注、標點與空白，比對 liuruan_tw.txt 字序完全一致。結果 PASS；沒有補入任何他本文字。
+3. 全文正好九個非空行；五幕共有八段引文，依序等於 P01–P06、P08–P09；全部為全文連續子字串。五幕標題齊全，P07 未進入五幕引文；結果 PASS。
+4. 確認全文無半形英文標點；未混入「七世孫」「遂停半年」；四份讀取證據皆含劉晨，Y 證據含《幽明錄》曰；結果 PASS。
+5. 實際檔案均已落盤，正文 939 bytes；acts.md 6828 bytes；glossary.md 7480 bytes。正文 SHA-256：`c92c2454b13ff28250b531f35c875fa6efc1fe81d9729f51b68079edcc8eacea`。
+
+CC 可從 G 網址抽查五句：「經十三日饑」「饑止體充」「此近人矣」「帳角懸鈴」「鄉邑零落，已十世矣」。正文標點有分段調整，字序一致。網址：https://zh.wikisource.org/zh-hant/太平廣記/卷第061#天台二女
+
+## 沒做到什麼與風險
+
+- 未核原刻或魯迅輯本印刷影像，未取得印刷版次與頁碼。ctext 直接開啟為 403，搜尋回傳有完整故事但含「各□數枚」「經涉山□」及轉換錯字。這是暫用對校見證，不可宣稱魯迅定本字形已逐字確證。未從記憶填入缺字。
+- 維基文庫《古小說鉤沈》目錄連到通用《幽明錄》頁，不能只憑連結就把通用頁每個字認定為魯迅輯本。該頁只作輔助；「筒／銅」與「璧／壁」保留待人工判斷。
+- 本輪找不到所見完整見證使用「噉」的證據；底本是「啗」、御覽是「啖」。不把「各噉數枚」補進正文，glossary 明列缺證。
+- **規格衝突：G 是採藥、十世，沒有取穀皮、銅瓦屋、七世孫，也沒有「遂停半年」逐字句。** 未修改 plan；五幕按指定 G 呈現。七世孫 NPC、七世推論題、銅瓦材質及他本細節引用須主線決定。不能直接把長本和 G 拼接。
+- 依「底本全文」要求保留 P07 於 sources；依刪節鐵律不在 acts 轉錄、翻譯。實際遊戲匯入器未改，U／S 線須排除 P07，結局全文頁亦同，否則會露出禁顯示段。
+- 未另寫題目、桃花源比較表、教師手冊，這些是後續輪次；未執行 Unity 或遊戲實測。
+- 未寫入 Obsidian／LLM 知識庫：本輪限定 sources/、docs/content/ 與明訂報告單檔，且外部 Vault 不在目前可寫範圍。沒有宣稱已存。
+
+## 下一步
+
+主線先裁定保留 G 十世結局或另輪改底本，再核對魯迅輯本影像疑字；U／S 線落實 P07 禁顯示清單。之後 C-R1 才依確定版本產生線索、測驗與比較表。
+evidence
+liuruan_tw.txt
+provenance.md
+variants.md
+---
+date: 2026-11-07
+type: 計劃書
+tags: [unity-webgl, 教育遊戲, 幽明錄, 劉晨阮肇, 桃花源記, 比較閱讀, 國文]
+---
+
+# 〈劉晨阮肇入天台〉Unity WebGL 教育遊戲計劃書（草案 v0.1）
+
+- 專案代號：`liuruan-tiantai`（實體路徑 `/Volumes/hk6429/projects/liuruan-tiantai`，`~/projects` 是 symlink，Codex 一律帶實體路徑）
+- 參考影片：`~/Downloads/F3-pUil44IpPP3fK.mp4`（UE5 Q 版小勇者，47 秒：帳篷村 → 開寶箱 → 木樁 → 光束森林小徑 → 營火帳篷）
+- 產線：沿用〈劉姥姥〉`~/projects/liulaolao-garden`（Unity 6000.3.27f1 URP WebGL＋Boot 場景包切塊＋R30 畫質工具）與 `/unity-webgl-edu-game` skill
+- 分工：**CC 規劃、寫任務書、驗收；Codex 執行**，每輪四線平行，只有 U 線碰 UnityMCP
+
+---
+
+## 一、教學目標
+
+| # | 目標 | 遊戲中怎麼學 |
+|---|---|---|
+| 1 | 讀懂志怪小說的敘事結構：入山 → 遇仙 → 留居 → 思歸 → 返鄉 | 五幕就是五段，每幕結束時解鎖原文 |
+| 2 | 抓線索推論：蕪菁葉、流杯、胡麻飯糝 →「此知去人徑不遠」 | 溪中漂流物三選一推論題 |
+| 3 | 「仙界一日，人間百年」的時間母題 | 結局村莊整個換樣，七世孫出場 |
+| 4 | 與〈桃花源記〉比較閱讀 | 結局比較表：入口、異境樣貌、離開方式、能否重返 |
+
+## 二、角色
+
+| 影片 | 本作 |
+|---|---|
+| 紅帽小勇者（玩家） | **劉晨**：Q 版漢代採藥人，頭巾、短褐、背簍、腰插小斧 |
+| 發光小象夥伴 | **阮肇**：AI 跟隨，會落後、會回頭催；左下頭像＝阮肇 |
+| 村民 | 二女子、三四十名仙女（遠景群像，用同一模型換色） |
+| 結局 NPC | 七世孫 |
+
+不做戰鬥。影片的劍盾改成小斧＋背簍；木樁靶場改成「取穀皮」的楮樹林。
+
+## 三、遊戲流程（五幕，約 15 分鐘，一節課可玩完＋討論）
+
+台詞與旁白**只引原文逐字**，自撰限簡短白話旁白，不加情節（劉姥姥鐵律沿用）。
+
+| 幕 | 影片對應段 | 原文情節 | 互動 | 考點 |
+|---|---|---|---|---|
+| 一、迷山 | 森林小徑＋光束 | 入天台山取穀皮，迷不得返，經十三日糧乏盡 | 剝 5 棵楮樹皮（＋穀皮計數）；HUD 5 格飢餓值隨時間遞減；小地圖逐漸起霧 | 「迷不得返」的處境 |
+| 二、攀桃 | 森林盡頭山壁 | 遙望山上桃樹，絕巖邃澗，攀援藤葛乃得至上，各噉數枚，飢止體充 | 沿藤蔓攀爬小段；摘桃，飢餓值回滿 | 困境轉折 |
+| 三、流杯 | 開寶箱 | 持杯取水，見蕪菁葉、一杯流出、有胡麻飯糝 →「此知去人徑不遠」 | 溪中三件漂流物＝三個寶箱，按 [E] 撿起；集滿後推論題；涉水逆流 | 線索推論 |
+| 四、仙村 | 帳篷村＋營火＋告示板 | 溪邊二女子喚「劉、阮二郎」；銅瓦屋、絳羅帳、帳角懸鈴；停半年，春時百鳥啼鳴，懷悲思求歸 | 村中任務告示板（原文段落卡）；季節由春轉春、鳥鳴；「求歸」選項 | 身在仙境的矛盾心理 |
+| 五、歸鄉 | （影片無，本作加碼） | 親舊零落，邑屋改異，無復相識；問訊得七世孫 | 回到第一幕起點的村子，整個換樣（同場景換一套建物＋陌生村民）；七世孫對話 | 時間母題＋比較閱讀 |
+
+結局：全文＋推論題（為什麼會是七世？）＋〈桃花源記〉比較表＋成績卡（沿用 QuizStats）。
+
+**待你決定**：原文中女子留宿的段落（「各就一帳宿」那段）國中不適合，建議**整段略過**，只用旁白「遂停半年」帶過。
+
+## 四、HUD（照影片版面）
+
+| 位置 | 影片 | 本作 |
+|---|---|---|
+| 左上 | 5 顆火焰＋「+25 Embers」 | 5 顆桃形飢餓值＋「穀皮 ×N」 |
+| 右上 | 3 個菱形技能格（G/R/F） | 剝皮／取水／呼喚阮肇（手機改成三顆圓鈕） |
+| 左下 | 小象頭像＋點狀冷卻環 | 阮肇頭像＋呼喚冷卻環 |
+| 右下 | 小地圖 | 小地圖（正交俯視 RenderTexture，第一幕會起霧） |
+| 中下 | `[E] Close the chest` | `[E] 撿起` 互動提示（手機改「互動」鈕） |
+
+## 五、美術定調
+
+- 整體：照影片的**風格化 Q 版＋暖陽光束**（頭身比約 1:2.5、飽和暖綠、強烈斜射陽光、柔和陰影）。跟劉姥姥的半寫實武俠不同，這次要可愛。
+- 天台山：松、竹、楮樹、藤蔓、絕巖、溪澗；光束用體積光假面片＋懸浮塵粒（不跑真體積光，WebGL 撐不住）。
+- 仙村：**銅瓦屋**（銅綠＋金邊屋瓦會反光）、絳紅羅帳、帳角懸鈴（風動＋音效）、桃花樹；比影片的帳篷村更夢幻。
+- 歸鄉村：同一塊地，換成破舊陌生的漢代民居、灰冷色調，與仙村形成反差。
+- 產線：codex-image2 概念圖 → **Dzine Normal**（10 點／件）轉 3D → headless Blender 瘦身 → Mixamo 自動綁骨 → Unity Humanoid。
+
+**Dzine 預算**：人物 4（劉晨、阮肇、仙女、七世孫）＋建物道具約 16 件 ≈ 20 件 × 10 點 ＝ 約 200 點。
+
+## 六、技術規劃（只列與劉姥姥不同處）
+
+| 項目 | 規劃 |
+|---|---|
+| 鏡頭 | 第三人稱跟隨＋碰撞縮距（沿用 CamOcclusion），比劉姥姥更低、更貼近，跟影片一樣 |
+| 場景 | 一個大地形分三區（森林／溪谷／村），Boot＋場景包切塊沿用 R30 |
+| 新系統 | `HungerSystem`、`CompanionFollow`（NavMesh 跟隨＋落後催促）、`MinimapCam`、`ClimbZone`、`DriftPickup`、`SeasonSwap`（歸鄉換景） |
+| 沿用 | BootLoader、PlayerController、TouchControls、QualityTier／QualityToggle、FontSubset（RebuildNoDialog）、ClueManager、QuizStats、EpilogueDirector、R30Lighting／R30Foliage、deploy.sh／verify.sh |
+| 包體 | data < 26,214,400 bytes；場景包每塊 20 MiB |
+| 部署 | CF Pages＋Netlify（不推 Vercel）；itch 等你說要再上；不推 GitHub（照劉姥姥） |
+
+## 七、四線分工與輪次
+
+| 線 | 負責 | 寫入範圍 | 工具 |
+|---|---|---|---|
+| **U** | Unity 組裝、建置 | `Assets/`、`ProjectSettings/` | Codex＋UnityMCP（唯一） |
+| **S** | 新系統 C# 原始碼（先在外部寫好、附 EditMode 測試） | `staging/scripts/` | Codex |
+| **A** | 美術：概念圖、天空、貼圖、草叢卡片 | `staging/art/` | Codex 生圖（codex-image2） |
+| **C** | 內容：原文校對、題目、比較表、教師手冊 | `sources/`、`Assets/_Project/Data/`、`docs/` | Codex |
+
+Dzine、Mixamo 要用瀏覽器，由 **CC 主線用 Chrome 操作**（Codex 碰不到你的 Chrome）。
+
+| 輪 | U | S | A | C | 驗收 |
+|---|---|---|---|---|---|
+| R0 開專案 | 從劉姥姥複製骨架、新建 Boot／Main、灰盒地形三區 | HungerSystem、CompanionFollow | 概念圖 6 張（森林、溪谷、仙村、歸鄉村、劉晨、阮肇） | 原文取得與校對（太平廣記卷 61 引幽明錄為底本）→ `sources/liuruan_tw.txt` | 你看概念圖定調 |
+| R1 白模可玩 | 灰盒走完五幕、HUD 版面 | MinimapCam、ClimbZone、DriftPickup | 天空全景、地面貼圖、草叢卡片 | clues.json＋題目＋比較表 | 瀏覽器實開灰盒版 |
+| R2 3D 生成 | 匯入 Dzine 模型 | SeasonSwap、EpilogueDirector 改寫 | 建物道具概念圖（單一主體淺灰底） | 教師手冊、學習單 | 主線跑 Dzine＋Mixamo |
+| R3 質感 | 地形、植被風動、光束、後製、仙村擺件密度 | 觸控三鈕、手機 HUD | 補圖、UI 圖示（桃、穀皮、頭像） | 字型子集字表、製作說明 | 改前改後對照圖 |
+| R4 審查 | 修正 | 修正 | 修正 | 四位專家走查（遊戲、國文、UX、效能） | 你說「全部修正」 |
+| R5 上線 | build＋場景包 | — | — | 上線文案 | deploy.sh＋verify.sh md5＋瀏覽器實開 |
+
+每輪派工規格（照劉姥姥）：任務書寫明寫入範圍、驗收條件、鐵律；`codex exec -C /Volumes/hk6429/projects/liuruan-tiantai -s workspace-write`；驗收看實際 diff 與檔案，不看回報文字；20 分鐘沒動靜視為卡住。
+
+## 八、需要你決定的事
+
+1. 女子留宿段：建議整段略過（見第三節）。
+2. 專案代號 `liuruan-tiantai`、遊戲名〈天台山・流杯記〉，可以嗎？
+3. Dzine 約 200 點，點數夠不夠？
+4. 上線範圍：只上 CF＋Netlify，還是比照劉姥姥也上 itch？
+
+## 九、風險
+
+| 風險 | 對策 |
+|---|---|
+| Q 版光束畫質在 WebGL 達不到影片水準 | 先做森林一區當樣板，你點頭再推其他區（skill 2.5 節） |
+| 原文版本差異（太平廣記／太平御覽／藝文類聚字句不同） | C 線列出異文表，以太平廣記為底本並註明 |
+| 阮肇 AI 跟隨卡地形 | NavMesh＋超距瞬移回身邊 |
+| UnityMCP 斷線（本 session 開頭就是 ECONNREFUSED） | 開工前請你開 Unity，Window → MCP for Unity → Start Server |
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc 'pwd; cat sources/evidence/*.txt; cat sources/provenance.md; cat sources/variants.md; cat docs/content/acts.md; cat docs/content/glossary.md; cat Assets/_Project/Scripts/ClueManager.cs; cat Assets/_Project/Scripts/ClueData.cs; ls Assets/_Project/Data; git status --short' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+劉晨、阮肇，入天台採藥，遠不得返，經十三日饑。遙望山上有桃樹子熟，遂躋險援葛至其下，啗數枚，饑止體充。欲下山，以杯取水，見蕪菁葉流下，甚鮮妍。復有一杯流下，有胡麻飯焉。乃相謂曰：「此近人矣。」遂渡山。出一大溪，溪邊有二女子，色甚美，見二人持杯，便笑曰：「劉、阮二郎捉向杯來。」劉、阮驚。二女遂忻然如舊相識，曰：「來何晚耶？」因邀還家。南東二璧〈南東二璧原作雨璧東壁，據明抄本改。黃本作西璧東璧〉各有絳羅帳，帳角懸鈴，上有金銀交錯。各有數侍婢使令。其饌有胡麻飯、山羊脯、牛肉，甚美。食畢行酒。俄有群女持桃子，笑曰：「賀汝婿來。」酒酣作樂。夜後各就一帳宿，婉態殊絕。至十日求還，苦留半年，氣候草木，常是春時，百鳥啼鳴，更懷鄉。歸思甚苦。女遂相送，指示還路。鄉邑零落，已十世矣。〈出《神仙記》。明抄本作出《搜神記》。〉
+幽明錄曰．漢帝永平五年．剡縣劉晨阮肇．共入天台山．度山．出一大溪．溪邊有二女子．姿質妙絕．遂留半年．懷土思求歸．既出．親舊零落．邑屋改異．無復相識．訊問得七世孫．
+漢明帝永平五年，剡縣劉晨阮肇共入天台山取穀皮，迷不得返，經十三日，糧食乏盡，飢餒殆死。遙望山上有一桃樹，大有子實，而絕岩邃澗，永無登路。攀援藤葛，乃得至上。各□數枚，而飢止體充。複下山，持杯取水，欲盥漱，見蕪菁葉從山腹流出，甚鮮新，複一杯流出，有胡麻飯糝，相謂曰：「此知去人徑不遠。便共沒水，逆流二三里，得度山出一大溪，溪邊有二女子，姿質妙絕，見二人持杯出，便笑曰：「劉阮二郎，捉向所失流杯來。」晨肇既不識之，緣二女便呼其姓，如似有舊，乃相見忻喜。問：「來何晚邪？「因邀還家。其家銅瓦屋，南壁及東壁下各有一大床，皆施絳羅帳，帳角懸鈴，金銀交錯床頭各有十侍婢敕云：「劉阮二郎，經涉山□，向雖得瓊實，猶尚虛弊，可速作食。」食胡麻飯、山羊脯、牛肉、甚甘美。食畢行酒，有一群女來，各持五三桃子，笑而言：「賀汝婿來。」酒酣作樂，劉阮忻怖交並。至暮、令各就一帳宿，女往就之，言聲清婉，令人忘憂。十日後欲求還去，女云：「君已來是，宿福所牽，何複欲還邪？「遂停半年。氣候草木是春時，百鳥啼鳴，更懷悲思，求歸甚苦。女曰：「罪牽君當可如何？「遂呼前來女子有三四十人，集會奏樂，共送劉阮，指示還路。既出，親舊零落，邑屋改異，無複相識。問訊得七世孫，傳聞上世入山，迷不得歸。至晉太元八年，忽複去，不知何所。
+《幽明錄》曰：漢明帝【52†永平五年】，剡縣劉晨、阮肇共入天台取穀皮，迷不得返，經十餘日，糧食乏盡，饑餒殆死。遙望山上有一桃樹，大有子實，而絕岩邃澗，了無登路。攀葛乃得至，啖數枚，而饑止體充，復下山持杯取水，欲盥漱，見蕪菁葉從山腹流出，甚鮮新，復一杯流出，有胡麻糝。相謂曰：「此處去人徑不遠。」度山出一大溪，溪邊有二女子，姿質妙絕，見二人持杯出，便笑曰：「劉、阮二郎捉向所失流杯來。」晨、肇既不識之，二女便呼其姓，如似有舊，相見忻喜，問來何晚耶？因要還家，家筒瓦屋，南壁及東壁下各有一大床，皆施絳羅帳，角懸鈴，上金銀交錯，床頭各十侍婢。便敕雲，劉、阮二郎，經涉山阻，向雖得瓊實，猶尚虛弊，可速作食。有胡麻飯，山羊脯，甚美。食畢行酒，有群女來，各持三五桃子，笑而言賀汝婿來。酒酣作樂，劉、阮忻怖交幷。至暮，令各就一帳宿，女往就之，言聲清婉，令人忘憂。至十日後，欲求還去。女云：「君已來，是宿緣所牽，何復欲還耶？」遂留半年，氣候草木是春時，百鳥鳴呼，更懷土，求歸甚苦。女曰：「當如何？」遂呼前來女子有三四十人集會奏樂，共送劉、阮，指示還路。既出，親舊零落，邑屋全异，無復相識。問得七世孫，傳聞上世入山，迷不得歸。
+# 原文來源與編輯紀錄
+
+取得日期：2026-11-07（Asia/Taipei）。本輪只建立 C-R0 內容資料，不修改計畫、程式或 Unity 資產。
+
+## 來源清單
+
+| 代號 | 來源、網址 | 版本與本輪取得狀態 |
+|---|---|---|
+| G（底本） | [《太平廣記》卷第六十一〈天台二女〉](https://zh.wikisource.org/zh-hant/太平廣記/卷第061#天台二女)；[固定修訂](https://zh.wikisource.org/w/index.php?title=太平廣記/卷第061&oldid=1524797) | 維基文庫繁體顯示之電子轉錄，頁尾修訂號 1524797。全文讀取成功；未核原刻影像，不冒稱某刻本的直接校錄。篇末實際標「出《神仙記》」，並注「明抄本作出《搜神記》」。正文另有二璧校注。 |
+| Y（對校） | [《太平御覽》卷四十一，地部六〈天台山〉引《幽明錄》](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；[固定修訂](https://zh.wikisource.org/w/index.php?title=太平御覽/0041&oldid=2587291) | 維基文庫電子轉錄；讀取相應整段成功，保留「筒瓦」「十餘日」「胡麻糝」「七世孫」等實際字樣。固定連結由頁面取得，單獨開啟回報 Cache miss，未將該連結當作另一次讀取成功。 |
+| E（對校） | [《藝文類聚》卷七，山部上〈天台山〉引《幽明錄》](https://zh.wikisource.org/zh-hant/藝文類聚/卷007#天台山)；[固定修訂](https://zh.wikisource.org/w/index.php?title=藝文類聚/卷007&oldid=2015757) | 維基文庫電子轉錄；相應節引整段成功。這是略引，不包含攀桃、流杯、宴飲等細節；不能用「未引」證明原書無此事。固定連結單獨開啟亦 Cache miss。 |
+| L（對校，暫用電子文字） | [魯迅《古小說鉤沉》電子本，第 182 段](https://ctext.org/wiki.pl?chapter=798132&if=en) | ctext Wiki 使用者可編輯電子文字。搜尋工具回傳第 182 段全文，直接開啟為 403。文字含「各□數枚」「經涉山□」、複／復誤轉、引號缺漏及「銅瓦屋」，不據此校改 G。未核到魯迅輯本印刷影像、版次、頁碼；「魯迅輯本定字」仍待人工判斷。 |
+| W（輔助，不當作獨立古本） | [維基文庫《幽明錄》](https://zh.wikisource.org/zh-hant/幽明錄)；[《古小說鉤沈》目錄](https://zh.wikisource.org/zh-hant/古小說鉤沈) | 目錄之「幽明錄」連到此頁；搜尋工具回傳本條全文，含「筒瓦屋」「各啖數枚」「遂停半年」。一般開啟的擷取內容未完整顯示本條，搜尋全文可見。目錄連結本身不足以證明該頁每個字均為魯迅定本，僅輔助對照。 |
+| C（未採用） | [ctext〈天台二女〉](https://ctext.org/taiping-guangji/61/tiantaiernv/ens) | 搜尋可見部分文字，但直接讀取 403；不作第二份完整底本證據。 |
+
+本輪已優先取得維基文庫與 ctext，未另取得中研院漢籍全文。四個對校見證為電子轉錄或搜尋回傳，並非四份原刻影像校勘。
+
+## 檔案編輯原則
+
+- `liuruan_tw.txt` 是 G 的**全文典藏文字**，不是可直接全部上畫面的遊戲台詞表。保留原字「饑」「啗」「璧」，不把它們改成他本字；只刪電子版夾注，改分段與全形標點。將「苦留半年，氣候草木」斷為「苦留半年。氣候草木」，字序不變。
+- G 篇末出處與二璧校注移入本檔及 `variants.md`，不混入故事正文。
+- 按任務的「底本全文」要求，第 7 行仍典藏留宿文字；**遊戲與教學顯示一律排除第 7 行**，依 `docs/content/acts.md` 的〔略〕處理。禁止從全文檔無條件逐行匯入結局全文頁。
+- 指定轉場旁白「遂停半年」屬專案明訂文字；L／W 有此字句，G 無此逐字字句。不可宣稱它是 G 的原句，也不可擅改全文檔來配合它。
+- G 與計畫的「七世孫」「取穀皮」「銅瓦屋」衝突，保留為主線決策事項，不用他本替換指定底本。
+
+## 逐段來源索引
+
+下列 P 編號就是 `liuruan_tw.txt` 行號。每段均完整見於同一個 G 網頁；拆段由本專案編輯，不假稱古本原有九段。
+
+| 段 | 逐字起訖 | 來源網址 | 顯示用途 |
+|---|---|---|---|
+| P01 | 劉晨、阮肇，…經十三日饑。 | https://zh.wikisource.org/zh-hant/太平廣記/卷第061#天台二女 | 第一幕 |
+| P02 | 遙望山上有桃樹子熟，…饑止體充。 | https://zh.wikisource.org/zh-hant/太平廣記/卷第061#天台二女 | 第二幕 |
+| P03 | 欲下山，…遂渡山。 | https://zh.wikisource.org/zh-hant/太平廣記/卷第061#天台二女 | 第三幕 |
+| P04 | 出一大溪，…因邀還家。 | https://zh.wikisource.org/zh-hant/太平廣記/卷第061#天台二女 | 第四幕迎接 |
+| P05 | 南東二璧…各有數侍婢使令。 | https://zh.wikisource.org/zh-hant/太平廣記/卷第061#天台二女 | 第四幕陳設 |
+| P06 | 其饌有胡麻飯、…酒酣作樂。 | https://zh.wikisource.org/zh-hant/太平廣記/卷第061#天台二女 | 第四幕宴飲 |
+| P07 | 夜後…苦留半年。 | https://zh.wikisource.org/zh-hant/太平廣記/卷第061#天台二女 | 典藏；整段不顯示、不翻譯 |
+| P08 | 氣候草木，…指示還路。 | https://zh.wikisource.org/zh-hant/太平廣記/卷第061#天台二女 | 第四幕思歸、送別 |
+| P09 | 鄉邑零落，已十世矣。 | https://zh.wikisource.org/zh-hant/太平廣記/卷第061#天台二女 | 第五幕 |
+
+## 讀取證據與再驗證
+
+`evidence/guangji.txt`、`evidence/yulan.txt`、`evidence/leiju.txt` 為網頁工具回傳之對應段落，保留工具插入的連結標記及原電子校注；`evidence/luxun.txt` 為 ctext 搜尋回傳第 182 段，保留缺字與錯誤標點。這些是本次讀取證據，不是原刻影像。各檔網址依上表 G／Y／E／L。
+
+驗證方式：去掉 G 證據中的〈…〉電子夾注及所有標點、空白後，比對全文檔去標點、空白之字串，必須完全相等；另核五幕全部引文均為全文檔連續子字串，且未含 P07。驗證結果見交件報告。
+
+古籍正文屬公有領域；電子頁面標示 CC BY-SA，保留站名、網址及修訂資訊以供回溯。沒有將搜尋工具的現代摘要當作古文。
+# 異文與版本差異表
+
+底本 G＝《太平廣記》卷六十一〈天台二女〉；Y＝《太平御覽》卷四十一；E＝《藝文類聚》卷七；L＝ctext《古小說鉤沉》第 182 段搜尋全文；W＝維基文庫《幽明錄》輔助轉錄。日期：2026-11-07。
+
+這是電子見證間的對讀；「採用 G」只表示遵守指定底本，並非斷定 G 一定較早或較正確。「無」指該電子見證未出現；E 大量節略，不作誤字判定。未檢原刻，不擅自補字。
+
+| 底本字／句 | 他本字／句 | 出處 | 採用與理由 |
+|---|---|---|---|
+| 入天台採藥 | 共入天台取穀皮；共入天台山取穀皮 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；[L](https://ctext.org/wiki.pl?chapter=798132&if=en) | 採 G；不可把取穀皮混入底本。剝五棵樹是 plan 互動設計，非 G 原文。 |
+| 遠不得返 | 迷不得返 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；[L](https://ctext.org/wiki.pl?chapter=798132&if=en) | 採 G；第一幕「迷山」為幕名，不改字成「迷」。 |
+| 經十三日饑 | 經十餘日，糧食乏盡，饑餒殆死；經十三日，糧食乏盡，飢餒殆死 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；[L](https://ctext.org/wiki.pl?chapter=798132&if=en) | 採 G 十三日；不補 G 未載的長句。 |
+| 有桃樹子熟 | 有一桃樹，大有子實，而絕岩邃澗，了無登路；…永無登路 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；[L](https://ctext.org/wiki.pl?chapter=798132&if=en) | 採 G；「絕巖邃澗」等列他本補充詞彙。 |
+| 躋險援葛至其下 | 攀葛乃得至；攀援藤葛，乃得至上 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；[L](https://ctext.org/wiki.pl?chapter=798132&if=en) | 採 G，指到桃樹下，不能改成「至上」。 |
+| 啗數枚 | 啖數枚；各□數枚；各啖數枚 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；[L](https://ctext.org/wiki.pl?chapter=798132&if=en)；[W](https://zh.wikisource.org/zh-hant/幽明錄) | 採 G 啗。L 缺字待人工判斷，不憑記憶補「噉」。本輪所見完整見證未用「噉」。 |
+| 以杯取水 | 持杯取水，欲盥漱 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；[L](https://ctext.org/wiki.pl?chapter=798132&if=en) | 採 G；盥漱不寫進底本。 |
+| 甚鮮妍 | 甚鮮新 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；[L](https://ctext.org/wiki.pl?chapter=798132&if=en) | 採 G，翻譯兼顧鮮嫩美好。 |
+| 有胡麻飯焉 | 有胡麻糝；有胡麻飯糝 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；[L](https://ctext.org/wiki.pl?chapter=798132&if=en) | 採 G；飯糝不是 G 的逐字用語。 |
+| 此近人矣 | 此處去人徑不遠；此知去人徑不遠 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；[L](https://ctext.org/wiki.pl?chapter=798132&if=en) | 採 G；推論題正引應用「此近人矣」。 |
+| 遂渡山 | 度山出一大溪；便共沒水，逆流二三里，得度山出一大溪 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；[L](https://ctext.org/wiki.pl?chapter=798132&if=en) | 採 G「渡」。涉水逆流為他本細節，不當成 G 的明文。 |
+| 色甚美 | 姿質妙絕 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；[E](https://zh.wikisource.org/zh-hant/藝文類聚/卷007#天台山) | 採 G。 |
+| 劉、阮二郎捉向杯來 | 劉、阮二郎捉向所失流杯來 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山) | 採 G；譯為帶來剛才的杯子，不把「所失」補入引文。 |
+| 忻然如舊相識 | 相見忻喜；乃相見忻喜 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；[L](https://ctext.org/wiki.pl?chapter=798132&if=en) | 採 G「忻」，不自行改「欣」。 |
+| 來何晚耶 | 來何晚邪 | [L](https://ctext.org/wiki.pl?chapter=798132&if=en) | 採 G 耶；L 引號損壞另記，不仿照錯誤標點。 |
+| 無屋瓦材質記載 | 家筒瓦屋；其家銅瓦屋；其家筒瓦屋 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；[L](https://ctext.org/wiki.pl?chapter=798132&if=en)；[W](https://zh.wikisource.org/zh-hant/幽明錄) | G 不補。筒／銅待人工判斷，尤其不能把電子本差異說成魯迅確定用字；plan 銅瓦屋須主線決定。 |
+| 南東二璧 | 南壁及東壁下各有一大床 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山) | 採電子 G「璧」，不悄改壁；G 自帶校注稱原作「雨璧東壁」、據明抄本改，黃本作「西璧東璧」。璧／壁及方向待人工判斷，未親見明抄、黃本。 |
+| 各有數侍婢使令 | 床頭各十侍婢；床頭各有十侍婢 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；[L](https://ctext.org/wiki.pl?chapter=798132&if=en) | 採 G，不改成十名。 |
+| 胡麻飯、山羊脯、牛肉 | 胡麻飯，山羊脯 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山) | 採 G，Y 此段無牛肉。 |
+| 苦留半年 | 遂留半年；遂停半年 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)、[E](https://zh.wikisource.org/zh-hant/藝文類聚/卷007#天台山)；[L](https://ctext.org/wiki.pl?chapter=798132&if=en) | 全文保留 G；遊戲略去相關段，依專案指示只用旁白「遂停半年」，註明不是 G 原句。 |
+| 更懷鄉。歸思甚苦 | 更懷土，求歸甚苦；更懷悲思，求歸甚苦；懷土思求歸 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；[L](https://ctext.org/wiki.pl?chapter=798132&if=en)；[E](https://zh.wikisource.org/zh-hant/藝文類聚/卷007#天台山) | 採 G；不以 plan 用語覆蓋。 |
+| 鄉邑零落，已十世矣 | 親舊零落，邑屋全异，無復相識。問得七世孫；親舊零落，邑屋改異，無復相識。訊問得七世孫；…問訊得七世孫 | [Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；[E](https://zh.wikisource.org/zh-hant/藝文類聚/卷007#天台山)；[L](https://ctext.org/wiki.pl?chapter=798132&if=en) | 採 G 十世。七世孫只能是他本比較，不能寫入 G 結局。Y「异」依頁面保留作對校記錄。 |
+| 無 | 至晉太元八年，忽複去，不知何所 | [L](https://ctext.org/wiki.pl?chapter=798132&if=en) | G 不補此後日逸去段；「複」疑電子轉換問題，待人工判斷。 |
+| 出《神仙記》 | 出《搜神記》（G 的明抄本校注）；《幽明錄》曰 | [G](https://zh.wikisource.org/zh-hant/太平廣記/卷第061#天台二女)；[Y](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)、[E](https://zh.wikisource.org/zh-hant/藝文類聚/卷007#天台山) | 實際標「《太平廣記》卷六十一〈天台二女〉，出《神仙記》」；不將篇末出處擅改成《幽明錄》。 |
+
+留宿範圍只以〔略〕處理，不在本表轉錄或翻譯其中內容。完整底本典藏與遊戲顯示界線見 `provenance.md`。
+# 五幕內容骨架（C-R0）
+
+依 `docs/plan.md` 第一節教學目標、第三節場景與互動位置編排。正文唯一底本為 `sources/liuruan_tw.txt`；P01–P09 對應行號。[底本每段來源：《太平廣記》卷六十一〈天台二女〉](https://zh.wikisource.org/zh-hant/太平廣記/卷第061#天台二女)。下列引文均逐字，白話為教學翻譯，不可當成人物新台詞。
+
+## 一、迷山
+
+- 原文範圍：P01；起「劉晨、阮肇」，訖「經十三日饑。」
+- 原文：
+
+> 劉晨、阮肇，入天台採藥，遠不得返，經十三日饑。
+
+- 白話：劉晨和阮肇進入天台山採藥，走得太遠，回不去，過了十三天，挨著餓。
+- 出現位置：森林小徑與光束區；飢餓值減少、地圖起霧後的幕末原文卡。對應「讀懂入山處境」目標。
+- plan 對接：剝五棵楮樹皮、穀皮計數是計畫指定互動；G 只寫採藥，沒有取穀皮、剝五棵樹或「迷不得返」字句。互動標籤可以依計畫製作，但不能標成底本原文；未經主線決定，不新增相關引文。
+
+## 二、攀桃
+
+- 原文範圍：P02；起「遙望山上有桃樹子熟」，訖「饑止體充。」
+- 原文：
+
+> 遙望山上有桃樹子熟，遂躋險援葛至其下，啗數枚，饑止體充。
+
+- 白話：遠遠看見山上桃樹的果實成熟了，便攀上險峻的地方，拉著葛藤到達桃樹下，吃了幾顆桃子，飢餓消除了，身體也恢復了力氣。
+- 出現位置：森林盡頭山壁；攀藤、摘桃、飢餓值回滿後解鎖原文卡。對應「辨認困境轉折」目標。
+- plan 對接：絕巖、深澗可作場景設計，但 G 無「絕巖邃澗」「各噉數枚」；正式引文用「躋險援葛」「啗數枚」。
+
+## 三、流杯
+
+- 原文範圍：P03；起「欲下山」，訖「遂渡山。」
+- 原文：
+
+> 欲下山，以杯取水，見蕪菁葉流下，甚鮮妍。復有一杯流下，有胡麻飯焉。乃相謂曰：「此近人矣。」遂渡山。
+
+- 白話：他們想下山，用杯子取水，看見蕪菁葉隨水流下，十分鮮嫩美好。接著又有一只杯子漂流下來，裡面有芝麻飯。他們便互相說：「這裡離人近了。」於是越過山去。
+- 出現位置：溪中漂流物三個互動點，對應影片開寶箱位置；撿取蕪菁葉、杯子、胡麻飯後，出推論題，再銜接溪谷出口。
+- 教學線索：三個可觀察物分別為葉、杯、杯內飯；原文不是說有三只杯或三件分別漂流的物品。三個互動點是遊戲呈現方式。推論重點是人類生活的線索；「此近人矣」是人物推論，不是已看見住宅的事實。
+- plan 對接：G 無「此知去人徑不遠」「盥漱」「胡麻飯糝」及「逆流二三里」。涉水逆流互動如保留，應標為依他本補充的設計，不能偽作 G 引文。
+
+## 四、仙村
+
+- 原文範圍：P04–P08；起「出一大溪」，訖「指示還路。」；**排除 P07，不翻譯、不展示**。
+- 迎接原文（P04）：
+
+> 出一大溪，溪邊有二女子，色甚美，見二人持杯，便笑曰：「劉、阮二郎捉向杯來。」劉、阮驚。二女遂忻然如舊相識，曰：「來何晚耶？」因邀還家。
+
+- 白話：他們來到一條大溪旁。溪邊有兩位容貌美麗的女子，見兩人拿著杯子，便笑著說：「劉郎、阮郎把剛才的杯子拿來了。」劉晨和阮肇很驚訝。兩位女子卻高興得像見到老朋友，問：「怎麼這麼晚才來？」便邀請他們回家。
+- 陳設原文（P05）：
+
+> 南東二璧各有絳羅帳，帳角懸鈴，上有金銀交錯。各有數侍婢使令。
+
+- 白話：南面和東面的牆邊，各有深紅色的絲羅帳，帳角掛著鈴，上面有金銀交錯的裝飾，各有幾位侍女供使喚。〔「璧」依文意暫作牆理解；底本文字仍保留「璧」，校勘待人工判斷。〕
+- 宴飲原文（P06）：
+
+> 其饌有胡麻飯、山羊脯、牛肉，甚美。食畢行酒。俄有群女持桃子，笑曰：「賀汝婿來。」酒酣作樂。
+
+- 白話：準備的食物有芝麻飯、山羊肉乾和牛肉，十分美味。吃完後，便斟酒勸飲。不久有一群女子拿著桃子來，笑著說：「恭喜妳的夫婿來了。」喝酒盡興後，便奏起音樂。
+- **〔略〕**：P07 整段；涵蓋留宿與十日後求還的敘述，採比指定起點更完整的刪節，不留引導性的夜間旁白。不提供翻譯、演出、任務、測驗或全文解鎖內容。
+- 轉場只顯示旁白：**遂停半年**。這是專案指定轉場，見他本 L／W；G 作「苦留半年」，不能標為 G 原句。字句差異詳見 `sources/variants.md`。
+- 思歸與送別原文（P08）：
+
+> 氣候草木，常是春時，百鳥啼鳴，更懷鄉。歸思甚苦。女遂相送，指示還路。
+
+- 白話：這裡的氣候和草木，總像春天一樣，百鳥鳴叫，他們更加思念家鄉，想回家的心情十分強烈。女子於是送別他們，指點回去的路。
+- 出現位置：溪邊迎接點 → 帳篷村與營火區 → 告示板原文卡 →「遂停半年」轉場 → 鳥鳴與求歸選項 → 村口送別。對應「留居、思歸」及身在異境仍思鄉的心理。
+- plan 對接：銅瓦屋、三四十名送行女子、由春轉春並非 G 的明文；G 只說常是春時，不演成已確定經歷完整四季。建物、群像如依計畫保留，不用補造旁白解釋。求歸按鈕可作操作標籤，人物台詞不得自編。
+
+## 五、歸鄉
+
+- 原文範圍：P09；起「鄉邑零落」，訖「已十世矣。」
+- 原文：
+
+> 鄉邑零落，已十世矣。
+
+- 白話：故鄉已衰落變樣，人間已過了十代。
+- 出現位置：返回第一幕村莊起點後，換景顯示陌生的村貌，再解鎖結局原文卡與時間母題討論。
+- plan 對接：指定底本沒有「七世孫」人物或對話，不能以此骨架產生七世孫台詞。結局問「為什麼會是七世」亦不適合 G；主線須先決定保留 G 十世，或正式修訂底本規格。C-R0 不更動 plan、不編寫替代 NPC 對話。
+- 教學界線：「仙界一日，人間百年」可作母題概括，不是本文原句或可換算的公式。G 只對照半年與十世；不能算出固定年數。〈桃花源記〉比較表與測驗另屬後續輪次。
+
+## 顯示清單與交接
+
+可顯示正文只限 P01、P02、P03、P04、P05、P06、P08、P09；P07 為典藏用禁顯示段。結局「全文」頁也須採上述刪節清單與〔略〕標記。此文件是內容契約，本輪未修改任何匯入器，實際程式仍需 U／S 線落實。
+
+若主線選擇《幽明錄》長本，需另輪明確改定底本、重新逐字校對；不可拿此輪的 G 全文與他本七世孫結局直接拼接。
+# 字詞注釋（國中程度）
+
+G＝[《太平廣記》卷六十一〈天台二女〉](https://zh.wikisource.org/zh-hant/太平廣記/卷第061#天台二女)；Y＝[《太平御覽》卷四十一引《幽明錄》](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；E＝[《藝文類聚》卷七引《幽明錄》](https://zh.wikisource.org/zh-hant/藝文類聚/卷007#天台山)；L＝[ctext《古小說鉤沉》第 182 段](https://ctext.org/wiki.pl?chapter=798132&if=en)。代號超連結即每條例句出處；L 尚未影像核字。
+
+先列 G 用語；第二表為任務指定的他本詞彙，不能因此加入 G 的台詞。引文保留見證字形，注釋使用台灣繁體中文。不取留宿段作例句。
+
+## 底本詞彙
+
+| 字詞 | 注釋 | 例句與出處 |
+|---|---|---|
+| 天台 | 山名；台在此讀ㄊㄞ，不讀ㄊㄞˊ。 | 「入天台採藥」〔G〕 |
+| 遠不得返 | 走得太遠，不能回去。返：返回。 | 「遠不得返」〔G，P01〕 |
+| 饑 | ㄐㄧ，飢餓；正文保留底本字形。 | 「經十三日饑」〔G，P01〕 |
+| 遙望 | 往遠處看。 | 「遙望山上有桃樹子熟」〔G，P02〕 |
+| 子 | 果實，這裡是桃子。 | 「桃樹子熟」〔G，P02〕 |
+| 躋險 | 躋，ㄐㄧ，登上；攀上險峻的地方。 | 「遂躋險援葛至其下」〔G，P02〕 |
+| 援葛 | 援，拉、攀著；葛，ㄍㄜˊ，葛藤。拉著葛藤攀行。 | 「遂躋險援葛至其下」〔G，P02〕 |
+| 啗 | ㄉㄢˋ，吃；與啖、噉有相通用法，正文不任意換字。 | 「啗數枚」〔G，P02〕 |
+| 枚 | 計算桃子等物品的量詞，白話說「顆」。 | 「啗數枚」〔G，P02〕 |
+| 體充 | 身體恢復充實有力。 | 「饑止體充」〔G，P02〕 |
+| 蕪菁 | ㄨˊ ㄐㄧㄥ，一種蔬菜，根和嫩葉可食用；此處是漂下的葉子。 | 「見蕪菁葉流下」〔G，P03〕；釋義參[教育部辭典](https://dict.revised.moe.edu.tw/dictView.jsp?ID=159435&la=0&powerMode=0)，未把現代菜名一概等同白蘿蔔。 |
+| 鮮妍 | 鮮嫩而美好。妍，ㄧㄢˊ，美好。 | 「甚鮮妍」〔G，P03〕 |
+| 復 | 又、再。 | 「復有一杯流下」〔G，P03〕 |
+| 胡麻飯 | 芝麻飯。胡麻指芝麻。 | 「有胡麻飯焉」〔G，P03〕 |
+| 焉 | 在這裡指「在其中」，即在杯子裡。 | 「有胡麻飯焉」〔G，P03〕 |
+| 相謂 | 彼此說、互相說。 | 「乃相謂曰」〔G，P03〕 |
+| 近人 | 離人近，依前文可推想附近有人活動。不是說已看見人。 | 「此近人矣」〔G，P03〕 |
+| 渡山 | 越過山；G 寫「渡」，他本寫「度」。 | 「遂渡山」〔G，P03〕 |
+| 色 | 容貌。 | 「色甚美」〔G，P04〕 |
+| 二郎 | 對劉、阮兩位男子的稱呼；不表示兩人各排行第二。 | 「劉、阮二郎捉向杯來」〔G，P04〕 |
+| 捉 | 拿、握持。 | 「捉向杯來」〔G，P04〕 |
+| 向 | 剛才、先前。G 語句簡略，不補入他本的「所失」。 | 「捉向杯來」〔G，P04〕 |
+| 忻 | ㄒㄧㄣ，高興、喜悅；不因讀音相同就改正文為欣。 | 「二女遂忻然如舊相識」〔G，P04〕 |
+| 何晚 | 為何這麼晚。 | 「來何晚耶」〔G，P04〕 |
+| 南東二璧 | 暫依上下文解為南、東兩面牆邊；「璧」與方向有校勘疑義。字義判定待人工核本。 | 「南東二璧各有絳羅帳」〔G，P05〕；見 `sources/variants.md`，不得默改壁。 |
+| 絳羅帳 | 絳，ㄐㄧㄤˋ，深紅色；羅，薄絲織品。深紅色絲羅製的帷帳。 | 「各有絳羅帳」〔G，P05〕 |
+| 交錯 | 相互交織、錯雜排列，此處指裝飾。 | 「上有金銀交錯」〔G，P05〕 |
+| 侍婢 | ㄕˋ ㄅㄧˋ，服侍人的女子；反映古代身分制度。 | 「各有數侍婢使令」〔G，P05〕 |
+| 使令 | 供人差遣、使喚。 | 「各有數侍婢使令」〔G，P05〕 |
+| 饌 | ㄓㄨㄢˋ，準備好的食物、菜餚。 | 「其饌有胡麻飯」〔G，P06〕 |
+| 脯 | ㄈㄨˇ，肉乾。 | 「山羊脯」〔G，P06〕 |
+| 行酒 | 斟酒勸飲。 | 「食畢行酒」〔G，P06〕 |
+| 俄 | ㄜˊ，不久。 | 「俄有群女持桃子」〔G，P06〕 |
+| 汝 | ㄖㄨˇ，你；對女子說話時白話可用「妳」。 | 「賀汝婿來」〔G，P06〕 |
+| 婿 | ㄒㄩˋ，夫婿、丈夫。 | 「賀汝婿來」〔G，P06〕 |
+| 酒酣 | 喝酒喝得盡興。酣，ㄏㄢ。 | 「酒酣作樂」〔G，P06〕 |
+| 作樂 | 奏樂。樂讀ㄩㄝˋ。 | 「酒酣作樂」〔G，P06〕 |
+| 懷鄉、歸思 | 思念家鄉、想回家的心情。思在「歸思」指思緒，讀ㄙˋ。 | 「更懷鄉。歸思甚苦」〔G，P08〕 |
+| 鄉邑 | 家鄉的聚落。邑，ㄧˋ。 | 「鄉邑零落」〔G，P09〕 |
+| 零落 | 衰敗、散落；在此形容故鄉已不復往日景象。 | 「鄉邑零落」〔G，P09〕 |
+| 十世 | 十代；不可直接換算成固定的年數。 | 「已十世矣」〔G，P09〕 |
+
+## 他本補充詞彙
+
+| 字詞 | 注釋與版本界線 | 例句與出處 |
+|---|---|---|
+| 穀皮 | 穀樹的樹皮，通常解作構樹（楮樹）的樹皮；不是稻穀的殼。此為他本採集物，G 只稱採藥。 | 「共入天台取穀皮」〔Y〕；植物名稱參[農業部資料，構樹條](https://kmweb.moa.gov.tw/redirect_files.php?id=9419)。 |
+| 餒 | ㄋㄟˇ，飢餓。「殆死」指幾乎死去。 | 「饑餒殆死」〔Y〕 |
+| 邃澗 | 邃，ㄙㄨㄟˋ，深遠；澗，ㄐㄧㄢˋ，山間水道。幽深的山澗。 | 「而絕岩邃澗，了無登路」〔Y〕；巖／岩依見證字形記錄。 |
+| 噉 | ㄉㄢˋ，吃。任務列此字，**本輪讀到 G 作啗、Y 作啖、L 該處缺字**；不假造含「噉」的本文例句。 | 對照例句「啗數枚」〔G，P02〕、「啖數枚」〔Y〕。噉在本文何本用字待人工判斷。 |
+| 盥漱 | ㄍㄨㄢˋ ㄕㄨˋ，洗手、漱口。G 沒有此詞。 | 「持杯取水，欲盥漱」〔Y〕 |
+| 胡麻飯糝 | 加芝麻的飯粒。糝，ㄙㄢˇ，此處解飯粒，不能譯成稀飯。Y 簡作「胡麻糝」，G 只寫胡麻飯。 | 「有胡麻飯糝」〔L〕；「有胡麻糝」〔Y〕；糝之義參[教育部異體字字典](https://dict.variants.moe.edu.tw/dictView.jsp?ID=66282&la=0)。 |
+| 去人徑不遠 | 距離人行的路不遠。去，距離；徑，小路。 | 「此處去人徑不遠」〔Y〕；G 推論作「此近人矣」。 |
+| 瓊實 | 美玉般珍貴的果實，此處指先前吃的桃子；非另一種新出現的果物。 | 「向雖得瓊實，猶尚虛弊」〔Y〕 |
+| 虛弊 | 身體虛弱、疲憊。 | 「猶尚虛弊」〔Y〕 |
+| 筒瓦 | 半圓筒形的屋瓦，說的是形狀；「銅瓦」才指金屬材質。G 無此句，筒／銅的版本差異待人工核本。 | 「家筒瓦屋」〔Y〕；L 電子文字作「其家銅瓦屋」。 |
+| 懷土 | 思念故鄉。土指鄉土。 | 「更懷土，求歸甚苦」〔Y〕；「懷土思求歸」〔E〕 |
+| 親舊 | 親人與老朋友。 | 「親舊零落」〔Y／E／L〕 |
+| 邑屋改異 | 村落、房屋已經改變。 | 「邑屋改異」〔E〕 |
+| 七世孫 | 傳了七代的後裔；是 Y／E／L 的情節，G 結尾為十世，不可混成同一版本。 | 「問得七世孫」〔Y〕；「訊問得七世孫」〔E〕；「問訊得七世孫」〔L〕 |
+
+釋義依文意簡化供國中閱讀；涉及原字疑義已保留標記。例句若未包含任務指定字形，明說缺證，不以同義字偽裝逐字出處。
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+namespace Liuruan
+{
+    /// clues.json 的閱讀、問答與進度資料。
+    /// JsonUtility 缺欄位時給預設值（字串 null、陣列 null），一律用下面的唯讀屬性判斷。
+    [Serializable]
+    public class ClueData
+    {
+        public int id;
+        public string title;
+        public string original;
+        public string plain;
+        public string question;
+        public string[] options;
+        public int answer;
+        public string feedback;
+        public string[] wrongHints;
+
+        public bool isEnding;     // 選填：結局卷軸（沒有任何一筆標記時，退回「最大 id＝結局」）
+        public int[] requires;    // 選填：這些線索收齊前鎖住（標記灰色、靠近時提示「先去看看〇〇」）
+
+        /// 題目及答案索引完整時才出題。
+        public bool HasQuiz => !string.IsNullOrEmpty(question) && options != null && options.Length > 0
+                               && answer >= 0 && answer < options.Length;
+
+    }
+
+    /// 頂層 "evidenceCards" 的一張：結局推論題前顯示（只顯示已收集線索的卡）
+    [Serializable]
+    public class EvidenceCard
+    {
+        public int clueId;
+        public string label;
+        public string quote;
+    }
+
+    /// 頂層 "reflection"：不計分的反思題
+    [Serializable]
+    public class Reflection
+    {
+        public string question;
+        public string[] prompts;
+    }
+
+    [Serializable]
+    class ClueList
+    {
+        public ClueData[] clues;
+        public ClueData infer;      // 選填：結局後的推論題；沒填就不出（結局線索本身可當推論題）
+        public string endingText;   // 選填：作者／人物揭曉文字；沒填用 Txt.EndingReveal
+        public EvidenceCard[] evidenceCards; // 選填
+        public Reflection reflection;        // 選填
+    }
+
+    /// 線索資料（clues.json）＋進度（PlayerPrefs）。
+    /// 有 requires 的線索要等列出的線索都收齊才開。
+    public class ClueManager : MonoBehaviour
+    {
+        const string SaveKey = "liuruan_collected";
+
+        public static ClueManager I { get; private set; }
+        /// 結局線索 id（資料中最大 id）；QuizStats 以它推算推論題 id
+        public static int EndingId { get; private set; }
+        public static bool IsEnding(int id) => id == EndingId;
+
+        [SerializeField] TextAsset clueJson;
+        [SerializeField] ScrollUI ui;
+        [SerializeField] Material markerMat; // 線索標記用（URP Unlit）
+        public Material MarkerMat => markerMat; // R17 任務關卡標記共用
+
+        ClueData[] clues = new ClueData[0];
+        ClueData inferData;
+        string endingText;
+        EvidenceCard[] evidenceCards = new EvidenceCard[0];
+        Reflection reflection;
+        readonly HashSet<int> collected = new HashSet<int>();
+        // id → 線索。ClueMarker 每幀呼叫 IsLocked → Find；舊版 Array.Find 帶捕獲 lambda，每次呼叫都配置記憶體（審查 #17）
+        readonly Dictionary<int, ClueData> byId = new Dictionary<int, ClueData>();
+
+        public IReadOnlyList<ClueData> Clues => clues;
+        public bool IsCollected(int id) => collected.Contains(id);
+        public bool FirstScrollPending => clues.Length > 0 && !collected.Contains(clues[0].id);
+        public ClueData Find(int id) => byId.TryGetValue(id, out var c) ? c : null;
+        public ClueData InferData => inferData;
+        public string EndingText => string.IsNullOrEmpty(endingText) ? Txt.EndingReveal : endingText;
+        /// 反思題（沒填 question 時為 null）
+        public Reflection ReflectionData => reflection;
+
+        /// 已收集線索的證據卡（依 clueId 排序）
+        public List<EvidenceCard> CollectedEvidence()
+        {
+            var list = new List<EvidenceCard>();
+            foreach (var e in evidenceCards)
+                if (e != null && collected.Contains(e.clueId) && (!string.IsNullOrEmpty(e.label) || !string.IsNullOrEmpty(e.quote)))
+                    list.Add(e);
+            list.Sort((a, b) => a.clueId.CompareTo(b.clueId));
+            return list;
+        }
+
+        // 以下計數每幀被 HUD／ClueMarker 呼叫：用迴圈，不用捕獲 this 的 lambda 或方法群組（每次都會配置委派）
+        /// 結局以外的線索數（HUD「線索冊 x／N」）
+        public int ScrollCount { get { int n = 0; foreach (var c in clues) if (c.id != EndingId) n++; return n; } }
+        public int ScrollsCollected { get { int n = 0; foreach (var c in clues) if (c.id != EndingId && collected.Contains(c.id)) n++; return n; } }
+        public bool EndingUnlocked => ScrollsCollected == ScrollCount;
+
+
+        /// ClueMarker 每幀呼叫：只回布林、不產生字串
+        public bool IsLocked(int id)
+        {
+            if (id == EndingId) return !EndingUnlocked;
+            var c = Find(id);
+            return c != null && (MissingRequirement(c) != null);
+        }
+
+        /// requires 裡第一張還沒收集的線索；都收齊回傳 null。
+        /// 會造成永久鎖死的條件一律略過（check.py 也會擋，這裡是 C# 端防呆，審查 #16）：
+        public ClueData MissingRequirement(ClueData c)
+        {
+            if (c == null || c.requires == null) return null;
+            foreach (int r in c.requires)
+            {
+                if (r == c.id || r == EndingId || collected.Contains(r)) continue;
+                var rc = Find(r);
+                if (rc == null) continue;
+                return rc;
+            }
+            return null;
+        }
+
+        /// 鎖住時的提示；沒鎖回傳 null
+        string LockedMessage(int id)
+        {
+            if (id == EndingId) return EndingUnlocked ? null : Txt.EndingLocked(ScrollsCollected, ScrollCount);
+            var c = Find(id);
+            if (c == null) return null;
+            var miss = MissingRequirement(c);
+            return miss != null ? Txt.RequiresLocked(miss.title) : null;
+        }
+
+        /// 算進成績的題目：一般選擇題、配對關（以配對後選擇題首答計）、
+        /// 有選擇題的小遊戲（小遊戲後由 ScrollUI 出題）、推論題（有 infer 區塊時）。
+        public bool IsScored(int id)
+        {
+            if (id == QuizStats.InferId) return inferData != null;
+            var c = Find(id);
+            return c != null && c.HasQuiz;
+        }
+
+        public string LabelOf(ClueData c)
+        {
+            if (c.id == EndingId) return Txt.EndingTag;
+            int n = 0;
+            foreach (var x in clues) if (x.id != EndingId && x.id < c.id) n++;
+            return Txt.RollPrefix + (n < Txt.Numerals.Length ? Txt.Numerals[n].ToString() : (n + 1).ToString());
+        }
+
+
+        void Awake()
+        {
+            I = this;
+            if (clueJson == null) Debug.LogError("[ClueManager] 沒有指定 clues.json");
+            else
+            {
+                var list = JsonUtility.FromJson<ClueList>(clueJson.text);
+                if (list != null)
+                {
+                    clues = list.clues ?? new ClueData[0];
+                    inferData = list.infer != null && !string.IsNullOrEmpty(list.infer.question) ? list.infer : null;
+                    endingText = list.endingText;
+                    if (list.evidenceCards != null) evidenceCards = list.evidenceCards;
+                    reflection = list.reflection != null && !string.IsNullOrEmpty(list.reflection.question) ? list.reflection : null;
+                }
+            }
+            Array.Sort(clues, (a, b) => a.id.CompareTo(b.id));
+            byId.Clear();
+            foreach (var c in clues) if (c != null && !byId.ContainsKey(c.id)) byId[c.id] = c;
+            var flagged = Array.Find(clues, c => c.isEnding);
+            EndingId = flagged != null ? flagged.id : clues.Length > 0 ? clues[clues.Length - 1].id : 0;
+            foreach (var s in PlayerPrefs.GetString(SaveKey, "").Split(',', StringSplitOptions.RemoveEmptyEntries))
+                if (int.TryParse(s, out int v)) collected.Add(v);
+        }
+
+        void Start()
+        {
+            foreach (var it in Interactable.All)
+                if (it.clueId >= 0) ClueMarker.Create(it, markerMat);
+            // 不自動跳題：先讓玩家自由走動，用一句話指出第一步
+            if (collected.Count == 0 && !ScrollUI.DeferHelp) Invoke(nameof(StartOpening), 1f);
+        }
+
+        void StartOpening() { if (ui) ui.Toast(Txt.Opening); }
+        /// R17：選經典模式後才放開場提示
+        public void ShowOpening() { if (collected.Count == 0) Invoke(nameof(StartOpening), 0.5f); }
+
+        public void TriggerClue(int id)
+        {
+            var locked = LockedMessage(id);
+            if (locked != null) { ui.Toast(locked); return; }
+            var clue = Find(id);
+            if (clue == null) { Debug.LogWarning($"[ClueManager] clues.json 沒有 id={id}"); return; }
+            if (IsCollected(id))
+                ui.ShowClue(clue, () => { }, true); // 已收集：直接重讀，不重播演出
+            else if (id == EndingId) ui.StartEnding(clue, () => Collect(id));
+            else ui.ShowClue(clue, () => Collect(id));
+        }
+
+        void Collect(int id)
+        {
+            if (!collected.Add(id)) return;
+            PlayerPrefs.SetString(SaveKey, string.Join(",", collected));
+            PlayerPrefs.Save();
+            if (id == EndingId) return;
+            string msg = EndingUnlocked ? Txt.EndingReady : null;
+            if (clues.Length > 0 && id == clues[0].id) msg = Txt.FirstScrollComplete;
+            StartCoroutine(NextStopToast(msg));
+        }
+
+        System.Collections.IEnumerator NextStopToast(string msg)
+        {
+            yield return null;
+            for (float t = 0; t < 30f && ScrollUI.I && ScrollUI.I.IsBusy; t += Time.unscaledDeltaTime) yield return null;
+            string text = msg;
+            if (string.IsNullOrEmpty(text)) yield break;
+            ui.Toast(text);
+        }
+
+        public void ResetProgress()
+        {
+            PlayerPrefs.DeleteKey(SaveKey);
+            QuizStats.Clear();
+            PlayerPrefs.DeleteKey(ScrollUI.HelpSeenKey); // 共用電腦：下一位學生重新開始也看得到操作說明
+            PlayerPrefs.Save();
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+    }
+}
+cat: Assets/_Project/Scripts/ClueData.cs: No such file or directory
+ls: Assets/_Project/Data: No such file or directory
+ M ProjectSettings/ProjectSettings.asset
+ M logs/shadercompiler-UnityShaderCompiler-0.log
+ M logs/shadercompiler-UnityShaderCompiler-1.log
+ M logs/shadercompiler-UnityShaderCompiler-2.log
+ D logs/shadercompiler-UnityShaderCompiler-3.log
+ D logs/shadercompiler-UnityShaderCompiler-4.log
+ D logs/shadercompiler-UnityShaderCompiler-5.log
+ D logs/shadercompiler-UnityShaderCompiler-6.log
+ D logs/shadercompiler-UnityShaderCompiler-7.log
+ D logs/shadercompiler-UnityShaderCompiler-8.log
+ D logs/shadercompiler-UnityShaderCompiler-9.log
+?? briefs/A-R1.md
+?? briefs/C-R1.md
+?? briefs/S-R1.md
+?? briefs/U-R1.md
+?? logs/AssetImportWorker0.log
+?? logs/AssetImportWorker1.log
+?? logs/codex-A-R1.log
+?? logs/codex-C-R1.log
+?? logs/codex-S-R1.log
+?? logs/codex-U-R1.log
+?? logs/shadercompiler-AssetImportWorker0-0.log
+?? logs/shadercompiler-AssetImportWorker1-0.log
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd; sed -n '1,150p' Assets/_Project/Scripts/ClueManager.cs; cat sources/liuruan_tw.txt; cat docs/content/glossary.md" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+namespace Liuruan
+{
+    /// clues.json 的閱讀、問答與進度資料。
+    /// JsonUtility 缺欄位時給預設值（字串 null、陣列 null），一律用下面的唯讀屬性判斷。
+    [Serializable]
+    public class ClueData
+    {
+        public int id;
+        public string title;
+        public string original;
+        public string plain;
+        public string question;
+        public string[] options;
+        public int answer;
+        public string feedback;
+        public string[] wrongHints;
+
+        public bool isEnding;     // 選填：結局卷軸（沒有任何一筆標記時，退回「最大 id＝結局」）
+        public int[] requires;    // 選填：這些線索收齊前鎖住（標記灰色、靠近時提示「先去看看〇〇」）
+
+        /// 題目及答案索引完整時才出題。
+        public bool HasQuiz => !string.IsNullOrEmpty(question) && options != null && options.Length > 0
+                               && answer >= 0 && answer < options.Length;
+
+    }
+
+    /// 頂層 "evidenceCards" 的一張：結局推論題前顯示（只顯示已收集線索的卡）
+    [Serializable]
+    public class EvidenceCard
+    {
+        public int clueId;
+        public string label;
+        public string quote;
+    }
+
+    /// 頂層 "reflection"：不計分的反思題
+    [Serializable]
+    public class Reflection
+    {
+        public string question;
+        public string[] prompts;
+    }
+
+    [Serializable]
+    class ClueList
+    {
+        public ClueData[] clues;
+        public ClueData infer;      // 選填：結局後的推論題；沒填就不出（結局線索本身可當推論題）
+        public string endingText;   // 選填：作者／人物揭曉文字；沒填用 Txt.EndingReveal
+        public EvidenceCard[] evidenceCards; // 選填
+        public Reflection reflection;        // 選填
+    }
+
+    /// 線索資料（clues.json）＋進度（PlayerPrefs）。
+    /// 有 requires 的線索要等列出的線索都收齊才開。
+    public class ClueManager : MonoBehaviour
+    {
+        const string SaveKey = "liuruan_collected";
+
+        public static ClueManager I { get; private set; }
+        /// 結局線索 id（資料中最大 id）；QuizStats 以它推算推論題 id
+        public static int EndingId { get; private set; }
+        public static bool IsEnding(int id) => id == EndingId;
+
+        [SerializeField] TextAsset clueJson;
+        [SerializeField] ScrollUI ui;
+        [SerializeField] Material markerMat; // 線索標記用（URP Unlit）
+        public Material MarkerMat => markerMat; // R17 任務關卡標記共用
+
+        ClueData[] clues = new ClueData[0];
+        ClueData inferData;
+        string endingText;
+        EvidenceCard[] evidenceCards = new EvidenceCard[0];
+        Reflection reflection;
+        readonly HashSet<int> collected = new HashSet<int>();
+        // id → 線索。ClueMarker 每幀呼叫 IsLocked → Find；舊版 Array.Find 帶捕獲 lambda，每次呼叫都配置記憶體（審查 #17）
+        readonly Dictionary<int, ClueData> byId = new Dictionary<int, ClueData>();
+
+        public IReadOnlyList<ClueData> Clues => clues;
+        public bool IsCollected(int id) => collected.Contains(id);
+        public bool FirstScrollPending => clues.Length > 0 && !collected.Contains(clues[0].id);
+        public ClueData Find(int id) => byId.TryGetValue(id, out var c) ? c : null;
+        public ClueData InferData => inferData;
+        public string EndingText => string.IsNullOrEmpty(endingText) ? Txt.EndingReveal : endingText;
+        /// 反思題（沒填 question 時為 null）
+        public Reflection ReflectionData => reflection;
+
+        /// 已收集線索的證據卡（依 clueId 排序）
+        public List<EvidenceCard> CollectedEvidence()
+        {
+            var list = new List<EvidenceCard>();
+            foreach (var e in evidenceCards)
+                if (e != null && collected.Contains(e.clueId) && (!string.IsNullOrEmpty(e.label) || !string.IsNullOrEmpty(e.quote)))
+                    list.Add(e);
+            list.Sort((a, b) => a.clueId.CompareTo(b.clueId));
+            return list;
+        }
+
+        // 以下計數每幀被 HUD／ClueMarker 呼叫：用迴圈，不用捕獲 this 的 lambda 或方法群組（每次都會配置委派）
+        /// 結局以外的線索數（HUD「線索冊 x／N」）
+        public int ScrollCount { get { int n = 0; foreach (var c in clues) if (c.id != EndingId) n++; return n; } }
+        public int ScrollsCollected { get { int n = 0; foreach (var c in clues) if (c.id != EndingId && collected.Contains(c.id)) n++; return n; } }
+        public bool EndingUnlocked => ScrollsCollected == ScrollCount;
+
+
+        /// ClueMarker 每幀呼叫：只回布林、不產生字串
+        public bool IsLocked(int id)
+        {
+            if (id == EndingId) return !EndingUnlocked;
+            var c = Find(id);
+            return c != null && (MissingRequirement(c) != null);
+        }
+
+        /// requires 裡第一張還沒收集的線索；都收齊回傳 null。
+        /// 會造成永久鎖死的條件一律略過（check.py 也會擋，這裡是 C# 端防呆，審查 #16）：
+        public ClueData MissingRequirement(ClueData c)
+        {
+            if (c == null || c.requires == null) return null;
+            foreach (int r in c.requires)
+            {
+                if (r == c.id || r == EndingId || collected.Contains(r)) continue;
+                var rc = Find(r);
+                if (rc == null) continue;
+                return rc;
+            }
+            return null;
+        }
+
+        /// 鎖住時的提示；沒鎖回傳 null
+        string LockedMessage(int id)
+        {
+            if (id == EndingId) return EndingUnlocked ? null : Txt.EndingLocked(ScrollsCollected, ScrollCount);
+            var c = Find(id);
+            if (c == null) return null;
+            var miss = MissingRequirement(c);
+            return miss != null ? Txt.RequiresLocked(miss.title) : null;
+        }
+
+        /// 算進成績的題目：一般選擇題、配對關（以配對後選擇題首答計）、
+        /// 有選擇題的小遊戲（小遊戲後由 ScrollUI 出題）、推論題（有 infer 區塊時）。
+        public bool IsScored(int id)
+        {
+            if (id == QuizStats.InferId) return inferData != null;
+            var c = Find(id);
+            return c != null && c.HasQuiz;
+劉晨、阮肇，入天台採藥，遠不得返，經十三日饑。
+遙望山上有桃樹子熟，遂躋險援葛至其下，啗數枚，饑止體充。
+欲下山，以杯取水，見蕪菁葉流下，甚鮮妍。復有一杯流下，有胡麻飯焉。乃相謂曰：「此近人矣。」遂渡山。
+出一大溪，溪邊有二女子，色甚美，見二人持杯，便笑曰：「劉、阮二郎捉向杯來。」劉、阮驚。二女遂忻然如舊相識，曰：「來何晚耶？」因邀還家。
+南東二璧各有絳羅帳，帳角懸鈴，上有金銀交錯。各有數侍婢使令。
+其饌有胡麻飯、山羊脯、牛肉，甚美。食畢行酒。俄有群女持桃子，笑曰：「賀汝婿來。」酒酣作樂。
+夜後各就一帳宿，婉態殊絕。至十日求還，苦留半年。
+氣候草木，常是春時，百鳥啼鳴，更懷鄉。歸思甚苦。女遂相送，指示還路。
+鄉邑零落，已十世矣。
+# 字詞注釋（國中程度）
+
+G＝[《太平廣記》卷六十一〈天台二女〉](https://zh.wikisource.org/zh-hant/太平廣記/卷第061#天台二女)；Y＝[《太平御覽》卷四十一引《幽明錄》](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；E＝[《藝文類聚》卷七引《幽明錄》](https://zh.wikisource.org/zh-hant/藝文類聚/卷007#天台山)；L＝[ctext《古小說鉤沉》第 182 段](https://ctext.org/wiki.pl?chapter=798132&if=en)。代號超連結即每條例句出處；L 尚未影像核字。
+
+先列 G 用語；第二表為任務指定的他本詞彙，不能因此加入 G 的台詞。引文保留見證字形，注釋使用台灣繁體中文。不取留宿段作例句。
+
+## 底本詞彙
+
+| 字詞 | 注釋 | 例句與出處 |
+|---|---|---|
+| 天台 | 山名；台在此讀ㄊㄞ，不讀ㄊㄞˊ。 | 「入天台採藥」〔G〕 |
+| 遠不得返 | 走得太遠，不能回去。返：返回。 | 「遠不得返」〔G，P01〕 |
+| 饑 | ㄐㄧ，飢餓；正文保留底本字形。 | 「經十三日饑」〔G，P01〕 |
+| 遙望 | 往遠處看。 | 「遙望山上有桃樹子熟」〔G，P02〕 |
+| 子 | 果實，這裡是桃子。 | 「桃樹子熟」〔G，P02〕 |
+| 躋險 | 躋，ㄐㄧ，登上；攀上險峻的地方。 | 「遂躋險援葛至其下」〔G，P02〕 |
+| 援葛 | 援，拉、攀著；葛，ㄍㄜˊ，葛藤。拉著葛藤攀行。 | 「遂躋險援葛至其下」〔G，P02〕 |
+| 啗 | ㄉㄢˋ，吃；與啖、噉有相通用法，正文不任意換字。 | 「啗數枚」〔G，P02〕 |
+| 枚 | 計算桃子等物品的量詞，白話說「顆」。 | 「啗數枚」〔G，P02〕 |
+| 體充 | 身體恢復充實有力。 | 「饑止體充」〔G，P02〕 |
+| 蕪菁 | ㄨˊ ㄐㄧㄥ，一種蔬菜，根和嫩葉可食用；此處是漂下的葉子。 | 「見蕪菁葉流下」〔G，P03〕；釋義參[教育部辭典](https://dict.revised.moe.edu.tw/dictView.jsp?ID=159435&la=0&powerMode=0)，未把現代菜名一概等同白蘿蔔。 |
+| 鮮妍 | 鮮嫩而美好。妍，ㄧㄢˊ，美好。 | 「甚鮮妍」〔G，P03〕 |
+| 復 | 又、再。 | 「復有一杯流下」〔G，P03〕 |
+| 胡麻飯 | 芝麻飯。胡麻指芝麻。 | 「有胡麻飯焉」〔G，P03〕 |
+| 焉 | 在這裡指「在其中」，即在杯子裡。 | 「有胡麻飯焉」〔G，P03〕 |
+| 相謂 | 彼此說、互相說。 | 「乃相謂曰」〔G，P03〕 |
+| 近人 | 離人近，依前文可推想附近有人活動。不是說已看見人。 | 「此近人矣」〔G，P03〕 |
+| 渡山 | 越過山；G 寫「渡」，他本寫「度」。 | 「遂渡山」〔G，P03〕 |
+| 色 | 容貌。 | 「色甚美」〔G，P04〕 |
+| 二郎 | 對劉、阮兩位男子的稱呼；不表示兩人各排行第二。 | 「劉、阮二郎捉向杯來」〔G，P04〕 |
+| 捉 | 拿、握持。 | 「捉向杯來」〔G，P04〕 |
+| 向 | 剛才、先前。G 語句簡略，不補入他本的「所失」。 | 「捉向杯來」〔G，P04〕 |
+| 忻 | ㄒㄧㄣ，高興、喜悅；不因讀音相同就改正文為欣。 | 「二女遂忻然如舊相識」〔G，P04〕 |
+| 何晚 | 為何這麼晚。 | 「來何晚耶」〔G，P04〕 |
+| 南東二璧 | 暫依上下文解為南、東兩面牆邊；「璧」與方向有校勘疑義。字義判定待人工核本。 | 「南東二璧各有絳羅帳」〔G，P05〕；見 `sources/variants.md`，不得默改壁。 |
+| 絳羅帳 | 絳，ㄐㄧㄤˋ，深紅色；羅，薄絲織品。深紅色絲羅製的帷帳。 | 「各有絳羅帳」〔G，P05〕 |
+| 交錯 | 相互交織、錯雜排列，此處指裝飾。 | 「上有金銀交錯」〔G，P05〕 |
+| 侍婢 | ㄕˋ ㄅㄧˋ，服侍人的女子；反映古代身分制度。 | 「各有數侍婢使令」〔G，P05〕 |
+| 使令 | 供人差遣、使喚。 | 「各有數侍婢使令」〔G，P05〕 |
+| 饌 | ㄓㄨㄢˋ，準備好的食物、菜餚。 | 「其饌有胡麻飯」〔G，P06〕 |
+| 脯 | ㄈㄨˇ，肉乾。 | 「山羊脯」〔G，P06〕 |
+| 行酒 | 斟酒勸飲。 | 「食畢行酒」〔G，P06〕 |
+| 俄 | ㄜˊ，不久。 | 「俄有群女持桃子」〔G，P06〕 |
+| 汝 | ㄖㄨˇ，你；對女子說話時白話可用「妳」。 | 「賀汝婿來」〔G，P06〕 |
+| 婿 | ㄒㄩˋ，夫婿、丈夫。 | 「賀汝婿來」〔G，P06〕 |
+| 酒酣 | 喝酒喝得盡興。酣，ㄏㄢ。 | 「酒酣作樂」〔G，P06〕 |
+| 作樂 | 奏樂。樂讀ㄩㄝˋ。 | 「酒酣作樂」〔G，P06〕 |
+| 懷鄉、歸思 | 思念家鄉、想回家的心情。思在「歸思」指思緒，讀ㄙˋ。 | 「更懷鄉。歸思甚苦」〔G，P08〕 |
+| 鄉邑 | 家鄉的聚落。邑，ㄧˋ。 | 「鄉邑零落」〔G，P09〕 |
+| 零落 | 衰敗、散落；在此形容故鄉已不復往日景象。 | 「鄉邑零落」〔G，P09〕 |
+| 十世 | 十代；不可直接換算成固定的年數。 | 「已十世矣」〔G，P09〕 |
+
+## 他本補充詞彙
+
+| 字詞 | 注釋與版本界線 | 例句與出處 |
+|---|---|---|
+| 穀皮 | 穀樹的樹皮，通常解作構樹（楮樹）的樹皮；不是稻穀的殼。此為他本採集物，G 只稱採藥。 | 「共入天台取穀皮」〔Y〕；植物名稱參[農業部資料，構樹條](https://kmweb.moa.gov.tw/redirect_files.php?id=9419)。 |
+| 餒 | ㄋㄟˇ，飢餓。「殆死」指幾乎死去。 | 「饑餒殆死」〔Y〕 |
+| 邃澗 | 邃，ㄙㄨㄟˋ，深遠；澗，ㄐㄧㄢˋ，山間水道。幽深的山澗。 | 「而絕岩邃澗，了無登路」〔Y〕；巖／岩依見證字形記錄。 |
+| 噉 | ㄉㄢˋ，吃。任務列此字，**本輪讀到 G 作啗、Y 作啖、L 該處缺字**；不假造含「噉」的本文例句。 | 對照例句「啗數枚」〔G，P02〕、「啖數枚」〔Y〕。噉在本文何本用字待人工判斷。 |
+| 盥漱 | ㄍㄨㄢˋ ㄕㄨˋ，洗手、漱口。G 沒有此詞。 | 「持杯取水，欲盥漱」〔Y〕 |
+| 胡麻飯糝 | 加芝麻的飯粒。糝，ㄙㄢˇ，此處解飯粒，不能譯成稀飯。Y 簡作「胡麻糝」，G 只寫胡麻飯。 | 「有胡麻飯糝」〔L〕；「有胡麻糝」〔Y〕；糝之義參[教育部異體字字典](https://dict.variants.moe.edu.tw/dictView.jsp?ID=66282&la=0)。 |
+| 去人徑不遠 | 距離人行的路不遠。去，距離；徑，小路。 | 「此處去人徑不遠」〔Y〕；G 推論作「此近人矣」。 |
+| 瓊實 | 美玉般珍貴的果實，此處指先前吃的桃子；非另一種新出現的果物。 | 「向雖得瓊實，猶尚虛弊」〔Y〕 |
+| 虛弊 | 身體虛弱、疲憊。 | 「猶尚虛弊」〔Y〕 |
+| 筒瓦 | 半圓筒形的屋瓦，說的是形狀；「銅瓦」才指金屬材質。G 無此句，筒／銅的版本差異待人工核本。 | 「家筒瓦屋」〔Y〕；L 電子文字作「其家銅瓦屋」。 |
+| 懷土 | 思念故鄉。土指鄉土。 | 「更懷土，求歸甚苦」〔Y〕；「懷土思求歸」〔E〕 |
+| 親舊 | 親人與老朋友。 | 「親舊零落」〔Y／E／L〕 |
+| 邑屋改異 | 村落、房屋已經改變。 | 「邑屋改異」〔E〕 |
+| 七世孫 | 傳了七代的後裔；是 Y／E／L 的情節，G 結尾為十世，不可混成同一版本。 | 「問得七世孫」〔Y〕；「訊問得七世孫」〔E〕；「問訊得七世孫」〔L〕 |
+
+釋義依文意簡化供國中閱讀；涉及原字疑義已保留標記。例句若未包含任務指定字形，明說缺證，不以同義字偽裝逐字出處。
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+web search: 
+web search: https://zh.wikisource.org/wiki/太平御覽/0041
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+御覽本實際作「經十餘日」「胡麻糝」「此處去人徑不遠」，與任務沿用的長本措辭略有差異；題目會保留相同推論，原文引用依御覽本。正文將以「……」標示刪節，讓結局全文也能通過嚴格子字串檢查；「遂停半年」依主線決定採用並明記校改依據。另外，現有 C# 尚無 `act` 欄位，本輪只交資料與介接說明，不改程式。
+
+hook: PreToolUse
+hook: PreToolUse Completed
+web search: 
+web search: '遂停半年'
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd; rg -n 'answer|wrongHints|infer|StartEnding' Assets/_Project/Scripts/ScrollUI.cs Assets/_Project/Scripts/QuizStats.cs; ls sources/evidence; cat briefs/C-R1.md" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+Assets/_Project/Scripts/ScrollUI.cs:415:            bool correct = idx == clue.answer;
+Assets/_Project/Scripts/ScrollUI.cs:425:                var hints = clue.wrongHints;
+Assets/_Project/Scripts/ScrollUI.cs:497:            var keys = new List<string> { clue.options[clue.answer] };
+Assets/_Project/Scripts/ScrollUI.cs:640:        /// 證據卡 → 結局推論題（作答）→ scenes.ending 揭曉（EndingDialogue）→ infer → 反思 → 成績卡。
+Assets/_Project/Scripts/ScrollUI.cs:642:        public void StartEnding(ClueData endClue, Action collect)
+Assets/_Project/Scripts/ScrollUI.cs:666:            var infer = InferClue();
+Assets/_Project/Scripts/ScrollUI.cs:667:            if (infer != null) ShowClue(infer, ShowReflection); else ShowReflection();
+Assets/_Project/Scripts/ScrollUI.cs:728:        /// 推論題（選填）：只有 clues.json 有 "infer" 區塊才出題；沒有就直接成績卡（結局線索本身可當推論題）
+guangji.txt
+leiju.txt
+luxun.txt
+yulan.txt
+# C 線 R1：改底本為《太平御覽》引《幽明錄》＋題庫
+
+先讀 AGENTS.md、docs/plan.md 第一、三節、你上一輪的 logs/C-R0.md 與 sources/*。可寫：sources/、docs/content/、Assets/_Project/Data/（只有這個 Unity 資料夾）。交件報告寫 logs/C-R1.md。
+
+## 決定（主線已拍板）
+- **底本改為《太平御覽》卷四十一引《幽明錄》**（你 R0 的 Y 本）。理由：遊戲情節（取穀皮、筒瓦屋、遂停半年、七世孫）全依《幽明錄》系統。太平廣記〈天台二女〉（出《神仙記》）改為對校本，在 variants.md 說明。
+- 屋瓦用底本「筒瓦屋」。留宿段照舊整段〔略〕。
+
+## 任務
+1. 重做 sources/liuruan_tw.txt（御覽為底本、一段一行、全形標點、台灣教科書慣例）、variants.md、provenance.md；舊版另存 sources/_R0_guangji/。御覽電子本若有明顯誤字，可據他本校改，但每一處都要在 variants.md 記錄「底本作某，據某本改」。
+2. 重做 docs/content/acts.md、glossary.md 對應新底本。
+3. 新增 Assets/_Project/Data/clues.json：格式照 Assets/_Project/Scripts/ClueManager.cs 的 ClueList／ClueData（只讀程式，不准改）。每筆多一個 int 欄位 act（1–5）。內容：
+   - 每幕 1 張原文卷軸（original 逐字取自 liuruan_tw.txt、plain 白話、question 選擇題 4 選項、answer、feedback、wrongHints 2 條）。
+   - 第三幕另加推論題：三件漂流物（蕪菁葉、杯、胡麻飯糝）→「此知去人徑不遠」的推論。
+   - 結局：isEnding=true，原文全文（留宿段以「……」省略並在 feedback 不提），推論題「為什麼回家已是七世？」。
+   - 題目要有誘答力、選項長度相近，國中程度。
+4. docs/content/compare_taohuayuan.md：〈劉晨阮肇〉與〈桃花源記〉比較表（入口、異境樣貌、居民、停留、離開方式、回去後、能否重返、作者寓意），每格引原文；〈桃花源記〉原文也要附來源網址。結局面板會用這張表，另出一份 Assets/_Project/Data/compare.json（rows: [{aspect, liuruan, taohua}]）。
+5. Assets/_Project/Data/narration.json：五幕的簡短白話旁白（每幕 ≤3 句、每句 ≤25 字），**只能描述原文已有的事**，不加情節、不寫人物台詞。
+
+驗收：clues.json 用 python json 解析通過；每個 original 字串都是 liuruan_tw.txt 的子字串（寫一支 tools/check_clues.py 自動檢查並貼輸出）。
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd; sed -n '630,685p' Assets/_Project/Scripts/ScrollUI.cs; sed -n '1,90p' Assets/_Project/Scripts/QuizStats.cs; rg --files sources docs/content" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+        // ---------- 結局：選文 → 推論題 → 揭曉＋成績卡 ----------
+
+        void ResetAll()
+        {
+            SpeechBridge.Stop();
+            QuizStats.Clear();
+            ClueManager.I.ResetProgress();
+        }
+
+        /// 結局流程（ClueManager 在集齊後觸發結局卷軸時呼叫）：
+        /// 證據卡 → 結局推論題（作答）→ scenes.ending 揭曉（EndingDialogue）→ infer → 反思 → 成績卡。
+        /// collect：成績卡出現前才呼叫（收進線索冊），中途重整會從頭再走一次結局。
+        public void StartEnding(ClueData endClue, Action collect)
+        {
+            onEndingCollected = collect;
+            promptBox.SetActive(false);
+            toastBox.SetActive(false);
+            var cm = ClueManager.I;
+            var cards = cm ? cm.CollectedEvidence() : null;
+            Action quiz = () => ShowClue(endClue, () => StartCoroutine(AfterEndingQuiz()));
+            if (cards != null && cards.Count > 0) ShowPaged(Txt.EvidenceTitle, EvidenceBody(cards), Txt.StartInfer, quiz);
+            else quiz();
+        }
+
+        /// 舊入口（相容）：直接從揭曉開始
+        public void ShowEnding()
+        {
+            promptBox.SetActive(false);
+            StopAllCoroutines();
+            toastBox.SetActive(false);
+            StartCoroutine(AfterEndingQuiz());
+        }
+
+        IEnumerator AfterEndingQuiz()
+        {
+            yield return null;
+            var infer = InferClue();
+            if (infer != null) ShowClue(infer, ShowReflection); else ShowReflection();
+        }
+
+        static string EvidenceBody(List<EvidenceCard> cards)
+        {
+            var cm = ClueManager.I;
+            var sb = new System.Text.StringBuilder(Txt.EvidenceIntro);
+            foreach (var e in cards)
+            {
+                string label = e.label;
+                if (string.IsNullOrEmpty(label) && cm) { var c = cm.Find(e.clueId); label = c != null ? c.title : ""; }
+                sb.Append($"<b><color=#7F542E>{label}</color></b>\n");
+                if (!string.IsNullOrEmpty(e.quote)) sb.Append(e.quote).Append('\n');
+                sb.Append('\n');
+            }
+            return sb.ToString();
+        }
+
+        void ShowReflection()
+using UnityEngine;
+
+namespace Liuruan
+{
+    /// 作答紀錄（PlayerPrefs）：每題答對前的作答次數、是否已答對、答對前是否看過白話。
+    /// 題號 = 線索 id；結局推論題 = 固定 InferId（100，不與線索 id 撞號）。首答正確 = 已答對且只答了 1 次。
+    /// 小遊戲不計分，見 ClueManager.IsScored。
+    public static class QuizStats
+    {
+        /// 推論題固定題號；線索 id 必須小於它（check.py 另驗）
+        public const int InferId = 100;
+        /// 線索題號上限（不含推論題），依 ClueManager 實際最大 id
+        static int MaxClueId => ClueManager.I != null && ClueManager.I.Clues.Count > 0 ? ClueManager.I.Clues[ClueManager.I.Clues.Count - 1].id : ClueManager.EndingId;
+        static System.Collections.Generic.IEnumerable<int> Ids()
+        {
+            for (int i = 0; i <= MaxClueId; i++) yield return i;
+            yield return InferId;
+        }
+        const int ClearMax = 64; // 重新開始時一律清到這裡，不依賴 ClueManager 是否在場
+
+        static string TriesKey(int id) => $"liuruan_q{id}_tries";
+        static string SolvedKey(int id) => $"liuruan_q{id}_solved";
+        static string PlainKey(int id) => $"liuruan_q{id}_plain";
+
+        public static bool Solved(int id) => PlayerPrefs.GetInt(SolvedKey(id), 0) == 1;
+        public static int Tries(int id) => PlayerPrefs.GetInt(TriesKey(id), 0);
+        public static bool SawPlain(int id) => PlayerPrefs.GetInt(PlainKey(id), 0) == 1;
+        public static bool FirstTryCorrect(int id) => Solved(id) && Tries(id) == 1;
+
+        static bool Scored(int id) => ClueManager.I == null || ClueManager.I.IsScored(id);
+
+        /// 只記「第一次答對之前」的作答，重看已答對的卷軸不改成績。
+        public static void Record(int id, bool correct)
+        {
+            if (Solved(id)) return;
+            PlayerPrefs.SetInt(TriesKey(id), Tries(id) + 1);
+            if (correct) PlayerPrefs.SetInt(SolvedKey(id), 1);
+            PlayerPrefs.Save();
+        }
+
+        public static void MarkPlain(int id)
+        {
+            if (Solved(id) || SawPlain(id)) return;
+            PlayerPrefs.SetInt(PlainKey(id), 1);
+            PlayerPrefs.Save();
+        }
+
+        public static int ScoredCount()
+        {
+            int n = 0;
+            foreach (int i in Ids()) if (Scored(i)) n++;
+            return n;
+        }
+
+        public static int FirstTryCount()
+        {
+            int n = 0;
+            foreach (int i in Ids()) if (Scored(i) && FirstTryCorrect(i)) n++;
+            return n;
+        }
+
+        /// 有白話的計分題中，沒看白話就答對的題數
+        public static int NoPlainCount()
+        {
+            int n = 0;
+            for (int i = 0; i <= MaxClueId; i++) if (Scored(i) && Solved(i) && !SawPlain(i)) n++;
+            return n;
+        }
+
+        /// 有白話的計分題數（NoPlainCount 的分母；推論題沒有白話，不算）
+        public static int PlainScoredCount()
+        {
+            int n = 0;
+            for (int i = 0; i <= MaxClueId; i++) if (Scored(i)) n++;
+            return n;
+        }
+
+        public static int TotalTries()
+        {
+            int n = 0;
+            foreach (int i in Ids()) if (Scored(i)) n += Tries(i);
+            return n;
+        }
+
+        public static void Clear()
+        {
+            for (int i = 0; i <= Mathf.Max(InferId, ClearMax); i++)
+            {
+                PlayerPrefs.DeleteKey(TriesKey(i));
+                PlayerPrefs.DeleteKey(SolvedKey(i));
+docs/content/acts.md
+sources/variants.md
+docs/content/glossary.md
+sources/liuruan_tw.txt
+sources/provenance.md
+sources/evidence/leiju.txt
+sources/evidence/luxun.txt
+sources/evidence/guangji.txt
+sources/evidence/yulan.txt
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd; mkdir -p sources/_R0_guangji docs/content Assets/_Project/Data tools; python3 - <<'PY'
+from pathlib import Path
+import shutil, json
+root=Path('.')
+archive=root/'sources/_R0_guangji'
+for name in ('liuruan_tw.txt','variants.md','provenance.md'):
+    dest=archive/name
+    if dest.exists():
+        raise SystemExit(f'不覆寫既有典藏：{dest}')
+    shutil.copy2(root/'sources'/name,dest)
+for name in ('acts.md','glossary.md'):
+    shutil.copy2(root/'docs/content'/name,archive/name)
+shutil.copytree(root/'sources/evidence',archive/'evidence')
+p=[
+'漢明帝永平五年，剡縣劉晨、阮肇共入天台取穀皮，迷不得返，經十餘日，糧食乏盡，饑餒殆死。',
+'遙望山上有一桃樹，大有子實，而絕岩邃澗，了無登路。攀葛乃得至，啖數枚，而饑止體充。',
+'復下山持杯取水，欲盥漱，見蕪菁葉從山腹流出，甚鮮新。復一杯流出，有胡麻糝。相謂曰：「此處去人徑不遠。」度山出一大溪。',
+'溪邊有二女子，姿質妙絕，見二人持杯出，便笑曰：「劉、阮二郎捉向所失流杯來。」晨、肇既不識之，二女便呼其姓，如似有舊，相見忻喜，問：「來何晚耶？」因要還家。',
+'家筒瓦屋，南壁及東壁下各有一大床，皆施絳羅帳，角懸鈴，上金銀交錯，床頭各十侍婢。便敕云：「劉、阮二郎，經涉山阻，向雖得瓊實，猶尚虛弊，可速作食。」有胡麻飯、山羊脯，甚美。食畢行酒，有群女來，各持三五桃子，笑而言：「賀汝婿來。」酒酣作樂，劉、阮忻怖交並。',
+'……遂停半年。氣候草木是春時，百鳥鳴呼，更懷土，求歸甚苦。女曰：「當如何？」遂呼前來女子有三四十人集會奏樂，共送劉、阮，指示還路。',
+'既出，親舊零落，邑屋全異，無復相識。問得七世孫，傳聞上世入山，迷不得歸。'
+]
+source='\\n'.join(p)+'\\n'
+(root/'sources/liuruan_tw.txt').write_text(source)
+def dump(name, data):
+    (root/'Assets/_Project/Data'/name).write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\\n')
+def clue(id,act,title,original,plain,question,options,answer,feedback,hints,**kw):
+    return dict(id=id,act=act,title=title,original=original,plain=plain,question=question,options=options,answer=answer,feedback=feedback,wrongHints=hints,**kw)
+clues=[
+clue(0,1,'迷山：糧盡的困境',p[0],
+'漢明帝永平五年，剡縣的劉晨與阮肇進天台山取穀樹皮，迷路無法返回。十多天後，糧食吃完，幾乎餓死。',
+'「迷不得返」與「糧食乏盡」合起來，說明兩人面臨什麼處境？',
+['山路雖然熟悉，卻因取皮而耽擱','無法找到歸路，又缺少維生食物','擔心遇到居民，因此不願意返家','雖然備有糧食，卻找不到採集物'],1,
+'兩人既迷路又缺糧，生存受到威脅；後來吃桃子才出現轉機。',
+['「不得返」是不能回去，還是不願回去？','「乏盡」表示糧食所剩不多，還是已經用完？']),
+clue(1,2,'攀桃：困境的轉機',p[1],
+'遠遠看見山上有棵桃樹，結了很多果實；岩壁陡峭、山澗幽深，沒有登上的路。他們攀著葛藤才到達，吃了幾顆桃子後，止住飢餓，恢復體力。',
+'「而饑止體充」在故事發展上，主要有什麼作用？',
+['交代山中果實，全年都可以採食','說明兩人吃飽，決定留山不返家','暗示山路平坦，採果原本無困難','呈現體力恢復，使探路得以繼續'],3,
+'「饑止體充」寫飢餓消除、體力恢復，讓原本幾乎餓死的兩人能繼續行動。',
+['先比較吃桃子前後，兩人的身體有何變化。','下段接著寫下山取水，這需要什麼條件？']),
+clue(2,3,'流杯：沿水發現線索',p[2],
+'兩人下山拿杯子取水，想洗手漱口，看見新鮮的蕪菁葉從山腹漂出；又漂出一只杯子，裡面有芝麻飯粒。他們認為附近有人行的路，越過山後到了一條大溪。',
+'這段文字呈現的事情，先後順序是哪一項？',
+['取水見漂流物，再推知人徑不遠','見到溪邊女子，再拾起漂流杯子','找到山中住屋，再沿溪返回取水','渡過大溪之後，再上山尋找桃樹'],0,
+'先有取水時的觀察，再有「去人徑不遠」的判斷，最後才寫到大溪；兩人此時尚未見到女子。',
+['先找「見」與「相謂曰」的前後位置。','女子出場在下一段，別把後文移到前面。']),
+clue(3,3,'流杯推論：物品透露人跡',p[2],
+'漂下的蕪菁葉很新鮮，杯子裡還有芝麻飯粒。兩人根據這些線索，推測附近有人活動。',
+'蕪菁葉、杯子與胡麻飯粒，為何使兩人推知「此處去人徑不遠」？',
+['物品隨水漂來，證明前方必定有大海','杯中留有食物，證明採集者就在眼前','菜葉新鮮且有餐具熟食，顯示附近有人','三物都能在山中自生，顯示前方有果樹'],2,
+'新鮮菜葉加上人使用的杯子與做好的食物，支持附近有人活動的推論；仍不能斷定人的身分或已在眼前。',
+['杯子和煮好的飯粒，與自然生長的桃子有何不同？','推論要同時解釋三種線索，不能只看水流。'],requires=[2]),
+clue(4,4,'仙村：美景中的思歸', '\\n'.join(p[3:6]),
+'溪邊的兩名女子叫出劉、阮的姓，邀他們回家。屋頂覆筒瓦，屋內有紅色羅帳與鈴飾，並以食物款待。……兩人停留半年，氣候草木像春天，鳥聲使他們更思念家鄉，苦求返家。女子們奏樂送行，指出歸路。',
+'仙村有美食與春景，兩人為何仍然「求歸甚苦」？',
+['屋中食物不足，因此急著回鄉找糧','女子不肯接待，因此只好另尋住處','春景突然消失，因此擔心山路封閉','聽見百鳥鳴叫，因此更深思念故鄉'],3,
+'「百鳥鳴呼，更懷土」直接連結鳥聲與思鄉。生活舒適，仍不能消除兩人對故鄉的牽掛。',
+['「懷土」的「土」指田地，還是家鄉？','從「百鳥鳴呼」後面尋找心理變化。']),
+clue(5,5,'歸鄉：陌生的故鄉',p[6],
+'出山後，親友已凋零，村落房屋全變了，也沒有認識的人。問到自己的七世孫，才知道後人傳說祖先入山迷路，未能返回。',
+'哪些訊息最能互相印證，說明故鄉已經過漫長歲月？',
+['屋舍改變且遇見七世孫，親友也已凋零','杯子漂下且菜葉新鮮，附近應有人行路','山上桃子很多且可食，兩人體力已恢復','女子認得兩人的姓氏，屋裡也備有酒食'],0,
+'故鄉屋舍與人事的改變，再加上七世孫的出現，共同顯示人間已過多代；不能只憑屋舍改變判定代數。',
+['題目問回鄉後的證據，先排除入山時的事。','哪個選項同時包含人事改變與後代身分？']),
+clue(6,5,'結局：山中半年，人間七世',source.rstrip('\\n'),
+'劉晨、阮肇入山取樹皮而迷路，靠桃子止飢，循水中漂流物發現人跡，受兩名女子款待。……停留半年後思鄉返家，卻發現故鄉人事全非，只問到七世孫。',
+'為什麼回家已是七世？依全文判斷，哪個解釋最合理？',
+['兩人把尋路日數算錯，實際已在山中過完七代','異境與人間時間不同，山中半年人間已過多代','七世孫故意隱瞞身分，讓兩人誤以為時代改變','村人搬走又換了房屋，兩人其實回到別的地方'],1,
+'「遂停半年」與「問得七世孫」形成時間落差，可推論異境與人間的時間不同。這是志怪敘事的安排，原文沒有提供固定的年數換算。',
+['把「遂停半年」與「問得七世孫」放在一起讀。','哪個解釋能同時說明時間落差與故鄉人事全非？'],isEnding=True)
+]
+dump('clues.json',dict(clues=clues,endingText='《太平御覽》卷四十一引《幽明錄》：山中停留半年，歸來已見七世孫。'))
+narration={'acts':[
+{'act':1,'sentences':['劉晨、阮肇入山取穀樹皮。','他們迷路十多天，糧食吃完了。']},
+{'act':2,'sentences':['他們攀著葛藤，到了桃樹旁。','吃下桃子後，兩人恢復體力。']},
+{'act':3,'sentences':['溪中漂來菜葉和盛有飯粒的杯子。','兩人推想附近有人行的路。']},
+{'act':4,'sentences':['溪邊的兩名女子邀他們回家。','遂停半年。','鳥聲使他們更思鄉，女子們送他們回去。']},
+{'act':5,'sentences':['回鄉後，村落房屋全變了。','問到七世孫，才聽到祖先入山的傳說。']}
+]}
+dump('narration.json',narration)
+print('已典藏 R0；已寫入御覽節選本、7 題及五幕旁白。')
+PY" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+已典藏 R0；已寫入御覽節選本、7 題及五幕旁白。
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd; python3 - <<'PY'
+from pathlib import Path
+import json
+r=Path('.')
+def write(path,text): (r/path).write_text(text.strip()+'\\n')
+y='https://zh.wikisource.org/wiki/太平御覽/0041#天台山'
+g='https://zh.wikisource.org/zh-hant/太平廣記/卷第061#天台二女'
+w='https://zh.wikisource.org/zh-hant/幽明錄'
+write('sources/variants.md',f'''# 異文與校改紀錄（C-R1）
+
+日期：2026-11-07。底本 Y＝[《太平御覽》卷四十一，地部六〈天台山〉引《幽明錄》]({y})；G＝[《太平廣記》卷六十一〈天台二女〉]({g})，篇末標出《神仙記》，改作對校；W＝[維基文庫《幽明錄》通用電子輯文]({w})；E＝[《藝文類聚》卷七](https://zh.wikisource.org/zh-hant/藝文類聚/卷007#天台山)；L＝[ctext《古小說鉤沉》第182段](https://ctext.org/wiki.pl?chapter=798132&if=en)。
+
+本表對照電子轉錄，未核原刻。W 不冒稱魯迅定本；L 仍有缺字，僅沿用 R0 證據。R0 舊正文、校勘與五幕文件保留於 "'`_R0_guangji/`，現行內容只用 Y，不將長本情節拼入。
+
+## 實際校改與編輯處理（完整清單）
+
+| 位置 | 底本與採用文字 | 依據與理由 |
+|---|---|---|
+| P05，敕後 | 底本作「便敕雲」，據 W「敕云」改為「便敕云」。 | 此為吩咐說話，雲為電子轉錄疑誤；保留其餘 Y 字序，補冒號與引號。 |
+| P05，忻怖後 | 底本作「交幷」，據 W「交並」改為「交並」。 | 幷／並字形統一為台灣常用字，不改語義。 |
+| P07，邑屋後 | 底本作「全异」，據 W「異」字形改為「全異」。 | 异／異字形正規化；不把 Y 的「全」換成 W 的「改」。 |
+| P06，半年 | 底本作「遂留半年」，據 W「遂停半年」改為「遂停半年」。 | **此非可確證的誤字**，是主線拍板之轉場用語例外；明示校改，不假稱 Y 本來作「停」。E 同 Y 作「留」。 |
+| P06，刪節 | Y「至暮，令各就一帳宿」起至「遂留半年」前，全以「……」代替。 | 整段不翻譯、不出題、不演出；文件說明以〔略〕稱之。連同引入語「至暮，令」一起省去，以免留下殘句。原 Y 完整電子文字仍典藏於 `evidence/yulan.txt`。 |
+| 全篇 | 除上述四處改字、指定刪節，僅調整標點與分段。 | 一段一行，七段；人物並列用頓號，說話加「」；長句分句，無新增故事字詞。P06「……」為刪節符號，非古文原字。 |
+
+## 保留的異文（不據以改字）
+
+| Y 現行底本文字 | 他本 | 採用說明 |
+|---|---|---|
+| 共入天台取穀皮 | G「入天台採藥」；W「共入天臺山取穀皮」 | 保留 Y；台／臺為山名字形，不添「山」。穀皮指樹皮，非稻殼。 |
+| 迷不得返；經十餘日 | G「遠不得返，經十三日饑」；W「經十三日」 | 保留 Y，不為配合舊 plan 改成十三日。 |
+| 絕岩邃澗，了無登路；攀葛乃得至，啖數枚 | G「躋險援葛至其下，啗數枚」；W「攀援藤葛，乃得至上。各啖數枚」 | 保留 Y 的岩、啖及簡句，不添各、噉或至上。 |
+| 有胡麻糝 | G「有胡麻飯焉」；W、L「有胡麻飯糝」 | 保留 Y；題目白話說芝麻飯粒，三件線索的意義不變，不悄加「飯」。 |
+| 此處去人徑不遠 | G「此近人矣」；W、L「此知去人徑不遠」 | 保留 Y；任務中的「此知」列作對校，題庫引文用「此處」。 |
+| 度山出一大溪 | G「遂渡山」；W、L 有「便共沒水，逆流二三里，得度山出一大溪」 | Y 不記逆流里數，旁白不添加涉水逆流的情節。 |
+| 因要還家 | G、W「因邀還家」 | 要通邀，保留原字，在詞注說明。 |
+| 家筒瓦屋 | G 無屋瓦記載；W「其家筒瓦屋」；L 電子字作「其家銅瓦屋」 | 主線指定採 Y「筒瓦屋」，說形狀，不做銅金屬材質解釋。 |
+| 南壁及東壁下各有一大床 | G「南東二璧」 | Y 直接作壁；G 校注與方向疑義見 R0 典藏，不沿用到 Y。 |
+| 角懸鈴，上金銀交錯，床頭各十侍婢 | G「帳角懸鈴」及「各有數侍婢」 | 保留 Y，不添帳、有等字。 |
+| 有胡麻飯、山羊脯 | G、W、L 另有牛肉 | 不補入牛肉。 |
+| 百鳥鳴呼，更懷土 | G「百鳥啼鳴，更懷鄉」；W「百鳥啼鳴，更懷悲思」 | 保留 Y「鳴呼」，解作鳥鳴，不改成計畫的「啼鳴」。 |
+| 問得七世孫 | G「鄉邑零落，已十世矣」；E「訊問得七世孫」；W、L「問訊得七世孫」 | 保留 Y 七世，不加訊；七代不等於固定七百年。 |
+| 傳聞上世入山，迷不得歸（篇止） | W、L 尚有晉太元八年再去之事 | Y 此引文無後日再入山，不補結尾；比較表「能否重返」只能寫未交代。 |
+| 《幽明錄》曰 | G 篇末「出《神仙記》」，附明抄本作《搜神記》校注 | 源流標示依見證，不把 G 冒標為《幽明錄》。 |
+'"''')
+write('sources/provenance.md',f'''# 原文來源與編輯紀錄（C-R1）
+
+核讀日期：2026-11-07（Asia/Taipei）。主線已決定以《太平御覽》卷四十一引《幽明錄》為底本。
+
+| 代號 | 來源與修訂 | 本輪狀態 |
+|---|---|---|
+| Y，底本 | [《太平御覽》卷四十一〈天台山〉]({y})；[固定修訂2587291](https://zh.wikisource.org/w/index.php?title=太平御覽/0041&oldid=2587291) | 本輪重讀故事整段，與 R0 "'`evidence/yulan.txt` 相符。固定連結另開為 Cache miss，不冒稱該次成功。 |
+| G，對校 | [《太平廣記》卷六十一〈天台二女〉]({g})；修訂1524797 | R0 讀取證據仍在 `evidence/guangji.txt`；本輪依典藏對校，未重新核原刻。出處為《神仙記》，不是《幽明錄》。 |
+| W，輔助校字 | [《幽明錄》通用電子輯文]({w})；[固定修訂7904673](https://zh.wikisource.org/w/index.php?title=幽明錄&oldid=7904673) | 本輪成功重讀全文中劉、阮條，核得「敕云」「交並」「邑屋改異」「遂停半年」。不是獨立古刻或確證的魯迅印刷定本。 |
+| E，對校 | [《藝文類聚》卷七](https://zh.wikisource.org/zh-hant/藝文類聚/卷007#天台山)；修訂2015757 | 沿用 R0 `evidence/leiju.txt` 節引，只能核其所引部分。 |
+| L，暫用對校 | [ctext《古小說鉤沉》第182段](https://ctext.org/wiki.pl?chapter=798132&if=en) | 沿用 R0 搜尋回傳 `evidence/luxun.txt`；有缺字，不據其缺字校正文。 |
+| T，比較閱讀 | [陶淵明〈桃花源記〉](https://zh.wikisource.org/zh-hant/桃花源記)；[固定修訂2620894](https://zh.wikisource.org/w/index.php?title=桃花源記&oldid=2620894) | 本輪讀取成功；抽取主文、排除「一作」夾注與附詩，另見 `evidence/taohuayuan.txt` 及比較表。 |
+
+## 現行正文與典藏界線
+
+- `liuruan_tw.txt` 是**御覽為底本的教學刪節整理本**，不是未經處理的古本影印或全文照錄。古籍正文屬公有領域，保留電子轉錄站名、網址與修訂供回溯。
+- 一段一行、全形標點。僅四處改字（雲→云、幷→並、异→異、留→停），每處依據與最後一處的主線例外詳見 `variants.md`。不把 W 長本整段換入 Y。
+- 依指定範圍略去留宿段，用「……」銜接「遂停半年」。acts 文件以〔略〕說明，不轉錄或翻譯省去內容；旁白只作「遂停半年」轉場。
+- 結局 `original` 為現行正文移除最後一個換行，保留段落換行及「……」，所以仍是正文檔的**嚴格連續子字串**；不用去標點、去空白的寬鬆比對。
+- 未刪節的 Y 電子見證典藏在 `evidence/yulan.txt`，不應直接匯入遊戲。R0 全套舊版（含 acts、glossary 與四份 evidence）凍結於 `_R0_guangji/`，不作遊戲載入來源。
+
+## 七段對應索引
+
+各段來源均為上表 Y；分段是專案編輯，非宣稱原刻本來有七段。
+
+| 行號 | 起訖 | 用途 |
+|---|---|---|
+| P01 | 漢明帝永平五年…饑餒殆死。 | 第一幕 |
+| P02 | 遙望山上有一桃樹…而饑止體充。 | 第二幕 |
+| P03 | 復下山持杯取水…度山出一大溪。 | 第三幕及另加的線索推論題 |
+| P04 | 溪邊有二女子…因要還家。 | 第四幕迎接 |
+| P05 | 家筒瓦屋…劉、阮忻怖交並。 | 第四幕屋舍與款待 |
+| P06 | ……遂停半年…指示還路。 | 第四幕刪節、思歸與送行 |
+| P07 | 既出…迷不得歸。 | 第五幕 |
+
+## 資料契約與驗證
+
+- `clues.json` 頂層為 `ClueList` 的 `clues` 陣列與 `endingText`；每題含 `ClueData` 所需欄位，新增整數 `act`。answer 為 **0 起算**選項索引。
+- id 0–2＝前三幕，3＝第三幕加題，4＝第四幕，5＝第五幕，6＝結局（唯一 `isEnding=true`）。不另填頂層 infer，避免把第三幕題延到結局或重複出題。id 3 requires=[2]；其餘無額外依賴，現行結局機制會等六張非結局卷軸全收齊。
+- 現行 `ClueData` 尚無 act，Unity JsonUtility 將忽略此額外欄位；須由 S／U 線另接欄位與五幕觸發。新增的 compare、narration 也只交 JSON，並未接入 Unity。
+- 比較表與 compare.json 的八列內容相同；旁白格式為 `acts: [{{act, sentences: [...]}}]`，每幕最多三句、每句含標點最多25字。
+- 驗證：`python3 tools/check_clues.py`。檢查 JSON、題目格式、嚴格原文子字串、結局全文、原文校改、比較引文及旁白長度；輸出見 `logs/C-R1.md`。
+- 尚未核原刻影像與印刷頁碼，電子本的「百鳥鳴呼」等字句保留，不宣稱已消除全部傳抄問題。
+'"''')
+print('已寫入來源說明及逐處校改表。')
+PY" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+已寫入來源說明及逐處校改表。
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+五幕卷軸、第三幕加題與結局題已寫入，共 7 題；R0 舊版也已完整典藏。比較表會明確區分：御覽引文未交代能否重返，〈桃花源記〉則明寫尋路失敗；作者寓意將標為有原文支持的閱讀詮釋。
+
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd; python3 - <<'PY'
+from pathlib import Path
+import json
+r=Path('.')
+def write(path,text): (r/path).write_text(text.strip()+'\\n')
+data=json.loads((r/'Assets/_Project/Data/clues.json').read_text())
+main=[data['clues'][i] for i in (0,1,2,4,5)]
+places=['森林小徑；入山取皮、迷路與缺糧後解鎖。','山壁與桃樹旁；攀葛吃桃後解鎖。','溪邊取水處；觀察菜葉、杯子與杯中飯粒後解鎖。','女子住處；迎接、款待、半年轉場與求歸送行後解鎖。','返鄉村落；發現人事全非、問到七世孫後解鎖。']
+ranges=['P01','P02','P03','P04–P06','P07']
+parts=['''# 五幕內容契約（C-R1）
+
+底本：[《太平御覽》卷四十一引《幽明錄》](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)。逐字正文見 "'`sources/liuruan_tw.txt`，校改與刪節見 `sources/variants.md`。白話僅供閱讀輔助，不是新增人物台詞。
+
+依 plan 第一節教學目標與第三節流程編排；主線本輪決定優先於舊 plan 的版本用字。以下原文與題庫相同。〕略〔的正式標記為〔略〕，正文與遊戲則只顯示「……」。'"'''.replace('〕略〔的正式標記為〔略〕','文件的刪節標記為〔略〕')]
+for c,place,ran in zip(main,places,ranges):
+    parts.append(f\"## 第{['一','二','三','四','五'][c['act']-1]}幕：{c['title']}\\n\\n- 段落：{ran}；卷軸 id={c['id']}，act={c['act']}。\\n- 出現位置：{place}\\n\\n\"+'\\n'.join('> '+line for line in c['original'].splitlines())+f\"\\n\\n白話：{c['plain']}\\n\\n考點：{c['question']}\\n\\n答案：{c['options'][c['answer']]}\\n\\n說明：{c['feedback']}\")
+parts.append('''## 版本與互動界線
+
+- 第一幕 Y 是「取穀皮」「經十餘日」；五棵樹、五格飢餓值是遊戲規則，不是原文數字，旁白不冒稱原文寫五棵。
+- 第二幕用「啖數枚」「攀葛乃得至」，不沿用舊 plan 的「各噉數枚」。
+- 第三幕三種線索是蕪菁葉、杯、胡麻飯粒；Y 逐字作「胡麻糝」「此處去人徑不遠」。W 長本作「胡麻飯糝」「此知去人徑不遠」，僅在異文表對照。Y 無「逆流二三里」，不加入旁白或引文。
+- 第三幕加題 id=3、act=3，requires=[2]；應在第三幕觀察線索後觸發，與第三幕卷軸是兩筆可計分題。
+- 第四幕為「筒瓦屋」，瓦的形狀不代表銅材質。留宿段整段〔略〕，只用「遂停半年」轉場；正文以「……」標省略，省去文字不翻譯、不出題。Y「百鳥鳴呼」保留，不改成舊 plan 的「百鳥啼鳴」。
+- 第五幕用「邑屋全異」「問得七世孫」，不換成他本「邑屋改異」「問訊得七世孫」。七世不可換算成固定七百年。
+
+## 結局與資料介接
+
+結局 id=6、act=5，唯一 isEnding=true。original 是七段刪節整理本全文，含段落換行，沒有另加題名；白話也只摘要保留情節。題目「為什麼回家已是七世？」以異境與人間時間落差為合理推論，不假稱原文明說固定換算率。feedback 不提省略內容。
+
+"'`clues.json` 共7筆，answer 為0起算，wrongHints 每題2條，options 每題4項。六筆非結局中，第3幕有兩筆，其餘每幕一筆。頂層不另放 infer，避免同題重複。endingText 明填本篇來源，避免落入舊專案的預設揭曉文。
+
+`compare.json` 是 rows: [{aspect, liuruan, taohua}]；`narration.json` 是 acts: [{act, sentences}]。每個句子為一個陣列元素，無人物新台詞。旁白與比較表仍須 S／U 線串接；既有 ClueData 沒有 act，須由該線處理。本輪不改 C#、場景或 Prefab，也不操作 Unity。
+'"''')
+write('docs/content/acts.md','\\n\\n'.join(parts))
+terms=[
+('剡縣','古地名，在今浙江一帶；剡讀ㄕㄢˋ。','剡縣劉晨、阮肇'),
+('穀皮','穀樹的樹皮，通常解作構樹（楮樹）皮；不是稻穀外殼。','共入天台取穀皮'),
+('迷不得返','迷路，無法回去；不得是不能，不是不肯。','迷不得返'),
+('十餘日','十多天；不能改說恰好十三天。','經十餘日'),
+('乏盡','缺乏而用盡。','糧食乏盡'),
+('饑餒殆死','餓得幾乎死去；殆，幾乎。保留底本饑字。','饑餒殆死'),
+('子實','果實，此處指桃子。','大有子實'),
+('絕岩邃澗','陡峭的岩壁與幽深的山澗。','而絕岩邃澗'),
+('了無','完全沒有。','了無登路'),
+('攀葛','攀著葛藤。','攀葛乃得至'),
+('啖','吃，讀ㄉㄢˋ；不換作他本的啗或未經核證的噉。','啖數枚'),
+('饑止體充','飢餓消除，身體恢復充實有力。','而饑止體充'),
+('盥漱','洗手、漱口；盥讀ㄍㄨㄢˋ，漱讀ㄕㄨˋ。','欲盥漱'),
+('蕪菁','一種可食根、葉的蔬菜；本文出現的是葉子。','見蕪菁葉從山腹流出'),
+('復','又、再。','復一杯流出'),
+('胡麻糝','芝麻飯粒；胡麻為芝麻，糝此處指飯粒。Y 沒有飯字，白話可說飯粒。','有胡麻糝'),
+('去人徑不遠','距離人行的小路不遠；去是距離，不是離去。','此處去人徑不遠'),
+('度山','越過山。','度山出一大溪'),
+('姿質妙絕','容貌、姿態十分美好。','姿質妙絕'),
+('捉向所失流杯來','拿著剛才失落而漂走的杯子來；捉是拿，向是剛才。','捉向所失流杯來'),
+('二郎','稱呼劉、阮兩位男子，不指各排行第二。','劉、阮二郎'),
+('忻喜','高興、喜悅；忻通欣，正文保留忻。','相見忻喜'),
+('要','邀請；此義讀ㄧㄠ。','因要還家'),
+('筒瓦屋','覆有筒形屋瓦的房屋；筒說形狀，不能解作銅製屋頂。','家筒瓦屋'),
+('絳羅帳','深紅色薄絲織品做的帷帳；絳讀ㄐㄧㄤˋ。','皆施絳羅帳'),
+('侍婢','服侍人的女子，反映古代身分制度。','床頭各十侍婢'),
+('敕云','吩咐說；此處敕不是指皇帝詔書，云是說。','便敕云'),
+('瓊實','像美玉般珍貴的果實，指先前吃的桃子。','向雖得瓊實'),
+('虛弊','虛弱、疲憊。','猶尚虛弊'),
+('山羊脯','山羊肉乾；脯讀ㄈㄨˇ。','山羊脯'),
+('行酒','斟酒勸飲。','食畢行酒'),
+('三五','三個、五個，泛指幾個，不是十五個。','各持三五桃子'),
+('忻怖交並','高興與害怕兩種情緒交織。','劉、阮忻怖交並'),
+('遂','於是、就；停指停留，該句依主線例外據W改字。','遂停半年'),
+('懷土','思念家鄉；土指鄉土。','更懷土'),
+('親舊零落','親人與老朋友已凋零、離散。','親舊零落'),
+('邑屋全異','村落與房屋完全變了樣；邑是聚落。','邑屋全異'),
+('無復相識','再也沒有認識的人；復是再。','無復相識'),
+('七世孫','傳了七代的後裔；世指世代，不是七歲或固定七百年。','問得七世孫'),
+('上世','前代、祖先所處的年代。','傳聞上世入山')]
+write('docs/content/glossary.md','''# 字詞注釋（C-R1）
+
+唯一例句來源：[《太平御覽》卷四十一引《幽明錄》](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)，依 "'`sources/liuruan_tw.txt` 校改刪節整理本。例句全部可在現行正文逐字找到；不是從他本補入的遊戲台詞。解釋供國中閱讀，完整改字理由見 `sources/variants.md`。
+
+| 字詞 | 注釋 | 正文例句 |
+|---|---|---|
+'"'''+ '\\n'.join(f'| {term} | {meaning} | 「{quote}」 |' for term,meaning,quote in terms)+'''
+
+「胡麻飯糝」「此知去人徑不遠」「各噉數枚」「邑屋改異」不是這份正文逐字用語；閱讀提問可談相同意思，但原文欄不得替換。「百鳥鳴呼」保留底本，譯作鳥兒鳴叫。留宿段整段〔略〕，不取其中字詞作例句。
+''')
+# 依本輪讀取的維基文庫主文，去除異文夾注與附詩；保留髣髴、纔、鷄、絶等來源字形。
+t='''晉太元中，武陵人捕魚為業。緣溪行，忘路之遠近。忽逢桃花林，夾岸數百步，中無雜樹，芳草鮮美，落英繽紛。漁人甚異之。復前行，欲窮其林。
+林盡水源，便得一山，山有小口，髣髴若有光。便捨船，從口入，初極狹，纔通人。復行數十步，豁然開朗。土地平曠，屋舍儼然。有良田、美池、桑竹之屬。阡陌交通，鷄犬相聞。其中往來種作，男女衣著，悉如外人。黃髮垂髫，並怡然自樂。
+見漁人，乃大驚，問所從來，具答之。便要還家，為設酒殺鷄作食。村中聞有此人，咸來問訊。自云先世避秦時亂，率妻子邑人來此絶境，不復出焉，遂與外人間隔。問今是何世，乃不知有漢，無論魏晉。此人一一為具言所聞，皆歎惋。餘人各復延至其家，皆出酒食。停數日，辭去。此中人語云：「不足為外人道也。」
+既出，得其船，便扶向路，處處誌之。及郡下，詣太守，説如此。太守即遣人隨其往，尋向所誌，遂迷，不復得路。
+南陽劉子驥，高尚士也。聞之，欣然規往。未果，尋病終。後遂無問津者。'''
+write('sources/evidence/taohuayuan.txt',t)
+rows=[
+('入口','迷山後循漂流物發現人跡，再越山到溪邊：「此處去人徑不遠。」「度山出一大溪。」','沿溪遇桃林，再穿山口進入：「緣溪行」「山有小口，髣髴若有光。」'),
+('異境樣貌','屋舍裝飾華美、氣候似春：「家筒瓦屋」「皆施絳羅帳」「氣候草木是春時」。','農村開闊，田池桑竹俱全：「土地平曠，屋舍儼然。」「有良田、美池、桑竹之屬。」'),
+('居民','兩名女子及侍婢、群女接待來客：「溪邊有二女子」「床頭各十侍婢」「有群女來」。文本未直接稱其為仙女。','避秦亂者的後裔與家屬，老幼安樂：「自云先世避秦時亂」「黃髮垂髫，並怡然自樂。」'),
+('停留','停留半年後強烈思鄉：「遂停半年。」「更懷土，求歸甚苦。」（停字校改見異文表。）','受村人款待數日後辭別：「餘人各復延至其家，皆出酒食。停數日，辭去。」'),
+('離開方式','女子們奏樂送別，指出歸路：「共送劉、阮，指示還路。」','自行辭別後找到船，沿原路作記號：「既出，得其船，便扶向路，處處誌之。」'),
+('回去後','故鄉人事全非，問到七世孫：「親舊零落，邑屋全異，無復相識。問得七世孫」。','到郡城報告，太守遣人再尋：「及郡下，詣太守，説如此。太守即遣人隨其往」。未寫漁人返鄉已過多代。'),
+('能否重返','本引文未交代再尋或重返；篇末只說祖先入山傳聞：「傳聞上世入山，迷不得歸。」不能據此斷言永遠不能回到異境。','重尋迷路，未能再入：「尋向所誌，遂迷，不復得路。」後續又寫「後遂無問津者。」'),
+('作者寓意','閱讀詮釋：以「遂停半年」對照「問得七世孫」，呈現異境與人間時間落差，以及「更懷土」的思鄉牽掛；不是作者明說的唯一寓意。','閱讀詮釋：由「先世避秦時亂」與「並怡然自樂」，可讀為嚮往遠離戰亂、安樂生活；「不復得路」又使理想世界難以尋得。')
+]
+compare={'rows':[dict(aspect=a,liuruan=l,taohua=t) for a,l,t in rows]}
+(r/'Assets/_Project/Data/compare.json').write_text(json.dumps(compare,ensure_ascii=False,indent=2)+'\\n')
+write('docs/content/compare_taohuayuan.md','''# 〈劉晨阮肇〉與〈桃花源記〉比較閱讀
+
+劉、阮底本：[《太平御覽》卷四十一引《幽明錄》](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)，本專案刪節校改正文見 "'`sources/liuruan_tw.txt`。桃花源來源：[陶淵明〈桃花源記〉，維基文庫](https://zh.wikisource.org/zh-hant/桃花源記)，[固定修訂2620894](https://zh.wikisource.org/w/index.php?title=桃花源記&oldid=2620894)。2026-11-07 核讀電子頁，未核原刻影像。
+
+下表與 `Assets/_Project/Data/compare.json` 八列文字完全相同。每格「」為原文，格內其餘文字為概括或閱讀詮釋。無重返記載不等於證明無法重返；志怪時間落差也不能套用到桃花源漁人身上。
+
+| 面向 | 〈劉晨阮肇〉 | 〈桃花源記〉 |
+|---|---|---|
+'"'''+ '\\n'.join(f'| {a} | {l} | {t} |' for a,l,t in rows)+'''
+
+## 〈桃花源記〉原文（比較所據之主文）
+
+以下排除網頁「一作」異文夾注與附詩；分段、標點為教學整理。將說話義「自雲」正規化為「自云」，與同段「語云」一致；其餘保留來源主文的髣髴、纔、鷄、絶、説、誌等字形，不擅換成別本。另存 "'`sources/evidence/taohuayuan.txt`，供比較引文逐字驗證。
+
+'"'''+ '\\n\\n'.join('> '+line for line in t.splitlines()))
+print('已寫入五幕對照、40條詞注、八列比較與桃花源主文。')
+PY" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+已寫入五幕對照、40條詞注、八列比較與桃花源主文。
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd; cat > tools/check_clues.py <<'PY'
+#"'!/usr/bin/env python3
+"""C-R1 聚焦檢查：從任意工作目錄執行，失敗時回傳非零結束碼。"""
+import json
+from pathlib import Path
+import re
+import sys
+import unicodedata
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def require(condition, message):
+    if not condition:
+        raise ValueError(message)
+
+
+def read_json(path):
+    return json.loads((ROOT / path).read_text(encoding="utf-8"))
+
+
+def validate_clues(data, source):
+    clues = data["clues"]
+    require(len(clues) == 7, "須有五幕卷軸、第三幕加題及結局，共7筆")
+    require([c["id"] for c in clues] == list(range(7)), "id 須依序為0–6且唯一")
+    require([c["act"] for c in clues] == [1, 2, 3, 3, 4, 5, 5], "幕次分配錯誤")
+    for c in clues:
+        label = f"id={c['"'id']}\"
+        require(type(c[\"act\"]) is int, f\"{label} act 必須是整數\")
+        for field in (\"title\", \"original\", \"plain\", \"question\", \"feedback\"):
+            require(isinstance(c.get(field), str) and c[field].strip(), f\"{label} {field} 缺漏\")
+        require(c[\"original\"] in source, f\"{label} original 不是正文嚴格子字串\")
+        options = c[\"options\"]
+        require(isinstance(options, list) and len(options) == 4, f\"{label} 須有4選項\")
+        require(all(isinstance(o, str) and o.strip() for o in options), f\"{label} 有空選項\")
+        require(len(set(options)) == 4, f\"{label} 有重複選項\")
+        require(type(c[\"answer\"]) is int and 0 <= c[\"answer\"] < 4, f\"{label} answer 須為0–3整數\")
+        hints = c[\"wrongHints\"]
+        require(isinstance(hints, list) and len(hints) == 2 and all(isinstance(h, str) and h.strip() for h in hints), f\"{label} 須有2條提示\")
+        require(all(word not in c[\"original\"] for word in (\"各就一帳宿\", \"女往就之\", \"宿緣所牽\")), f\"{label} 洩漏刪節段\")
+        require(all(type(i) is int and 0 <= i < c[\"id\"] for i in c.get(\"requires\", [])), f\"{label} 前置依賴無效或成環\")
+    ending = [c for c in clues if c.get(\"isEnding\")]
+    require(len(ending) == 1 and ending[0][\"id\"] == 6, \"唯一結局須為id=6\")
+    require(ending[0][\"original\"] == source.rstrip(\"\\n\"), \"結局不是刪節整理本全文\")
+    require(ending[0][\"original\"].count(\"……\") == 1, \"結局刪節符號須恰有1處\")
+    require(\"infer\" not in data, \"第三幕加題不應另放結局infer\")
+
+
+def check_source(source):
+    # 電子見證保留工具連結標記，先還原標記中的本文。
+    witness = (ROOT / \"sources/evidence/yulan.txt\").read_text(encoding=\"utf-8\").strip()
+    witness = re.sub(r\"【\\d+†(["'^】]+)】", r"'"\\1\", witness).removeprefix(\"《幽明錄》曰：\")
+    start = witness.index(\"至暮，令各就一帳宿\")
+    end = witness.index(\"遂留半年\", start)
+    witness = witness[:start] + witness[end:]
+    for old, new in ((\"便敕雲\", \"便敕云\"), (\"交幷\", \"交並\"), (\"全异\", \"全異\"), (\"遂留半年\", \"遂停半年\")):
+        witness = witness.replace(old, new)
+    def letters(text):
+        return \"\".join(c for c in text if not c.isspace() and not unicodedata.category(c).startswith(\"P\"))
+    require(letters(source) == letters(witness), \"正文與御覽證據不符（已扣除4處校改、刪節、標點）\")
+    require(len(source.splitlines()) == 7, \"正文須一段一行，共7段\")
+    require(not re.search(r\"[A-Za-z0-9,.:;"'!?]", source), "正文含非全形標點或拉丁文字")
+
+
+def check_support(source):
+    compare = read_json("Assets/_Project/Data/compare.json")["rows"]
+    require([r["aspect"] for r in compare] == ["入口", "異境樣貌", "居民", "停留", "離開方式", "回去後", "能否重返", "作者寓意"], "比較須有指定8個面向")
+    taohua = (ROOT / "sources/evidence/taohuayuan.txt").read_text(encoding="utf-8")
+    doc = (ROOT / "docs/content/compare_taohuayuan.md").read_text(encoding="utf-8")
+    for row in compare:
+        require(f"| {row['"'aspect']} | {row['liuruan']} | {row['taohua']} |\" in doc, \"比較文件與JSON不一致\")
+        for field, original in ((\"liuruan\", source), (\"taohua\", taohua)):
+            quotes = re.findall(r\"「(["'^」]+)」", row[field])
+            require(quotes and all(q in original for q in quotes), f"比較{row['"'aspect']}/{field}引文不符\")
+    acts = read_json(\"Assets/_Project/Data/narration.json\")[\"acts\"]
+    require([a[\"act\"] for a in acts] == list(range(1, 6)), \"旁白須含五幕且不重複\")
+    for a in acts:
+        require(1 <= len(a[\"sentences\"]) <= 3, f\"旁白第{a['act']}幕超過3句\")
+        for sentence in a[\"sentences\"]:
+            require(isinstance(sentence, str) and 1 <= len(sentence) <= 25, \"旁白單句超過25字\")
+            require(sentence.endswith(\"。\") and sentence.count(\"。\") == 1, \"旁白元素須為單句\")
+            require(not any(c in sentence for c in \"「」『』\"), \"旁白不可加入人物台詞\")
+    for filename in (\"acts.md\", \"glossary.md\"):
+        text = (ROOT / \"docs/content\" / filename).read_text(encoding=\"utf-8\")
+        for line in text.splitlines():
+            if line.startswith(\"> \"):
+                require(line[2:] in source, \"五幕引文不是正文子字串\")
+            if filename == \"glossary.md\" and line.startswith(\"| \") and \"「\" in line:
+                require(all(q in source for q in re.findall(r\"「(["'^」]+)」", line.split("|")[-2])), "詞注例句不是正文子字串")
+
+
+def main():
+    source = (ROOT / "sources/liuruan_tw.txt").read_text(encoding="utf-8")
+    check_source(source)
+    print("PASS 底本：7段；與御覽證據字序一致（4處校改＋指定刪節）")
+    validate_clues(read_json("Assets/_Project/Data/clues.json"), source)
+    print("PASS clues.json：JSON解析、7題格式、act、4選項、答案索引、2提示、依賴")
+    print("PASS original：7/7 嚴格連續子字串（不去空白、不去標點）")
+    print("PASS 結局：唯一isEnding、刪節全文、1處……、未含留宿段")
+    check_support(source)
+    print("PASS compare.json：8列；每格原文引句相符；Markdown與JSON一致")
+    print("PASS narration.json：5幕、每幕≤3句、每句含標點≤25字")
+    print("PASS acts.md／glossary.md：原文與例句逐字相符")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (ValueError, KeyError, TypeError, OSError) as error:
+        print(f"FAIL {error}", file=sys.stderr)
+        sys.exit(1)
+PY
+python3 tools/check_clues.py' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+PASS 底本：7段；與御覽證據字序一致（4處校改＋指定刪節）
+PASS clues.json：JSON解析、7題格式、act、4選項、答案索引、2提示、依賴
+PASS original：7/7 嚴格連續子字串（不去空白、不去標點）
+PASS 結局：唯一isEnding、刪節全文、1處……、未含留宿段
+PASS compare.json：8列；每格原文引句相符；Markdown與JSON一致
+PASS narration.json：5幕、每幕≤3句、每句含標點≤25字
+PASS acts.md／glossary.md：原文與例句逐字相符
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+檢查腳本已通過：7 筆 `original` 都是正文的嚴格連續子字串；比較表 8 列引文、旁白字數與題目格式也通過。接著會測試腳本能否攔下錯字、錯誤答案索引和循環依賴，並確認 R0 典藏未變更後寫交件報告。
+
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd; python3 - <<'PY'
+import copy, importlib.util, subprocess, json
+from pathlib import Path
+spec=importlib.util.spec_from_file_location('checks','tools/check_clues.py')
+m=importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+source=Path('sources/liuruan_tw.txt').read_text()
+data=json.loads(Path('Assets/_Project/Data/clues.json').read_text())
+mutations=[('原文錯字',lambda d:d['clues'][0].update(original='不存在的原文')),
+('答案超界',lambda d:d['clues'][1].update(answer=4)),
+('重複選項',lambda d:d['clues'][2]['options'].__setitem__(1,d['clues'][2]['options'][0])),
+('循環依賴',lambda d:d['clues'][3].update(requires=[3])),
+('缺少提示',lambda d:d['clues'][4].update(wrongHints=['只有一條'])),
+('結局缺全文',lambda d:d['clues'][6].update(original='遂停半年。'))]
+for label, mutate in mutations:
+    bad=copy.deepcopy(data); mutate(bad)
+    try: m.validate_clues(bad,source)
+    except ValueError: pass
+    else: raise SystemExit(f'FAIL 未攔截{label}')
+print(f'PASS 檢查器反例測試：{len(mutations)}/{len(mutations)} 成功攔截')
+for name in ('liuruan_tw.txt','variants.md','provenance.md','acts.md','glossary.md'):
+    oldpath=('docs/content/' if name in ('acts.md','glossary.md') else 'sources/')+name
+    before=subprocess.run(['git','show',f'HEAD:{oldpath}'],check=True,capture_output=True).stdout
+    assert before==Path('sources/_R0_guangji',name).read_bytes(),name
+for evidence in Path('sources/_R0_guangji/evidence').iterdir():
+    assert evidence.read_bytes()==(Path('sources/evidence')/evidence.name).read_bytes()
+print('PASS R0典藏：5份文件與HEAD逐位元組相同；4份證據複本相同')
+PY
+
+git diff --check -- sources docs/content Assets/_Project/Data tools/check_clues.py logs/C-R1.md" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 17ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+PASS 檢查器反例測試：6/6 成功攔截
+PASS R0典藏：5份文件與HEAD逐位元組相同；4份證據複本相同
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd; python3 - <<'PY'
+from pathlib import Path
+p=Path('tools/check_clues.py')
+s=p.read_text()
+old='    print(\"PASS acts.md／glossary.md：原文與例句逐字相符\")\\n'
+new=old+'''    invalid = read_json(\"Assets/_Project/Data/clues.json\")
+    invalid[\"clues\"][0][\"original\"] = source + \"非原文\"
+    try:
+        validate_clues(invalid, source)
+    except ValueError:
+        print(\"PASS 檢查器自檢：成功攔截不屬於正文的original\")
+    else:
+        raise ValueError(\"檢查器自檢失敗\")
+'''
+assert old in s
+p.write_text(s.replace(old,new))
+PY
+/bin/rm tools/__pycache__/check_clues.*.pyc
+python3 tools/check_clues.py" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+PASS 底本：7段；與御覽證據字序一致（4處校改＋指定刪節）
+PASS clues.json：JSON解析、7題格式、act、4選項、答案索引、2提示、依賴
+PASS original：7/7 嚴格連續子字串（不去空白、不去標點）
+PASS 結局：唯一isEnding、刪節全文、1處……、未含留宿段
+PASS compare.json：8列；每格原文引句相符；Markdown與JSON一致
+PASS narration.json：5幕、每幕≤3句、每句含標點≤25字
+PASS acts.md／glossary.md：原文與例句逐字相符
+PASS 檢查器自檢：成功攔截不屬於正文的original
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd; python3 - <<'PY'
+from pathlib import Path
+import subprocess, hashlib
+result=subprocess.run(['python3','tools/check_clues.py'],capture_output=True,text=True,check=True)
+files=['sources/liuruan_tw.txt','sources/variants.md','sources/provenance.md','sources/evidence/taohuayuan.txt','docs/content/acts.md','docs/content/glossary.md','docs/content/compare_taohuayuan.md','Assets/_Project/Data/clues.json','Assets/_Project/Data/compare.json','Assets/_Project/Data/narration.json','tools/check_clues.py']
+rows='\\n'.join(f'| "'`{f}` | {Path(f).stat().st_size} |'"' for f in files)
+sha=hashlib.sha256(Path('sources/liuruan_tw.txt').read_bytes()).hexdigest()
+report=f'''# C 線 R1 交件報告
+
+日期：2026-11-07。狀態：底本整理、題庫與比較資料已落盤，聚焦檢查通過；Unity 匯入、畫面及五幕觸發尚待 U／S 線接入驗收。
+
+## 做了什麼
+
+- 讀取 AGENTS.md、plan 第一／三節、C-R0 報告、sources 全部正文與證據，並只讀 ClueManager、ScrollUI、QuizStats 的資料與使用方式。根目錄 RTK.md 不存在，未假稱讀過。未操作 Unity。
+- 改用《太平御覽》卷四十一引《幽明錄》，七段一段一行；廣記〈天台二女〉（出《神仙記》）改作對校。R0 五份文件與四份 evidence 完整另存 sources/_R0_guangji/。
+- 本輪重新瀏覽御覽、通用《幽明錄》電子輯文與〈桃花源記〉，來源網址與修訂號均記在 provenance。未以搜尋摘要替代古文。
+- 原文四處字詞調整全部記在 variants：敕雲→敕云、交幷→交並、全异→全異、遂留半年→遂停半年。最後一項是主線用語決定，**不當作已證實誤字**。保留筒瓦、十餘日、胡麻糝、此處去人徑不遠、百鳥鳴呼、問得七世孫等 Y 字句，不混入長本細節。
+- 留宿整段以〔略〕處理；現行正文與結局用「……」標省略，僅以「遂停半年」銜接。省去內容不翻譯、不出題，結局 feedback 也不提。
+- 五幕各一張卷軸，加第三幕三物推論題與一張結局全文推論題，共7筆。每筆 act、4選項、0起算 answer、2條 wrongHints 齊全。國中程度，誘答分別針對不能／不肯、敘事順序、證據與斷言、思鄉動機、七世固定換算等誤讀。
+- 建立八面向比較，逐格引文並區分文本明說與閱讀詮釋；Markdown 與 compare.json 文字一致。附〈桃花源記〉主文及來源，不假稱本篇寫了重返失敗，也不假稱漁人返鄉已過數代。
+- 建立五幕旁白，每幕2–3句，每句含標點最多25字；只敘述正文已有事情，無人物新台詞。
+
+## 檔案清單
+
+| 檔案 | bytes |
+|---|---:|
+{rows}
+| "'`sources/_R0_guangji/` | 9份典藏檔案（五份文件、四份證據） |
+| `logs/C-R1.md` | 本交件報告 |
+
+tools/check_clues.py 與本 logs 單檔是任務明訂的寫入路徑例外；Unity 內只寫 Assets/_Project/Data/。未改其他線 C#、場景、設定、計畫或既有紀錄；未提交 Git、未推 GitHub、未部署。
+
+正文 SHA-256：`{sha}`。
+
+## 驗證與實際輸出
+
+執行 `python3 tools/check_clues.py`，結束碼0：
+
+```text
+{result.stdout.rstrip()}
+```
+
+另以記憶體內反例測試確認6/6攔截：原文錯字、答案超界、重複選項、循環依賴、缺少提示、結局缺全文。檢查器另內建一個不改檔的錯誤 original 自檢，未僅測正常資料。
+
+R0 典藏驗證：五份文件均與本輪起始 HEAD 逐位元組相同，四份證據與原 evidence 複本相同。`git diff --check` 對本輪指定檔案通過。JSON 驗證使用 Python 標準函式庫，未新增套件。
+
+手動內容複核：四選項各有單一正解；三件線索共同支持附近有人，不能斷言已見女子；半年／七世為時間落差推論，未定出固定年數換算；每幕旁白均能回指本文；比較表每格都有引句，未記載處明言未交代。
+
+## 沒做到什麼、介接風險與下一步
+
+- 未核古刻影像與印刷頁碼；電子本「百鳥鳴呼」保留，校本品質仍以電子轉錄為界。御覽固定修訂連結開啟為 Cache miss，當前頁完整故事讀取成功，兩者未混稱。
+- 現行 ClueData 無 act，JsonUtility 會忽略額外欄位；須由 S／U 線另行接上 act。未改 C# 來冒充完成介接。
+- id 契約：0第一幕、1第二幕、2第三幕卷軸、3第三幕加題、4第四幕、5第五幕、6結局。id3 requires=[2]；結局由現行 ClueManager 等六張非結局卷軸全收齊後開放。**須確保第三幕有id3的觸發點**，否則結局會等不到它。
+- 本輪不填頂層 infer，第三幕加題不會延到結局；結局自身即是七世推論題。明填 endingText 防止使用舊預設來源文。
+- compare.json 契約為 rows:[{{aspect,liuruan,taohua}}]；narration.json 為 acts:[{{act,sentences}}]。兩者尚未接進結局面板或幕次系統。U／S 線須確認載入引用、字型字表、換行捲動與觸發；七段結局文字尤其需要實際檢查可讀性。
+- 未執行 Unity、建置、瀏覽器或手機測試；資料檢查通過不等於遊戲可玩驗收。未改 plan 內仍舊的銅瓦、十三日、逆流與廣記底本敘述；本輪決定與內容契約已明列，主線須另同步各線。
+- 未寫入 Obsidian／LLM 知識庫：Vault 不在目前可寫範圍，也超出本輪指定寫入邊界；不宣稱已存。交件報告及所有正式內容均留在本專案。
+
+下一步：U／S 依上述 id 與資料契約接入，確認id3可取得、act可用、結局全文可捲動、比較表可讀，以及刪節內容未被 evidence／R0典藏誤載。
+'"'''
+Path('logs/C-R1.md').write_text(report)
+print('已寫入 logs/C-R1.md，含實際檢查輸出與介接風險。')
+PY
+git diff --check -- sources docs/content Assets/_Project/Data tools/check_clues.py logs/C-R1.md
+git status --short -- sources docs/content Assets/_Project/Data tools logs/C-R1.md" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 29ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+已寫入 logs/C-R1.md，含實際檢查輸出與介接風險。
+ M docs/content/acts.md
+ M docs/content/glossary.md
+ M sources/liuruan_tw.txt
+ M sources/provenance.md
+ M sources/variants.md
+?? Assets/_Project/Data/
+?? docs/content/compare_taohuayuan.md
+?? logs/C-R1.md
+?? sources/_R0_guangji/
+?? sources/evidence/taohuayuan.txt
+?? tools/
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+已完成御覽底本、R0 典藏、7 題題庫、五幕詞注與旁白、桃花源比較表。
+
+[交件報告與完整檢查輸出](/Volumes/hk6429/projects/liuruan-tiantai/logs/C-R1.md)｜[檢查腳本](/Volumes/hk6429/projects/liuruan-tiantai/tools/check_clues.py)
+
+```text
+PASS 底本：7段；與御覽證據字序一致
+PASS clues.json：7題格式、幕次、選項、答案及提示
+PASS original：7/7 嚴格連續子字串
+PASS 結局：刪節全文、唯一結局、未含留宿段
+PASS compare.json：8列引文及文件一致
+PASS narration.json：五幕句數、字數合規
+PASS acts.md／glossary.md：引文逐字相符
+PASS 檢查器自檢；另6/6錯誤反例成功攔截
+```
+
+未操作或實測 Unity；`act`、第三幕加題觸發及比較面板仍須 U／S 線接入。
+Obsidian 未儲存：Vault 不在本輪可寫範圍。
+hook: Stop
+hook: Stop
+hook: Stop Completed
+hook: Stop Completed
+tokens used
+94,572
+已完成御覽底本、R0 典藏、7 題題庫、五幕詞注與旁白、桃花源比較表。
+
+[交件報告與完整檢查輸出](/Volumes/hk6429/projects/liuruan-tiantai/logs/C-R1.md)｜[檢查腳本](/Volumes/hk6429/projects/liuruan-tiantai/tools/check_clues.py)
+
+```text
+PASS 底本：7段；與御覽證據字序一致
+PASS clues.json：7題格式、幕次、選項、答案及提示
+PASS original：7/7 嚴格連續子字串
+PASS 結局：刪節全文、唯一結局、未含留宿段
+PASS compare.json：8列引文及文件一致
+PASS narration.json：五幕句數、字數合規
+PASS acts.md／glossary.md：引文逐字相符
+PASS 檢查器自檢；另6/6錯誤反例成功攔截
+```
+
+未操作或實測 Unity；`act`、第三幕加題觸發及比較面板仍須 U／S 線接入。
+Obsidian 未儲存：Vault 不在本輪可寫範圍。
+EXIT=0

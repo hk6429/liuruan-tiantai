@@ -11,6 +11,7 @@ namespace Liuruan
     public class ClueData
     {
         public int id;
+        public int act;
         public string title;
         public string original;
         public string plain;

@@ -1,0 +1,7 @@
+S 線 R1 已完成，僅修改 `staging/scripts/`：
+
+- 三組 Core、MonoBehaviour 包裝與事件介面已交件。
+- INTEGRATION.md 已更新掛載與 GameFlow 接線契約。
+- Core 測試 **69 passed，0 failed**，完整輸出已貼入[交件報告](/Volumes/hk6429/projects/liuruan-tiantai/staging/scripts/logs/S-R1.md)。
+
+未開 Unity；包裝編譯、場景接線與實機驗收待 U 線完成。受寫入範圍限制，未另存 Obsidian。

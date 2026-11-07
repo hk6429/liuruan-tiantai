@@ -22,6 +22,7 @@ namespace Liuruan
         public static Transform CamShot;
 
         CharacterController cc;
+        HungerSystem hunger;
         float yaw, pitch = 20f, vy;
         float interactHintAfter;
         static readonly int SpeedHash = Animator.StringToHash("Speed");
@@ -29,6 +30,7 @@ namespace Liuruan
         void Awake()
         {
             cc = GetComponent<CharacterController>();
+            hunger = GetComponent<HungerSystem>();
             if (cam == null && Camera.main != null) cam = Camera.main.transform;
             yaw = transform.eulerAngles.y;
             RestoreFoliage();
@@ -83,7 +85,8 @@ namespace Liuruan
 
             vy = cc.isGrounded ? -1f : vy + gravity * Time.deltaTime;
             Vector3 before = transform.position;
-            MoveDisplacement(cc, (move * moveSpeed + Vector3.up * vy) * Time.deltaTime);
+            float speed = moveSpeed * (hunger ? hunger.SpeedMultiplier : 1f);
+            MoveDisplacement(cc, (move * speed + Vector3.up * vy) * Time.deltaTime);
             GroundFeet();
 
             // 讀實際水平速度（撞牆就停步；鍵盤、觸控搖桿都走 move → cc.Move，一樣有效）

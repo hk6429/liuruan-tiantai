@@ -1,0 +1,419 @@
+[
+  {
+    "path": "foliage/bamboo.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGBA",
+    "bytes": 447592,
+    "sha256": "470bb7c930f32d79c7200a05670d7e6b4a2e1145fae1ab35705872450567c2e0",
+    "alpha_zero_fraction": 0.8382940292358398
+  },
+  {
+    "path": "foliage/fern.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGBA",
+    "bytes": 862777,
+    "sha256": "cc558ad820d85a31c88d4c75ef1e786a95a88724200bd70894931fc8ef2cb773",
+    "alpha_zero_fraction": 0.6242694854736328
+  },
+  {
+    "path": "foliage/foliage_atlas.png",
+    "size": [
+      2048,
+      2048
+    ],
+    "mode": "RGBA",
+    "bytes": 2461974,
+    "sha256": "35a70507178ddef8d00f748cdd006e5d38ca105b62e2e29cc44bc657ec9ba999",
+    "alpha_zero_fraction": 0.7546365261077881
+  },
+  {
+    "path": "foliage/foliage_contact.png",
+    "size": [
+      1200,
+      800
+    ],
+    "mode": "RGB",
+    "bytes": 591134,
+    "sha256": "4e9f051f1d522c7d324cc66e9b7260f0dba6405cc128f5e54dd1ebc5e8ce0e89"
+  },
+  {
+    "path": "foliage/hanging_vine.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGBA",
+    "bytes": 484597,
+    "sha256": "d550a68a86150ce6e3bb50afec8aed571e6083b04a98714b2fca31a9424b03ce",
+    "alpha_zero_fraction": 0.8271713256835938
+  },
+  {
+    "path": "foliage/shrub.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGBA",
+    "bytes": 735947,
+    "sha256": "a66d046108fa1c983f277d5df33d7249837bb1ed3dfb680bdf9d57a6c18f105d",
+    "alpha_zero_fraction": 0.6161403656005859
+  },
+  {
+    "path": "foliage/tall_grass.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGBA",
+    "bytes": 596998,
+    "sha256": "012eacde6a55dc0f81ec311d8298bb86facd5e53a0538d7dc59fa737c501528a",
+    "alpha_zero_fraction": 0.7444305419921875
+  },
+  {
+    "path": "foliage/wildflowers.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGBA",
+    "bytes": 746602,
+    "sha256": "58df61f302e3e768d2e83b7010dee12ec49dc1f0b0f0b35ce749e70a82b14c2c",
+    "alpha_zero_fraction": 0.6781740188598633
+  },
+  {
+    "path": "ground/dirt_path.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGB",
+    "bytes": 1284605,
+    "sha256": "866e62df2f599db8f14fff6ed39b56720ec85687848db1ee7e2df41d30b481dd",
+    "seam_max_lr": 0,
+    "seam_max_tb": 0
+  },
+  {
+    "path": "ground/dirt_path_n.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGB",
+    "bytes": 688387,
+    "sha256": "dc4c3bc61b20b137c2ee9f791e06a7f00209b2d1c1b4440ecf649d897078384c",
+    "seam_max_lr": 0,
+    "seam_max_tb": 0
+  },
+  {
+    "path": "ground/dirt_path_tilecheck.png",
+    "size": [
+      2048,
+      2048
+    ],
+    "mode": "RGB",
+    "bytes": 2751092,
+    "sha256": "9e520f37be4f9868bbca56c93a87c9f638aabb3b77403c6c65834e2f1fb3cd87"
+  },
+  {
+    "path": "ground/grass.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGB",
+    "bytes": 1526879,
+    "sha256": "abb683c314658c9355e3541d2ade77f408d7610ee9a126360c30620eddd06368",
+    "seam_max_lr": 0,
+    "seam_max_tb": 0
+  },
+  {
+    "path": "ground/grass_n.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGB",
+    "bytes": 942944,
+    "sha256": "8e86bb5cd6196811a455669744e4da3dd4b0ed95bb9f5f481e724065ebf0ac5a",
+    "seam_max_lr": 0,
+    "seam_max_tb": 0
+  },
+  {
+    "path": "ground/grass_tilecheck.png",
+    "size": [
+      2048,
+      2048
+    ],
+    "mode": "RGB",
+    "bytes": 3233674,
+    "sha256": "b875abc3f6ae6fbcd7812165d38ce34e8ea3d2cf5abe66e5bfbc645e997dd71a"
+  },
+  {
+    "path": "ground/moss_rock.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGB",
+    "bytes": 1517076,
+    "sha256": "6c0fcd0559ec1bfc5cc938362fa58918338ef863ff9ea6fd327ec32939200154",
+    "seam_max_lr": 0,
+    "seam_max_tb": 0
+  },
+  {
+    "path": "ground/moss_rock_n.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGB",
+    "bytes": 811502,
+    "sha256": "06e48722e4dea020acedae886c0ce2a60e441fdefbb2eadd29b8a7d1ef37e463",
+    "seam_max_lr": 0,
+    "seam_max_tb": 0
+  },
+  {
+    "path": "ground/moss_rock_tilecheck.png",
+    "size": [
+      2048,
+      2048
+    ],
+    "mode": "RGB",
+    "bytes": 3219831,
+    "sha256": "afc6d588f3bae3d310c63e9ed5e029a1dcb760530c6cce371eec87f1624cb57f"
+  },
+  {
+    "path": "ground/riverbed_pebble.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGB",
+    "bytes": 1654659,
+    "sha256": "68ae98c0d5fe6b2bbd79b3f3527ff82350e0543f4c22c8aacb27c8c983cd0169",
+    "seam_max_lr": 0,
+    "seam_max_tb": 0
+  },
+  {
+    "path": "ground/riverbed_pebble_n.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGB",
+    "bytes": 1010180,
+    "sha256": "1af6a6e10103d66800a24dcf92634f2f0e3e1efea9a76c36a4571076163e400c",
+    "seam_max_lr": 0,
+    "seam_max_tb": 0
+  },
+  {
+    "path": "ground/riverbed_pebble_tilecheck.png",
+    "size": [
+      2048,
+      2048
+    ],
+    "mode": "RGB",
+    "bytes": 3503230,
+    "sha256": "3e279cc262a03ca35a18aceeb1943ed1d36561878aa00ecd1677e6890f265000"
+  },
+  {
+    "path": "ground/village_stone.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGB",
+    "bytes": 1429181,
+    "sha256": "339a3a6cdf2adbadc6a88c585c29eef9088995d52b3db76d8b72d47ea4b35b62",
+    "seam_max_lr": 0,
+    "seam_max_tb": 0
+  },
+  {
+    "path": "ground/village_stone_n.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGB",
+    "bytes": 818543,
+    "sha256": "165b3627bc632247fa8d4712c63c274591cdfadba1eb918591e96608aa17ccab",
+    "seam_max_lr": 0,
+    "seam_max_tb": 0
+  },
+  {
+    "path": "ground/village_stone_tilecheck.png",
+    "size": [
+      2048,
+      2048
+    ],
+    "mode": "RGB",
+    "bytes": 3045834,
+    "sha256": "66476a6c47f20e6e3ea9043e4b9235297d82b632bfda719aa8455f1f082fa464"
+  },
+  {
+    "path": "sky/sky_day.png",
+    "size": [
+      2048,
+      1024
+    ],
+    "mode": "RGB",
+    "bytes": 1898638,
+    "sha256": "e2ee649680962303815ace1e5d012edb36d537981f0941e0e472f25b3622d325"
+  },
+  {
+    "path": "sky/sky_day_wrapcheck.png",
+    "size": [
+      4096,
+      1024
+    ],
+    "mode": "RGB",
+    "bytes": 2043193,
+    "sha256": "1197e50ede33ff7505f2a04af7f853d3ed766137f851af1c5625f6d237029e89"
+  },
+  {
+    "path": "sky/sky_return.png",
+    "size": [
+      2048,
+      1024
+    ],
+    "mode": "RGB",
+    "bytes": 1583147,
+    "sha256": "2a9a79927776b0d23d725d50310fb17d278f53927dea662191d709aed19d6dd1"
+  },
+  {
+    "path": "sky/sky_return_wrapcheck.png",
+    "size": [
+      4096,
+      1024
+    ],
+    "mode": "RGB",
+    "bytes": 1716971,
+    "sha256": "a08b7739963569b61f9d8bb86836f71b969def661e70a656997e3aeb0a70aa22"
+  },
+  {
+    "path": "ui/bark.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "bytes": 84128,
+    "sha256": "aa0ff3349587b14d7100aa6b82f4cf631933c87c6cff3409b67e2c6dbb76f833",
+    "alpha_zero_fraction": 0.532623291015625
+  },
+  {
+    "path": "ui/minimap_frame.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "bytes": 38203,
+    "sha256": "d55cfa3315d69cfa597a5815bbe85c102b16bb863bebd26555494999bfb40251",
+    "alpha_zero_fraction": 0.707550048828125
+  },
+  {
+    "path": "ui/peach_empty.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "bytes": 53667,
+    "sha256": "81f375f44353095d211e6397f8748ca7e8dc4b40adc8509d28e555525812ed79",
+    "alpha_zero_fraction": 0.5206298828125
+  },
+  {
+    "path": "ui/peach_full.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "bytes": 61066,
+    "sha256": "ad76ff26f842315e7c58ce5aa312df087fe08c4f5225280d40112056385155c4",
+    "alpha_zero_fraction": 0.522003173828125
+  },
+  {
+    "path": "ui/peach_half.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "bytes": 62124,
+    "sha256": "5af27aa8a47180c5bd02168d9d5f1bedab09522959b6658cbc851e5d91189bca",
+    "alpha_zero_fraction": 0.5202178955078125
+  },
+  {
+    "path": "ui/portrait_frame.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "bytes": 52252,
+    "sha256": "241006173a305a5f8161c9b7500d64908ecbfbc35b7ddab32033210ddceb4966",
+    "alpha_zero_fraction": 0.7284088134765625
+  },
+  {
+    "path": "ui/portrait_ruanzhao.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "bytes": 100668,
+    "sha256": "3044022f7798c5bc86d7b15b4949c9916919e71024d15be6dc85a1303dea5732",
+    "alpha_zero_fraction": 0.358245849609375
+  },
+  {
+    "path": "ui/skill_bark.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "bytes": 96666,
+    "sha256": "14ea748e7505ec83e2fb1e3b561a0b8a999f0b7b4aef0eb7ebc586422dad7b24",
+    "alpha_zero_fraction": 0.353515625
+  },
+  {
+    "path": "ui/skill_call.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "bytes": 92556,
+    "sha256": "709ad689f339e6b7e408ab86e9033840fe3917a43e84c73fbd44d0b23d76a359",
+    "alpha_zero_fraction": 0.3575286865234375
+  },
+  {
+    "path": "ui/skill_water.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "bytes": 87019,
+    "sha256": "00ce75e920e8a7cfbc25f72c605ef61519668b374f9b8aa42c7d22d1be0e2154",
+    "alpha_zero_fraction": 0.36614990234375
+  },
+  {
+    "path": "ui/ui_contact.png",
+    "size": [
+      1400,
+      560
+    ],
+    "mode": "RGB",
+    "bytes": 626025,
+    "sha256": "c4d9b5d2cd7a1fd380b6a5643b1a685d81e4de4d82c2aa6b251b641cd528ee69"
+  }
+]
