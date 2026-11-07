@@ -1,0 +1,10 @@
+已完成 8 張概念圖，全數通過 `check.py`：
+
+- 尺寸皆為 1024×1024 PNG。
+- 四角色差最高 1.06（< 8）。
+- 四邊最小留白 7.03%（≥ 6%）。
+
+[總覽圖](/Volumes/hk6429/projects/liuruan-tiantai/staging/art/R2/contact.png) · [交件報告與全部提示詞](/Volumes/hk6429/projects/liuruan-tiantai/staging/art/R2/A-R2.md)
+
+未進行 Dzine 轉模；薄紗、銅鈴與米粒的轉模效果仍待確認。
+

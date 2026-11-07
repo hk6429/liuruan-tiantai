@@ -1,0 +1,6 @@
+R2b 檔案已交件：[交件報告](logs/U-R2b.md)。四組件離線編譯通過，Core 測試 **91／91 通過**。
+
+CC Refresh 後，將 `r2-r2b-001` 寫入 `Assets/_Project/Editor/R1Command.txt` 即可執行驗收。
+
+未執行 Unity、截圖或 release build；道具來源目前缺件，實際步態、畫面與包體仍待 CC 驗證。
+

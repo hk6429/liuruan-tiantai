@@ -1,0 +1,3380 @@
+OpenAI Codex v0.166.0
+--------
+workdir: /Volumes/hk6429/projects/liuruan-tiantai
+model: gpt-6.1-sol
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR]
+reasoning effort: medium
+reasoning summaries: none
+session id: 01a1b41d-f599-7220-9510-b873186cf5dd
+--------
+user
+# S 線 R2：SeasonSwap、EpilogueDirector、CharacterBob
+
+先讀 AGENTS.md、docs/plan.md、staging/scripts/INTEGRATION.md、你上一輪的 staging/scripts/logs/S-R1.md、Assets/_Project/Data/clues.json、compare.json、narration.json（只讀）。也讀 Assets/_Project/Scripts/GameFlow.cs 與 HudUI.cs（只讀，了解 U 線現有介面；不准改）。只能寫 staging/scripts/。不開 Unity。延續純 C# Core＋MonoBehaviour 包裝＋測試的模式。交件報告寫 staging/scripts/logs/S-R2.md。
+
+1. **SeasonSwap**（第四幕「停半年」與第五幕「歸鄉換景」）：
+   - SeasonCore：季節序列 春→夏→秋→冬→春，給一個 0–1 的進度回傳目前季節與兩季間的混合權重；Act4 的「停半年」演出用 6 秒跑完一輪（春回春），最後停在春並發 `OnBirdsSing` 一次（對應「春時百鳥啼鳴」）。
+   - SeasonSwap 元件：Inspector 掛四組季節顏色（樹冠色、地面色、霧色、光色）與兩組場景根物件 `immortalVillageRoot`／`homeVillageRoot`；`PlayHalfYear()` 跑季節；`SwapToHome()` 關仙村、開歸鄉村、天空改用 sky_return 材質（欄位給 U 指定）、光色轉灰冷。不 Find 字串，全部用欄位。
+   - 測試：季節邊界、權重連續、鳥鳴只發一次、重複呼叫冪等。
+2. **EpilogueDirector**（結局）：讀 clues.json（isEnding 那條為全文）、compare.json，產出結局頁的資料模型（純 C#）：①全文分段 ②推論題「為什麼找到的是七世孫？」三選一（題目、選項、解析只能引用 sources/liuruan_tw.txt 原文與 docs/content/acts.md 已有的白話；不准自編情節） ③桃花源記比較表列資料 ④成績卡（剝皮數、漂流物、閱讀卡答對率、總時間）。MonoBehaviour 包裝只發事件與提供資料，不建 UI。測試：比較表列數與 compare.json 一致、成績計算、題目答案索引正確。
+3. **CharacterBob**：人物模型在綁骨前的程序化動畫。依父物件水平速度做上下彈跳（步頻隨速度）、左右微擺、前傾；靜止時呼吸縮放（±1.5%）。參數可調，速度由外部餵（`SetSpeed(float)`）或自動量測 transform 位移。Core 測試：速度 0 時無彈跳、步頻與速度單調、無 NaN。
+4. 更新 INTEGRATION.md 加三個元件的掛法與事件。run_core_tests.sh 加新測試，實際跑全綠，輸出貼報告。
+
+warning: Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.
+  user (/Users/naichengchen/.codex/config.toml): `features.rmcp_client` is ignored.
+  user (/Users/naichengchen/.codex/config.toml): `writable_roots` is ignored.
+warning: Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.
+  user (/Users/naichengchen/.codex/config.toml): `features.rmcp_client` is ignored.
+  user (/Users/naichengchen/.codex/config.toml): `writable_roots` is ignored.
+warning: Under-development features enabled: chronicle. Under-development features are incomplete and may behave unpredictably. To suppress this warning, set `suppress_unstable_features_warning = true` in /Users/naichengchen/.codex/config.toml.
+warning: Exceeded skills context budget. All skill descriptions were removed and 50 additional skills were not included in the model-visible skills list.
+hook: SessionStart
+hook: SessionStart
+hook: SessionStart Completed
+hook: SessionStart Completed
+hook: UserPromptSubmit
+hook: UserPromptSubmit
+hook: UserPromptSubmit Completed
+hook: UserPromptSubmit Completed
+codex
+我會先讀交接文件與 U 線介面，確認資料格式及既有測試方式；本輪只修改 `staging/scripts/`，不開 Unity。
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "rg -n 'liuruan|S-R1' /Users/naichengchen/.codex/memories/MEMORY.md" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+57:applies_to: cwd=/Volumes/hk6429/projects/liuruan-tiantai; reuse_rule=the educational-game planning pattern is reusable, but project files, Unity version, MCP availability, art credits, repository state, and deployment outcome must be inspected anew.
+63:- extensions/skysight/resources/2026-11-06T16-20-00-DHLy-10min-memory-summary.md (cwd=/Volumes/hk6429/projects/liuruan-tiantai, rollout_path=extensions/skysight/resources/2026-11-06T16-20-00-DHLy-10min-memory-summary.md, updated_at=2026-11-06T16:20:00+00:00, thread_id=None, project/Git initialization observed; Unity MCP unconfirmed) [skysight memory]
+68:- liuruan-tiantai, 天台山・流杯記, 劉晨, 阮肇, Unity 6.3 WebGL, Unity MCP, AGENTS.md, Git, Cloudflare, Netlify, 手機瀏覽器
+76:- The selected adaptation moved from 《桃花源記》 candidates to the 劉晨、阮肇 story; the working name is 〈天台山・流杯記〉 and project code is `liuruan-tiantai`. The plan scopes art, interaction, text review, questions, and teacher material, with about 200 generation credits and Cloudflare/Netlify as the stated deployment scope. [Task 1] [skysight memory]
+77:- The observed terminal sequence began `/Volumes/hk6429/projects/liuruan-tiantai`, Git, `AGENTS.md`, and four work briefs. Unity Hub was opened, but no Unity MCP server startup, scene/build, or WebGL play result was recorded. [Task 1] [skysight memory]
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc 'cat AGENTS.md docs/plan.md staging/scripts/INTEGRATION.md staging/scripts/logs/S-R1.md' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+# 天台山・流杯記（liuruan-tiantai）— Codex 接手說明
+
+Unity 6000.3.27f1 URP WebGL 國文遊戲，題材《幽明錄》〈劉晨阮肇入天台〉。回覆一律繁體中文（台灣）。
+計劃書：docs/plan.md（五幕：迷山／攀桃／流杯／仙村／歸鄉；四線 U/S/A/C）。
+參考畫面：staging/ref/*.jpg（UE5 Q 版小勇者影片截圖，風格與 HUD 版面照它）。
+骨架來源：/Volumes/hk6429/projects/liulaolao-garden（劉姥姥，只讀，絕不修改該專案）。
+
+## 鐵律
+- 只寫自己這條線被指定的資料夾，不碰別線的檔案。
+- 只有 U 線可以操作 Unity（UnityMCP 或 batchmode），其他線不得開 Unity。
+- 台詞與原文只用 sources/liuruan_tw.txt 逐字，不准自編情節或台詞；自撰限簡短白話旁白。
+- 女子留宿段（「各就一帳宿」起至「遂停半年」前）整段略過，只用旁白「遂停半年」帶過。
+- 不做戰鬥。不推 GitHub、不推 Vercel。生成產物不放 iCloud。
+- 刪檔用 /bin/rm；Blender 只能 headless（-b --factory-startup）。
+- 完成時在 logs/<線>-R<輪>.md 寫交件報告：做了什麼、檔案清單、怎麼驗證的、沒做到什麼。不得謊報。
+---
+date: 2026-11-07
+type: 計劃書
+tags: [unity-webgl, 教育遊戲, 幽明錄, 劉晨阮肇, 桃花源記, 比較閱讀, 國文]
+---
+
+# 〈劉晨阮肇入天台〉Unity WebGL 教育遊戲計劃書（草案 v0.1）
+
+- 專案代號：`liuruan-tiantai`（實體路徑 `/Volumes/hk6429/projects/liuruan-tiantai`，`~/projects` 是 symlink，Codex 一律帶實體路徑）
+- 參考影片：`~/Downloads/F3-pUil44IpPP3fK.mp4`（UE5 Q 版小勇者，47 秒：帳篷村 → 開寶箱 → 木樁 → 光束森林小徑 → 營火帳篷）
+- 產線：沿用〈劉姥姥〉`~/projects/liulaolao-garden`（Unity 6000.3.27f1 URP WebGL＋Boot 場景包切塊＋R30 畫質工具）與 `/unity-webgl-edu-game` skill
+- 分工：**CC 規劃、寫任務書、驗收；Codex 執行**，每輪四線平行，只有 U 線碰 UnityMCP
+
+---
+
+## 一、教學目標
+
+| # | 目標 | 遊戲中怎麼學 |
+|---|---|---|
+| 1 | 讀懂志怪小說的敘事結構：入山 → 遇仙 → 留居 → 思歸 → 返鄉 | 五幕就是五段，每幕結束時解鎖原文 |
+| 2 | 抓線索推論：蕪菁葉、流杯、胡麻飯糝 →「此知去人徑不遠」 | 溪中漂流物三選一推論題 |
+| 3 | 「仙界一日，人間百年」的時間母題 | 結局村莊整個換樣，七世孫出場 |
+| 4 | 與〈桃花源記〉比較閱讀 | 結局比較表：入口、異境樣貌、離開方式、能否重返 |
+
+## 二、角色
+
+| 影片 | 本作 |
+|---|---|
+| 紅帽小勇者（玩家） | **劉晨**：Q 版漢代採藥人，頭巾、短褐、背簍、腰插小斧 |
+| 發光小象夥伴 | **阮肇**：AI 跟隨，會落後、會回頭催；左下頭像＝阮肇 |
+| 村民 | 二女子、三四十名仙女（遠景群像，用同一模型換色） |
+| 結局 NPC | 七世孫 |
+
+不做戰鬥。影片的劍盾改成小斧＋背簍；木樁靶場改成「取穀皮」的楮樹林。
+
+## 三、遊戲流程（五幕，約 15 分鐘，一節課可玩完＋討論）
+
+台詞與旁白**只引原文逐字**，自撰限簡短白話旁白，不加情節（劉姥姥鐵律沿用）。
+
+| 幕 | 影片對應段 | 原文情節 | 互動 | 考點 |
+|---|---|---|---|---|
+| 一、迷山 | 森林小徑＋光束 | 入天台山取穀皮，迷不得返，經十三日糧乏盡 | 剝 5 棵楮樹皮（＋穀皮計數）；HUD 5 格飢餓值隨時間遞減；小地圖逐漸起霧 | 「迷不得返」的處境 |
+| 二、攀桃 | 森林盡頭山壁 | 遙望山上桃樹，絕巖邃澗，攀援藤葛乃得至上，各噉數枚，飢止體充 | 沿藤蔓攀爬小段；摘桃，飢餓值回滿 | 困境轉折 |
+| 三、流杯 | 開寶箱 | 持杯取水，見蕪菁葉、一杯流出、有胡麻飯糝 →「此知去人徑不遠」 | 溪中三件漂流物＝三個寶箱，按 [E] 撿起；集滿後推論題；涉水逆流 | 線索推論 |
+| 四、仙村 | 帳篷村＋營火＋告示板 | 溪邊二女子喚「劉、阮二郎」；銅瓦屋、絳羅帳、帳角懸鈴；停半年，春時百鳥啼鳴，懷悲思求歸 | 村中任務告示板（原文段落卡）；季節由春轉春、鳥鳴；「求歸」選項 | 身在仙境的矛盾心理 |
+| 五、歸鄉 | （影片無，本作加碼） | 親舊零落，邑屋改異，無復相識；問訊得七世孫 | 回到第一幕起點的村子，整個換樣（同場景換一套建物＋陌生村民）；七世孫對話 | 時間母題＋比較閱讀 |
+
+結局：全文＋推論題（為什麼會是七世？）＋〈桃花源記〉比較表＋成績卡（沿用 QuizStats）。
+
+**待你決定**：原文中女子留宿的段落（「各就一帳宿」那段）國中不適合，建議**整段略過**，只用旁白「遂停半年」帶過。
+
+## 四、HUD（照影片版面）
+
+| 位置 | 影片 | 本作 |
+|---|---|---|
+| 左上 | 5 顆火焰＋「+25 Embers」 | 5 顆桃形飢餓值＋「穀皮 ×N」 |
+| 右上 | 3 個菱形技能格（G/R/F） | 剝皮／取水／呼喚阮肇（手機改成三顆圓鈕） |
+| 左下 | 小象頭像＋點狀冷卻環 | 阮肇頭像＋呼喚冷卻環 |
+| 右下 | 小地圖 | 小地圖（正交俯視 RenderTexture，第一幕會起霧） |
+| 中下 | `[E] Close the chest` | `[E] 撿起` 互動提示（手機改「互動」鈕） |
+
+## 五、美術定調
+
+- 整體：照影片的**風格化 Q 版＋暖陽光束**（頭身比約 1:2.5、飽和暖綠、強烈斜射陽光、柔和陰影）。跟劉姥姥的半寫實武俠不同，這次要可愛。
+- 天台山：松、竹、楮樹、藤蔓、絕巖、溪澗；光束用體積光假面片＋懸浮塵粒（不跑真體積光，WebGL 撐不住）。
+- 仙村：**銅瓦屋**（銅綠＋金邊屋瓦會反光）、絳紅羅帳、帳角懸鈴（風動＋音效）、桃花樹；比影片的帳篷村更夢幻。
+- 歸鄉村：同一塊地，換成破舊陌生的漢代民居、灰冷色調，與仙村形成反差。
+- 產線：codex-image2 概念圖 → **Dzine Normal**（10 點／件）轉 3D → headless Blender 瘦身 → Mixamo 自動綁骨 → Unity Humanoid。
+
+**Dzine 預算**：人物 4（劉晨、阮肇、仙女、七世孫）＋建物道具約 16 件 ≈ 20 件 × 10 點 ＝ 約 200 點。
+
+## 六、技術規劃（只列與劉姥姥不同處）
+
+| 項目 | 規劃 |
+|---|---|
+| 鏡頭 | 第三人稱跟隨＋碰撞縮距（沿用 CamOcclusion），比劉姥姥更低、更貼近，跟影片一樣 |
+| 場景 | 一個大地形分三區（森林／溪谷／村），Boot＋場景包切塊沿用 R30 |
+| 新系統 | `HungerSystem`、`CompanionFollow`（NavMesh 跟隨＋落後催促）、`MinimapCam`、`ClimbZone`、`DriftPickup`、`SeasonSwap`（歸鄉換景） |
+| 沿用 | BootLoader、PlayerController、TouchControls、QualityTier／QualityToggle、FontSubset（RebuildNoDialog）、ClueManager、QuizStats、EpilogueDirector、R30Lighting／R30Foliage、deploy.sh／verify.sh |
+| 包體 | data < 26,214,400 bytes；場景包每塊 20 MiB |
+| 部署 | CF Pages＋Netlify（不推 Vercel）；itch 等你說要再上；不推 GitHub（照劉姥姥） |
+
+## 七、四線分工與輪次
+
+| 線 | 負責 | 寫入範圍 | 工具 |
+|---|---|---|---|
+| **U** | Unity 組裝、建置 | `Assets/`、`ProjectSettings/` | Codex＋UnityMCP（唯一） |
+| **S** | 新系統 C# 原始碼（先在外部寫好、附 EditMode 測試） | `staging/scripts/` | Codex |
+| **A** | 美術：概念圖、天空、貼圖、草叢卡片 | `staging/art/` | Codex 生圖（codex-image2） |
+| **C** | 內容：原文校對、題目、比較表、教師手冊 | `sources/`、`Assets/_Project/Data/`、`docs/` | Codex |
+
+Dzine、Mixamo 要用瀏覽器，由 **CC 主線用 Chrome 操作**（Codex 碰不到你的 Chrome）。
+
+| 輪 | U | S | A | C | 驗收 |
+|---|---|---|---|---|---|
+| R0 開專案 | 從劉姥姥複製骨架、新建 Boot／Main、灰盒地形三區 | HungerSystem、CompanionFollow | 概念圖 6 張（森林、溪谷、仙村、歸鄉村、劉晨、阮肇） | 原文取得與校對（太平廣記卷 61 引幽明錄為底本）→ `sources/liuruan_tw.txt` | 你看概念圖定調 |
+| R1 白模可玩 | 灰盒走完五幕、HUD 版面 | MinimapCam、ClimbZone、DriftPickup | 天空全景、地面貼圖、草叢卡片 | clues.json＋題目＋比較表 | 瀏覽器實開灰盒版 |
+| R2 3D 生成 | 匯入 Dzine 模型 | SeasonSwap、EpilogueDirector 改寫 | 建物道具概念圖（單一主體淺灰底） | 教師手冊、學習單 | 主線跑 Dzine＋Mixamo |
+| R3 質感 | 地形、植被風動、光束、後製、仙村擺件密度 | 觸控三鈕、手機 HUD | 補圖、UI 圖示（桃、穀皮、頭像） | 字型子集字表、製作說明 | 改前改後對照圖 |
+| R4 審查 | 修正 | 修正 | 修正 | 四位專家走查（遊戲、國文、UX、效能） | 你說「全部修正」 |
+| R5 上線 | build＋場景包 | — | — | 上線文案 | deploy.sh＋verify.sh md5＋瀏覽器實開 |
+
+每輪派工規格（照劉姥姥）：任務書寫明寫入範圍、驗收條件、鐵律；`codex exec -C /Volumes/hk6429/projects/liuruan-tiantai -s workspace-write`；驗收看實際 diff 與檔案，不看回報文字；20 分鐘沒動靜視為卡住。
+
+## 八、需要你決定的事
+
+1. 女子留宿段：建議整段略過（見第三節）。
+2. 專案代號 `liuruan-tiantai`、遊戲名〈天台山・流杯記〉，可以嗎？
+3. Dzine 約 200 點，點數夠不夠？
+4. 上線範圍：只上 CF＋Netlify，還是比照劉姥姥也上 itch？
+
+## 九、風險
+
+| 風險 | 對策 |
+|---|---|
+| Q 版光束畫質在 WebGL 達不到影片水準 | 先做森林一區當樣板，你點頭再推其他區（skill 2.5 節） |
+| 原文版本差異（太平廣記／太平御覽／藝文類聚字句不同） | C 線列出異文表，以太平廣記為底本並註明 |
+| 阮肇 AI 跟隨卡地形 | NavMesh＋超距瞬移回身邊 |
+| UnityMCP 斷線（本 session 開頭就是 ECONNREFUSED） | 開工前請你開 Unity，Window → MCP for Unity → Start Server |
+# S 線 R0／R1 掛載說明
+
+本批提供原始碼；S 線未開 Unity、未寫 Assets、未改 PlayerController。
+
+## 匯入位置
+
+由 U 線複製（保留隨附 asmdef）：
+
+- `Runtime/` → `Assets/_Project/Scripts/Liuruan/Runtime/`
+- `Tests/EditMode/` → `Assets/_Project/Tests/EditMode/Liuruan/`
+
+不要把 `Tests/Console/` 複製進 Assets，該處只含 console 測試用的 NUnit 屬性替身，匯入會與 Unity NUnit 衝突。不要把整個 staging/scripts 複製進 Assets。
+Runtime 無第三方套件。EditMode 需專案已有 Unity Test Framework（NUnit）；本批不新增或修改 Unity 套件。
+
+## 劉晨：HungerSystem
+
+1. 在玩家劉晨的 GameObject 加入 `Liuruan.HungerSystem`，第一幕 `Initial Value = 3`、`Interval Seconds = 24`。
+2. PlayerController 快取同物件元件：`hunger = GetComponent<Liuruan.HungerSystem>();`，並新增欄位 `private Liuruan.HungerSystem hunger;`。
+3. 在既有速度計算完成後、乘上移動向量之前，加這一行（`moveSpeed` 換成實際的每幀區域速度變數）：
+
+```csharp
+moveSpeed *= hunger != null ? hunger.SpeedMultiplier : 1f;
+```
+
+每幀由基礎速度重算 `moveSpeed`，不可反覆修改 Inspector 的基礎速度欄位，否則會累乘。此專案尚無 PlayerController 原始碼可核對，因此這是插入契約，不是已套用的 diff。
+
+4. HUD 啟用時先讀 `Value` 畫 5 格桃形圖示，再訂閱 `OnChanged(float)`；元件停用時解除訂閱。Inspector 也有 `On Changed` UnityEvent 可接 UI。
+5. `OnStarving` / Inspector `On Starving` 只在正值跨到 0 時通知一次；沒有死亡、扣血或結局處理。
+6. Toast UI 接 `OnToast(string)` 或 Inspector `On Toast`，顯示「肚子餓了，去找些食物吧。」；包裝層只發訊息，不建立 UI。
+7. 面板／演出開始呼叫 `Pause()`，全部結束後 `Resume()`。這是可重複呼叫的布林暫停；若多面板重疊，請由既有面板管理者彙整後再 Resume。暫停保留未滿 24 秒的餘額。
+8. 食物呼叫 `Eat(amount)`，攀桃完成呼叫 `FillAll()`。補食不重設仍在進行的計時；從飢餓恢復則重新計時。暫停期間仍可補食。重新開始第一幕時重新建立玩家物件，Core 沒有跨場景存檔。
+
+Core API：`HungerCore(initialValue = 3, intervalSeconds = 24)`、`Tick(deltaSeconds)`、`Value`、`SpeedMultiplier`、`IsPaused`、`Pause/Resume/Eat/FillAll`、`OnChanged/OnStarving`。輸入 NaN、無限值、負時間或負食物量會拋出 ArgumentOutOfRangeException；初始飢餓值夾在 0–5。
+
+## 阮肇：CompanionFollow
+
+1. 在阮肇的移動根物件加入 `Liuruan.CompanionFollow`，`Player` 指向劉晨。
+2. 可加 NavMeshAgent 並烘焙可行走範圍；建議基速 3、加速倍率 1.6。Agent 啟用且在 NavMesh 上時採 NavMesh 路徑；否則直接 MoveTowards。無 Agent 也能跑。
+3. 根物件的位移由此元件負責，動畫關閉 Root Motion；`Animator` 的 Speed 參數每幀讀 `CompanionFollow.Speed`（實際世界位移 m/s）。瞬移當幀為 0。NavMeshAgent 的停止距離由元件設成 2.4m，使它確實進入 `<2.5m` 的 Idle 範圍。
+4. 技能按鈕呼叫 `Call()`，回傳 true 才播放成功回饋；false 代表冷卻中，不延長冷卻。呼喚使阮肇維持 Catchup，直到 `<2.5m` 待機或觸發瞬移。
+5. 左下頭像環每幀讀 `CooldownRatio`：1＝剛呼喚、0＝可呼喚；8 秒後歸零。若 UI 要顯示完成比例，讀 `1f - CooldownRatio`。Time.timeScale = 0 時跟隨與冷卻一起停止；未指定 Player 時不更新 Core。
+6. 狀態距離採三維直線距離：`<2.5` Idle、`[2.5,12]` Follow、`(12,30]` Catchup、`>30` Teleport；呼喚中的 Catchup 優先於 Follow。
+7. 非 Idle 狀態先記錄位置，此後連續 3 秒未離開進度錨點 0.05m 即視為卡住；累積移動達 0.05m、Idle 或瞬移會重設計時。Core 回傳的瞬移目標是玩家水平朝向後方 2m，零水平朝向則用世界 -Z。
+8. Unity 包裝會在該目標附近 2m 取 NavMesh 落點（因此實際落點可能偏離恰好 2m），再 Warp；無有效落點或 Warp 失敗時直接設定位置。多層地形／山壁需要 U 線現場驗證安全落點。MoveTowards 不做避障與地面貼合，僅供沒有 NavMesh 的灰盒備援。
+
+純 Core 使用 `WorldPosition(X,Y,Z)`，不引用 UnityEngine。`CompanionCore.Tick(dt, player, companion, playerForward)` 回傳狀態，並更新 `Destination`；`Call()`、`CooldownRatio` 提供技能契約。
+
+## 驗證
+
+在專案根目錄執行：
+
+```sh
+staging/scripts/Tests/run_core_tests.sh
+```
+
+本機實際使用 .NET SDK 10.0.402，限定 C# 9，零 NuGet 套件，warnings 視為 errors。runner 在暫存目錄編譯所有 `*Core.cs` 與同一份 EditMode 測試，反射呼叫 Test/TestCase；這是 console 斷言執行，不是啟動 Unity 的 NUnit runner。需 .NET SDK 8 以上；本機已有 dotnet，未使用 mono/csc 備援。測試產物離開時清除。
+
+U 線匯入後請在 Test Runner → EditMode 跑 `Liuruan.Tests`，再現場驗證：HUD 初始三格／歸零 Toast 與 60% 速度／暫停與補桃／NavMesh 跟隨／無 NavMesh 備援／卡住及超距瞬移／動畫 Speed／呼喚冷卻環。S 線未執行這些 Unity 驗證。
+
+
+## R1：MinimapCam（右下小地圖）
+
+1. 建立獨立 Camera，掛 `Liuruan.MinimapCam`，不要掛在主相機。指定 Player、Companion；Target 可空，流程改變目標時呼叫 `SetTarget(Transform)`，清除用 `SetTarget(null)`。
+2. World Min 是探索範圍左下角的世界 X/Z；World Size 是 X/Z 寬深（預設 -128/-128、256/256，**U 線須依灰盒實際範圍調整**）。這是固定世界格網，不隨玩家平移，避免迷霧紀錄漂移。Reveal Radius Cells 預設 2，以格為單位，採包含邊界的圓形揭露；半徑 0 只揭露所在格。
+3. View Half Size 預設 24m，Camera Height 100m；地圖固定世界 +Z 朝上，俯視正交、aspect=1，跟隨玩家位置，不跟玩家旋轉。Map Layers 選環境層，排除主角／夥伴模型或非地圖特效。請避免其他相機控制器同時寫入此 Camera。
+4. Awake 建立 `Output`（256×256 RenderTexture）及 `FogMask`（32×32 RGBA Texture2D；黑色 alpha 255＝霧、0＝已探索），銷毀時釋放。本批以內建 OnGUI 在右下直接合成底圖、世界對齊迷霧與圖示層，不需要新增 UI 套件；白色箭頭表示玩家朝向、青色點表示阮肇、黃色點表示當前目標，圖示畫在霧上，離開視野時隱藏。
+5. `Output` **只含攝影機底圖**，迷霧與圖示是 OnGUI 疊層；若 U 線改用 Canvas，須一起移植疊層，不可只把 Output 放進 RawImage 就當作完整地圖。不要同時顯示兩份底圖。FogMask 的列從世界 -Z 到 +Z（Texture2D 的底至頂），取樣須使用固定 World Min/Size，不能直接伸滿跟隨視窗。超出世界範圍在第一幕保持黑霧。
+6. GameFlow 初始化完成（Awake 之後）先呼叫 `SetAct(1)`；換幕呼叫 `SetAct(2..5)`。第一幕自動隨玩家所在格揭露，第二幕起完全取消迷霧；重新回第一幕保留本局探索紀錄，重開局需重建元件。`OnFogChanged(bool enabled)` 僅在有霧／無霧切換時發送，初始狀態請由流程主動設定。
+7. 最小版只記錄每幀玩家所在格的周圍；瞬移不揭露中間路徑。預設 256m 世界每格 8m，若想要較細探索，先縮小 World Size。未提供存檔或額外 UI 互動。
+
+## R1：ClimbZone（第二幕藤蔓）
+
+1. 在藤蔓互動區物件掛 `Liuruan.ClimbZone`，隨附 BoxCollider 由 Awake 設為 trigger，調整 trigger 覆蓋藤蔓底部。指定 Player（移動根物件）、Player Movement（該玩家的一般移動 MonoBehaviour）、Hunger（同一玩家 HungerSystem）、Plane Origin、Top Landing。一般移動元件不可指向 ClimbZone 自己。
+2. Plane Origin 放在**玩家根位置對應的藤蔓底邊中心**，local +X 是橫移方向、世界 +Y 是上攀方向、local +Z 朝離開山壁方向；只能繞世界 Y 旋轉、不能傾斜或滾轉。Width/Height 是世界公尺，不使用 Transform scale 換算。Top Landing 放在平台上安全的玩家根落點，必須可容納膠囊，不要放進山壁。
+3. 玩家 Collider 或其子物件 Collider 進入 trigger 後 `CanInteract` 才為 true，互動呼叫 `TryInteract()`，成功回 true；一般移動已被停用時拒絕掛附，避免多區搶同一玩家。元件記住一般移動與 CharacterController 的啟用狀態，暫停兩者以鎖定藤蔓平面；釋放、到頂完成及元件停用都還原原始狀態。玩家不能另有持續推動的 Rigidbody、NavMeshAgent 或 Root Motion，若有，U 線需配合 `OnMovementLockChanged` 暫停它們。
+4. 狀態：Grounded → Attaching（投影到平面）→ 下一個非零 dt 更新進入 Climbing。WASD／方向鍵沿藤蔓移動，手機每幀呼叫 `SetMoveInput(Vector2)`，放開時傳 Vector2.zero。向量會正規化以免斜走加速；正常 1.2m/s，Hunger.Value <1 為 0.6m/s，恰為 1 仍為 1.2m/s。Hunger 未指定時視為飽食，因此 U 線必須接上。
+5. 向上到頂：TopOut → 以 1.2m/s 從藤頂移至 Top Landing → Grounded → `OnTopOut()`。`OnStateChanged(TopOut)` 是翻越開始，**GameFlow 應以 OnTopOut 作為已站上平台的通知**。此為位置過渡，動畫由 U 線依狀態接線；TopOut 期間維持移動鎖定。
+6. 向下到底：Release → 還原控制 → Grounded；停在底部不輸入不會立刻放開。取消／切幕可呼叫 `Release()`；它會安全地還原控制，重複呼叫不多發事件。停用區域也自動 Release。頂端／底端及翻越路徑沒有碰撞掃描，須由 U 線安排安全落點與無障礙路徑。
+7. `OnPromptChanged(bool)` 提供進出區提示；UI 可以顯示簡短白話「攀藤」。包裝不建立台詞、不處理 GameFlow、不自行消耗 E 或觸控互動鍵。
+
+## R1：DriftPickup／DriftCollection（第三幕溪流）
+
+1. 在第三幕流程根物件掛一個 `Liuruan.DriftCollection`。溪中三個漂流物各掛 `Liuruan.DriftPickup`，三者的 Collection **都指定同一個收集器**；指定 Player，Id 依序為 1＝蕪菁葉、2＝杯、3＝胡麻飯糝。請勿用三個不同的收集器，否則不會集滿。
+2. Waypoints 至少兩點，依上游到下游排列；路徑點必須是獨立靜態物件，不能放在漂流物的子階層。Start 時快取世界座標，使用開放 Catmull–Rom 曲線（端點重複），Cycle Seconds 預設 30 秒走完全程，抵達下游後回上游循環；不是下游反向游回上游。各漂流物可用不同路徑／週期避免重疊。
+3. 曲線採均勻參數，因此速度不是固定 m/s，彎道可能略有超出控制點；依溪道寬度放路徑點並調長週期以維持緩慢漂流。本輪未新增弧長表、浮力、物理或網路套件。
+4. 玩家距離採三維直線距離，<=2m 可拾取；`CanInteract` 供 UI／互動路由器即時讀取。`OnPromptChanged(int id, bool visible)` 在靠近／離開／停用時通知顯示或清除提示，可顯示「撿起」。只有真正成功才回傳 `TryInteract() == true`，遠距／重複拾取均回 false。
+5. 成功時 Core 先把該 id 記入共用收集器：收集器發 `OnCollected(int id)`，第三個唯一 id 接著發 `OnAllCollected()`，再由拾取物發 `OnPickedUp(int id)`；包裝清除提示並停用整個漂流物 GameObject（Renderer/Collider 一起停用）。如果流程會在全收集時立刻切幕，優先訂閱收集器事件。每個 id 只計一次，三件全收集只發一次，即使存在重複 id 的物件也不會多算；重啟物件仍會自行隱藏。
+6. GameFlow 用收集器 `Count` 同步 HUD，`OnCollected` 更新三件線索、`OnAllCollected` 開推論題；各 `OnPickedUp` 留給拾取特效。不靠 static 全域狀態，重新開始此幕若要清空收集，重建共用收集器及三個漂流物，不要只 SetActive(true)。
+
+## R1：GameFlow／輸入接線契約（U 線負責）
+
+Runtime 不引用 GameFlow、PlayerController、Interactable、ScrollUI 或 TouchInput，也不依賴它們所在的組件。沿用現有事件路由即可；不須修改這批 asmdef。
+
+| 元件 | C# 事件 | 參數／用途 |
+|---|---|---|
+| MinimapCam | `event Action<bool> OnFogChanged` | true＝第一幕迷霧啟用，false＝取消 |
+| ClimbZone | `event Action<ClimbState> OnStateChanged` | 狀態改變（含 Attaching、Climbing、TopOut、Release、Grounded） |
+| ClimbZone | `event Action<bool> OnMovementLockChanged` | 攀爬鎖定／還原時，通知其他移動或動畫系統 |
+| ClimbZone | `event Action<bool> OnPromptChanged` | 藤蔓互動提示顯示／清除 |
+| ClimbZone | `event Action OnTopOut` | 翻越完成、安全落點到達後通知流程 |
+| DriftPickup | `event Action<int, bool> OnPromptChanged` | 漂流物 id、顯示或清除 |
+| DriftPickup | `event Action<int> OnPickedUp` | 單一拾取物成功後的 id |
+| DriftCollection | `event Action<int> OnCollected` | 共用唯一收集通知，id=1/2/3 |
+| DriftCollection | `event Action OnAllCollected` | 三個唯一 id 全收集，只發一次 |
+
+事件都應在 U 線 OnEnable 訂閱、OnDisable 解除。C# 事件不是 Inspector UnityEvent；如需 Inspector 綁定，請由既有輸入／流程腳本轉接。
+
+現有 PlayerController 會透過 `Interactable.onInteract` 處理 E 與手機按鈕，可在 U 線用有保存參考的 UnityAction 轉接，例如：
+
+```csharp
+// U 線已有對應的 Interactable、ClimbZone 參考。
+UnityEngine.Events.UnityAction climbAction = () => { climbZone.TryInteract(); };
+climbInteractable.onInteract.AddListener(climbAction);
+// 拆除時使用同一個 climbAction RemoveListener。
+```
+
+漂流物同理轉接 `TryInteract()`；其 Interactable 設 radius=2、clueId=-1、toast 空值，prompt 用「撿起」。現有 Interactable 只看水平距離，**真正能拾取仍以 DriftPickup.CanInteract 的三維 2m 為準**；U 線的提示路由應先檢查此值，避免樓層上下誤顯示。藤蔓的 Interactable 則須同時檢查 ClimbZone.CanInteract，因一般 Nearest 並不檢查 trigger。一次互動只選一個可互動元件，避免同幀多次處理；請勿讓另一支腳本重複 ConsumeDown。
+
+ClimbZone 攀爬期間停用 PlayerController（含其相機 LateUpdate），相機暫留原位；若要攀爬鏡頭跟隨，U 線由獨立鏡頭腳本處理，不能重新啟用一般移動來解決。
+
+## R1 驗證與交接邊界
+
+`Tests/run_core_tests.sh` 已納入新三組測試；R0 的 40 案例保留，新 29 案例，共 **69 passed, 0 failed**。同一份 R1CoreTests.cs 可由 Unity NUnit 執行。原始 console 輸出：`logs/core-tests-R1.txt`，交件報告：`logs/S-R1.md`。
+
+本輪只完成純 C# 測試及靜態檢查；未開 Unity、未編譯 MonoBehaviour、未掛場景。U 線需驗證：256² RenderTexture／迷霧世界座標對齊與第二幕取消／箭頭北朝上；玩家多 Collider 進出與攀爬控制還原／手機搖桿／上下端安全落點；三物件循環與隱藏／提示路由／三個 id 與推論題事件。OnGUI 的疊層順序及手機安全區也需實機驗收。
+# S 線 R1 交件報告
+
+日期：2026-11-07。寫入範圍僅 `staging/scripts/`；未開 Unity、未跑 batchmode、未修改 Assets／其他線、未推送。
+
+## 變更與交件
+
+- MinimapFogCore：固定世界範圍的 32×32 格網、圓形揭露半徑、世界座標轉格、最大邊界歸最後一格、範圍外不揭露；Act2–5 關霧，回 Act1 保留探索。
+- MinimapCam：專用正交北向俯視相機跟隨玩家，建立／釋放 256² RenderTexture 與 32² Texture2D 遮罩；右下 OnGUI 疊加世界對齊迷霧、玩家朝向箭頭、阮肇點、目標點。不新增 UI 套件。
+- ClimbCore：Grounded→Attaching→Climbing→TopOut／Release，正常 1.2m/s、飢餓值 <1 為 0.6m/s；斜走不加速、左右／上下限位。
+- ClimbZone：trigger 內互動掛附、藤蔓平面鎖定、鍵盤／外部手機向量輸入、頂端自動移至平台落點、底端自動放開；暫停並還原一般移動及 CharacterController 原始狀態，停用時也還原。
+- DriftCore／DriftCollectionCore：開放 Catmull–Rom 路徑、沿路徑下游循環、三維 2m 拾取、共用唯一 id 記錄、重複拾取拒絕、全收集只通知一次。
+- DriftPickup／DriftCollection：獨立三個物件共享收集器、靠近／離開提示事件、拾取後隱藏整個物件，重新啟用仍不重生；以 C# event 通知流程，不引用 GameFlow。
+- INTEGRATION.md：掛載、Inspector 欄位、事件名稱與參數、GameFlow 輸入輸出契約、既有 Interactable 轉接方式與 U 線驗收項目。
+- 沿用 R0 WorldPosition、RequireFinite、Check 及同份 EditMode／console 測試模式；沒有新增套件、組件依賴或測試替身。
+
+## 檔案清單
+
+新增：
+
+- `Runtime/MinimapFogCore.cs`
+- `Runtime/MinimapCam.cs`
+- `Runtime/ClimbCore.cs`
+- `Runtime/ClimbZone.cs`
+- `Runtime/DriftCore.cs`（含 DriftCollectionCore）
+- `Runtime/DriftPickup.cs`
+- `Runtime/DriftCollection.cs`
+- `Tests/EditMode/R1CoreTests.cs`
+- `logs/core-tests-R1.txt`
+- `logs/S-R1.md`（本報告）
+
+修改：
+
+- `INTEGRATION.md`
+- `Tests/run_core_tests.sh`
+- `Tests/Console/Runner.cs`
+
+以上皆相對於 `staging/scripts/`；R0 Core、包裝與原測試未改。
+
+## 實際驗證
+
+執行 `staging/scripts/Tests/run_core_tests.sh`，結果 **69 passed, 0 failed**：原 R0 40 案例＋本輪 29 案例。使用本機 .NET SDK 10.0.402、C# 9、warnings as errors、零 NuGet 套件。此 runner 執行與 EditMode 相同的測試方法，並非 Unity Test Runner。
+
+新增測試涵蓋：
+
+- 迷霧：非正方形世界座標、負世界起點、內部格線、精確最大邊界、四側範圍外、半徑 0／2 與圓形遮罩、角落裁切、重複揭露、Act2–5 取消／回 Act1 保留、非法輸入。
+- 攀爬：完整到頂事件序列、到頂保持鎖定直到 Finish、到底自動 Release、底部靜止、<1／=1 飢餓邊界、斜走速度、側邊限位、附著座標夾值、重複釋放、非法輸入。
+- 漂流：曲線起終點／中間 waypoint／彎道取樣、週期精確邊界與餘額、2m／2.001m 拾取、三維距離、拾取後停止且不再拾取／重生、重複 id、全收集只發一次、事件內重入重複拾取、路徑陣列防外部修改、非法輸入。
+
+其他實際檢查：
+
+- `sh -n staging/scripts/Tests/run_core_tests.sh`：通過。
+- `git diff --check -- staging/scripts`：通過；另掃描新增 C#／整合文件／shell 無行尾空白。
+- 五個 `*Core.cs` 均無 UnityEngine／UnityEditor 引用；全部 Runtime 無 GameFlow 引用。
+- 兩個 asmdef 均可解析為 JSON，未修改 asmdef。
+- 原始輸出含 macOS `CSSM_ModuleLoad` 訊息，未隱藏；編譯與測試仍成功。
+
+### 實際完整測試輸出
+
+```text
+/Volumes/hk6429/projects/liuruan-tiantai
+Compiler: .NET SDK 10.0.402; C# 9.0; no NuGet packages; shared EditMode test methods
+CSSM_ModuleLoad(): One or more parameters passed to a function were not valid.
+PASS HungerCoreTests.ClampsInitialValue(-1,0)
+PASS HungerCoreTests.ClampsInitialValue(0,0)
+PASS HungerCoreTests.ClampsInitialValue(5,5)
+PASS HungerCoreTests.ClampsInitialValue(6,5)
+PASS HungerCoreTests.DropsAtExactIntervalAndPreservesRemainder()
+PASS HungerCoreTests.EatClampFillAndChangeEvents()
+PASS HungerCoreTests.FoodWorksWhilePausedAndDoesNotResetActiveClock()
+PASS HungerCoreTests.LargeTickClampsAndRecoveryGetsFreshInterval()
+PASS HungerCoreTests.PauseResumeIsIdempotentAndKeepsRemainder()
+PASS HungerCoreTests.RejectsInvalidInputs()
+PASS HungerCoreTests.StartsWithThreeAndNormalSpeed()
+PASS HungerCoreTests.StarvesOncePerCrossingAndRecoversWithoutDying()
+PASS HungerCoreTests.SupportsCustomInterval()
+PASS HungerCoreTests.ZeroTickDoesNothing()
+PASS CompanionCoreTests.AllSixteenDistanceDrivenTransitions(0)
+PASS CompanionCoreTests.AllSixteenDistanceDrivenTransitions(1)
+PASS CompanionCoreTests.AllSixteenDistanceDrivenTransitions(2)
+PASS CompanionCoreTests.AllSixteenDistanceDrivenTransitions(3)
+PASS CompanionCoreTests.CallAcceleratesUntilReunion()
+PASS CompanionCoreTests.CallCooldownAndExactReadyBoundary()
+PASS CompanionCoreTests.CatchupCanAlsoGetStuck()
+PASS CompanionCoreTests.DistanceBoundaries(0,Idle)
+PASS CompanionCoreTests.DistanceBoundaries(2.499,Idle)
+PASS CompanionCoreTests.DistanceBoundaries(2.5,Follow)
+PASS CompanionCoreTests.DistanceBoundaries(12,Follow)
+PASS CompanionCoreTests.DistanceBoundaries(12.001,Catchup)
+PASS CompanionCoreTests.DistanceBoundaries(30,Catchup)
+PASS CompanionCoreTests.DistanceBoundaries(30.001,Teleport)
+PASS CompanionCoreTests.ExactStuckBoundary()
+PASS CompanionCoreTests.FiveCentimetresResetsStuckTimer()
+PASS CompanionCoreTests.IdleNeverCountsAsStuck()
+PASS CompanionCoreTests.MovesThroughEveryStateAndBack()
+PASS CompanionCoreTests.ProgressAndIdleResetStuckTimer()
+PASS CompanionCoreTests.RejectsInvalidTimeAndCoordinates()
+PASS CompanionCoreTests.SlowProgressAccumulatesAgainstAnchor()
+PASS CompanionCoreTests.StuckAtExactlyThreeSecondsTeleportsThenResets()
+PASS CompanionCoreTests.TeleportClearsCallButPreservesCooldown()
+PASS CompanionCoreTests.TeleportIsTwoMetresBehindNormalizedHorizontalForward()
+PASS CompanionCoreTests.UsesThreeDimensionalDistance()
+PASS CompanionCoreTests.ZeroForwardUsesWorldBack()
+PASS MinimapFogCoreTests.OutsideDoesNotRevealEdge(-16.001,0)
+PASS MinimapFogCoreTests.OutsideDoesNotRevealEdge(16.001,0)
+PASS MinimapFogCoreTests.OutsideDoesNotRevealEdge(0,-32.001)
+PASS MinimapFogCoreTests.OutsideDoesNotRevealEdge(0,32.001)
+PASS MinimapFogCoreTests.RadiusClipsAtCornerAndKeepsHistoryAcrossActs()
+PASS MinimapFogCoreTests.RadiusIsCircularAndRepeatedRevealIsIdempotent()
+PASS MinimapFogCoreTests.RejectsInvalidInputs()
+PASS MinimapFogCoreTests.WorldCoordinates(-16,-32,0,0)
+PASS MinimapFogCoreTests.WorldCoordinates(-15,-30,1,1)
+PASS MinimapFogCoreTests.WorldCoordinates(0,0,16,16)
+PASS MinimapFogCoreTests.WorldCoordinates(16,32,31,31)
+PASS ClimbCoreTests.AttachClampsAndExplicitReleaseIsIdempotent()
+PASS ClimbCoreTests.DescendingToBottomReleasesAutomatically()
+PASS ClimbCoreTests.DiagonalSpeedAndSideBounds()
+PASS ClimbCoreTests.FullTopOutSequenceAndEvents()
+PASS ClimbCoreTests.HungerSpeedBoundary(0,0.6)
+PASS ClimbCoreTests.HungerSpeedBoundary(0.999,0.6)
+PASS ClimbCoreTests.HungerSpeedBoundary(1,1.2)
+PASS ClimbCoreTests.HungerSpeedBoundary(5,1.2)
+PASS ClimbCoreTests.RejectsInvalidInputs()
+PASS ClimbCoreTests.StationaryAtBottomDoesNotRelease()
+PASS DriftCoreTests.AllCollectedOnceEvenWithReentrantDuplicatePickup()
+PASS DriftCoreTests.CollectedItemsStopAndCannotReappearOrNotifyAgain()
+PASS DriftCoreTests.CurveSamplesEndpointsKnotsAndBend()
+PASS DriftCoreTests.LoopsAtExactPeriodAndPreservesRemainder()
+PASS DriftCoreTests.PickupRadiusBoundary(2,True)
+PASS DriftCoreTests.PickupRadiusBoundary(2.001,False)
+PASS DriftCoreTests.PickupUsesThreeDimensionsAndCopiesWaypoints()
+PASS DriftCoreTests.RejectsInvalidInputs()
+RESULT: 69 passed, 0 failed
+```
+
+## 未做到與已知風險
+
+- 本輪遵守 S 線限制，**未開 Unity、未編譯 MonoBehaviour、未跑 Unity NUnit／場景／WebGL／手機**；Core 全綠不等於場景驗收完成。
+- MinimapCam.Output 只有底圖，霧與圖示由 OnGUI 疊層；U 線若改成 RawImage 必須連疊層一起移植。實際灰盒世界範圍、渲染層、相機高度／裁切、UI 疊層與手機安全區尚待校準。
+- 攀爬需接好既有 Interactable／輸入路由；包裝不自行消耗 E 或手機互動鍵，避免與現有 PlayerController 重複處理。Hunger 欄位必須指定，否則視為飽食。
+- 攀爬需垂直藤蔓平面、已校準的玩家根高度與安全平台落點。鎖定期間停用 CharacterController，不做牆面／翻越碰撞掃描；TopOut 是位置過渡，未製作角色翻越動畫。若有額外 Rigidbody／Root Motion，U 線須透過鎖定事件暫停。
+- 攀爬停用既有 PlayerController 也會停住其相機 LateUpdate；如需專用攀爬鏡頭由 U 線接獨立鏡頭腳本。
+- 漂流採均勻參數曲線，彎道非等速且可能略超出 waypoint；預設每 30 秒走完整條路。未做弧長等速表、浮力或物理。
+- 共用收集器屬本局狀態，不提供跨場景存檔。三件須共用同一收集器；重玩需重建收集器及物件。
+- 根目錄 RTK.md 不存在；已讀 AGENTS.md、計畫書第三／四／六節、S-R0 報告與 INTEGRATION.md。
+- Obsidian 位於本輪允許寫入範圍外，依「只能寫 staging/scripts/」未另存，未宣稱已儲存。
+
+## 下一步（U 線）
+
+依 INTEGRATION.md 匯入 Runtime 與 Tests/EditMode（不匯入 Tests/Console），跑 Unity EditMode。掛三組元件與共用收集器，接互動及 GameFlow 事件，校準世界範圍／藤蔓平面／平台落點／溪流路徑，再實測地圖迷霧與圖示、攀爬還原與頂底端、三物件拾取及推論題。
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc 'cat Assets/_Project/Data/clues.json Assets/_Project/Data/compare.json Assets/_Project/Data/narration.json Assets/_Project/Scripts/GameFlow.cs Assets/_Project/Scripts/HudUI.cs' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+{
+  "clues": [
+    {
+      "id": 0,
+      "act": 1,
+      "title": "迷山：糧盡的困境",
+      "original": "漢明帝永平五年，剡縣劉晨、阮肇共入天台取穀皮，迷不得返，經十餘日，糧食乏盡，饑餒殆死。",
+      "plain": "漢明帝永平五年，剡縣的劉晨與阮肇進天台山取穀樹皮，迷路無法返回。十多天後，糧食吃完，幾乎餓死。",
+      "question": "「迷不得返」與「糧食乏盡」合起來，說明兩人面臨什麼處境？",
+      "options": [
+        "山路雖然熟悉，卻因取皮而耽擱",
+        "無法找到歸路，又缺少維生食物",
+        "擔心遇到居民，因此不願意返家",
+        "雖然備有糧食，卻找不到採集物"
+      ],
+      "answer": 1,
+      "feedback": "兩人既迷路又缺糧，生存受到威脅；後來吃桃子才出現轉機。",
+      "wrongHints": [
+        "「不得返」是不能回去，還是不願回去？",
+        "「乏盡」表示糧食所剩不多，還是已經用完？"
+      ]
+    },
+    {
+      "id": 1,
+      "act": 2,
+      "title": "攀桃：困境的轉機",
+      "original": "遙望山上有一桃樹，大有子實，而絕岩邃澗，了無登路。攀葛乃得至，啖數枚，而饑止體充。",
+      "plain": "遠遠看見山上有棵桃樹，結了很多果實；岩壁陡峭、山澗幽深，沒有登上的路。他們攀著葛藤才到達，吃了幾顆桃子後，止住飢餓，恢復體力。",
+      "question": "「而饑止體充」在故事發展上，主要有什麼作用？",
+      "options": [
+        "交代山中果實，全年都可以採食",
+        "說明兩人吃飽，決定留山不返家",
+        "暗示山路平坦，採果原本無困難",
+        "呈現體力恢復，使探路得以繼續"
+      ],
+      "answer": 3,
+      "feedback": "「饑止體充」寫飢餓消除、體力恢復，讓原本幾乎餓死的兩人能繼續行動。",
+      "wrongHints": [
+        "先比較吃桃子前後，兩人的身體有何變化。",
+        "下段接著寫下山取水，這需要什麼條件？"
+      ]
+    },
+    {
+      "id": 2,
+      "act": 3,
+      "title": "流杯：沿水發現線索",
+      "original": "復下山持杯取水，欲盥漱，見蕪菁葉從山腹流出，甚鮮新。復一杯流出，有胡麻糝。相謂曰：「此處去人徑不遠。」度山出一大溪。",
+      "plain": "兩人下山拿杯子取水，想洗手漱口，看見新鮮的蕪菁葉從山腹漂出；又漂出一只杯子，裡面有芝麻飯粒。他們認為附近有人行的路，越過山後到了一條大溪。",
+      "question": "這段文字呈現的事情，先後順序是哪一項？",
+      "options": [
+        "取水見漂流物，再推知人徑不遠",
+        "見到溪邊女子，再拾起漂流杯子",
+        "找到山中住屋，再沿溪返回取水",
+        "渡過大溪之後，再上山尋找桃樹"
+      ],
+      "answer": 0,
+      "feedback": "先有取水時的觀察，再有「去人徑不遠」的判斷，最後才寫到大溪；兩人此時尚未見到女子。",
+      "wrongHints": [
+        "先找「見」與「相謂曰」的前後位置。",
+        "女子出場在下一段，別把後文移到前面。"
+      ]
+    },
+    {
+      "id": 3,
+      "act": 3,
+      "title": "流杯推論：物品透露人跡",
+      "original": "復下山持杯取水，欲盥漱，見蕪菁葉從山腹流出，甚鮮新。復一杯流出，有胡麻糝。相謂曰：「此處去人徑不遠。」度山出一大溪。",
+      "plain": "漂下的蕪菁葉很新鮮，杯子裡還有芝麻飯粒。兩人根據這些線索，推測附近有人活動。",
+      "question": "蕪菁葉、杯子與胡麻飯粒，為何使兩人推知「此處去人徑不遠」？",
+      "options": [
+        "物品隨水漂來，證明前方必定有大海",
+        "杯中留有食物，證明採集者就在眼前",
+        "菜葉新鮮且有餐具熟食，顯示附近有人",
+        "三物都能在山中自生，顯示前方有果樹"
+      ],
+      "answer": 2,
+      "feedback": "新鮮菜葉加上人使用的杯子與做好的食物，支持附近有人活動的推論；仍不能斷定人的身分或已在眼前。",
+      "wrongHints": [
+        "杯子和煮好的飯粒，與自然生長的桃子有何不同？",
+        "推論要同時解釋三種線索，不能只看水流。"
+      ],
+      "requires": [
+        2
+      ]
+    },
+    {
+      "id": 4,
+      "act": 4,
+      "title": "仙村：美景中的思歸",
+      "original": "溪邊有二女子，姿質妙絕，見二人持杯出，便笑曰：「劉、阮二郎捉向所失流杯來。」晨、肇既不識之，二女便呼其姓，如似有舊，相見忻喜，問：「來何晚耶？」因要還家。\n家筒瓦屋，南壁及東壁下各有一大床，皆施絳羅帳，角懸鈴，上金銀交錯，床頭各十侍婢。便敕云：「劉、阮二郎，經涉山阻，向雖得瓊實，猶尚虛弊，可速作食。」有胡麻飯、山羊脯，甚美。食畢行酒，有群女來，各持三五桃子，笑而言：「賀汝婿來。」酒酣作樂，劉、阮忻怖交並。\n……遂停半年。氣候草木是春時，百鳥鳴呼，更懷土，求歸甚苦。女曰：「當如何？」遂呼前來女子有三四十人集會奏樂，共送劉、阮，指示還路。",
+      "plain": "溪邊的兩名女子叫出劉、阮的姓，邀他們回家。屋頂覆筒瓦，屋內有紅色羅帳與鈴飾，並以食物款待。……兩人停留半年，氣候草木像春天，鳥聲使他們更思念家鄉，苦求返家。女子們奏樂送行，指出歸路。",
+      "question": "仙村有美食與春景，兩人為何仍然「求歸甚苦」？",
+      "options": [
+        "屋中食物不足，因此急著回鄉找糧",
+        "女子不肯接待，因此只好另尋住處",
+        "春景突然消失，因此擔心山路封閉",
+        "聽見百鳥鳴叫，因此更深思念故鄉"
+      ],
+      "answer": 3,
+      "feedback": "「百鳥鳴呼，更懷土」直接連結鳥聲與思鄉。生活舒適，仍不能消除兩人對故鄉的牽掛。",
+      "wrongHints": [
+        "「懷土」的「土」指田地，還是家鄉？",
+        "從「百鳥鳴呼」後面尋找心理變化。"
+      ]
+    },
+    {
+      "id": 5,
+      "act": 5,
+      "title": "歸鄉：陌生的故鄉",
+      "original": "既出，親舊零落，邑屋全異，無復相識。問得七世孫，傳聞上世入山，迷不得歸。",
+      "plain": "出山後，親友已凋零，村落房屋全變了，也沒有認識的人。問到自己的七世孫，才知道後人傳說祖先入山迷路，未能返回。",
+      "question": "哪些訊息最能互相印證，說明故鄉已經過漫長歲月？",
+      "options": [
+        "屋舍改變且遇見七世孫，親友也已凋零",
+        "杯子漂下且菜葉新鮮，附近應有人行路",
+        "山上桃子很多且可食，兩人體力已恢復",
+        "女子認得兩人的姓氏，屋裡也備有酒食"
+      ],
+      "answer": 0,
+      "feedback": "故鄉屋舍與人事的改變，再加上七世孫的出現，共同顯示人間已過多代；不能只憑屋舍改變判定代數。",
+      "wrongHints": [
+        "題目問回鄉後的證據，先排除入山時的事。",
+        "哪個選項同時包含人事改變與後代身分？"
+      ]
+    },
+    {
+      "id": 6,
+      "act": 5,
+      "title": "結局：山中半年，人間七世",
+      "original": "漢明帝永平五年，剡縣劉晨、阮肇共入天台取穀皮，迷不得返，經十餘日，糧食乏盡，饑餒殆死。\n遙望山上有一桃樹，大有子實，而絕岩邃澗，了無登路。攀葛乃得至，啖數枚，而饑止體充。\n復下山持杯取水，欲盥漱，見蕪菁葉從山腹流出，甚鮮新。復一杯流出，有胡麻糝。相謂曰：「此處去人徑不遠。」度山出一大溪。\n溪邊有二女子，姿質妙絕，見二人持杯出，便笑曰：「劉、阮二郎捉向所失流杯來。」晨、肇既不識之，二女便呼其姓，如似有舊，相見忻喜，問：「來何晚耶？」因要還家。\n家筒瓦屋，南壁及東壁下各有一大床，皆施絳羅帳，角懸鈴，上金銀交錯，床頭各十侍婢。便敕云：「劉、阮二郎，經涉山阻，向雖得瓊實，猶尚虛弊，可速作食。」有胡麻飯、山羊脯，甚美。食畢行酒，有群女來，各持三五桃子，笑而言：「賀汝婿來。」酒酣作樂，劉、阮忻怖交並。\n……遂停半年。氣候草木是春時，百鳥鳴呼，更懷土，求歸甚苦。女曰：「當如何？」遂呼前來女子有三四十人集會奏樂，共送劉、阮，指示還路。\n既出，親舊零落，邑屋全異，無復相識。問得七世孫，傳聞上世入山，迷不得歸。",
+      "plain": "劉晨、阮肇入山取樹皮而迷路，靠桃子止飢，循水中漂流物發現人跡，受兩名女子款待。……停留半年後思鄉返家，卻發現故鄉人事全非，只問到七世孫。",
+      "question": "為什麼回家已是七世？依全文判斷，哪個解釋最合理？",
+      "options": [
+        "兩人把尋路日數算錯，實際已在山中過完七代",
+        "異境與人間時間不同，山中半年人間已過多代",
+        "七世孫故意隱瞞身分，讓兩人誤以為時代改變",
+        "村人搬走又換了房屋，兩人其實回到別的地方"
+      ],
+      "answer": 1,
+      "feedback": "「遂停半年」與「問得七世孫」形成時間落差，可推論異境與人間的時間不同。這是志怪敘事的安排，原文沒有提供固定的年數換算。",
+      "wrongHints": [
+        "把「遂停半年」與「問得七世孫」放在一起讀。",
+        "哪個解釋能同時說明時間落差與故鄉人事全非？"
+      ],
+      "isEnding": true
+    }
+  ],
+  "endingText": "《太平御覽》卷四十一引《幽明錄》：山中停留半年，歸來已見七世孫。"
+}
+{
+  "rows": [
+    {
+      "aspect": "入口",
+      "liuruan": "迷山後循漂流物發現人跡，再越山到溪邊：「此處去人徑不遠。」「度山出一大溪。」",
+      "taohua": "沿溪遇桃林，再穿山口進入：「緣溪行」「山有小口，髣髴若有光。」"
+    },
+    {
+      "aspect": "異境樣貌",
+      "liuruan": "屋舍裝飾華美、氣候似春：「家筒瓦屋」「皆施絳羅帳」「氣候草木是春時」。",
+      "taohua": "農村開闊，田池桑竹俱全：「土地平曠，屋舍儼然。」「有良田、美池、桑竹之屬。」"
+    },
+    {
+      "aspect": "居民",
+      "liuruan": "兩名女子及侍婢、群女接待來客：「溪邊有二女子」「床頭各十侍婢」「有群女來」。文本未直接稱其為仙女。",
+      "taohua": "避秦亂者的後裔與家屬，老幼安樂：「自云先世避秦時亂」「黃髮垂髫，並怡然自樂。」"
+    },
+    {
+      "aspect": "停留",
+      "liuruan": "停留半年後強烈思鄉：「遂停半年。」「更懷土，求歸甚苦。」（停字校改見異文表。）",
+      "taohua": "受村人款待數日後辭別：「餘人各復延至其家，皆出酒食。停數日，辭去。」"
+    },
+    {
+      "aspect": "離開方式",
+      "liuruan": "女子們奏樂送別，指出歸路：「共送劉、阮，指示還路。」",
+      "taohua": "自行辭別後找到船，沿原路作記號：「既出，得其船，便扶向路，處處誌之。」"
+    },
+    {
+      "aspect": "回去後",
+      "liuruan": "故鄉人事全非，問到七世孫：「親舊零落，邑屋全異，無復相識。問得七世孫」。",
+      "taohua": "到郡城報告，太守遣人再尋：「及郡下，詣太守，説如此。太守即遣人隨其往」。未寫漁人返鄉已過多代。"
+    },
+    {
+      "aspect": "能否重返",
+      "liuruan": "本引文未交代再尋或重返；篇末只說祖先入山傳聞：「傳聞上世入山，迷不得歸。」不能據此斷言永遠不能回到異境。",
+      "taohua": "重尋迷路，未能再入：「尋向所誌，遂迷，不復得路。」後續又寫「後遂無問津者。」"
+    },
+    {
+      "aspect": "作者寓意",
+      "liuruan": "閱讀詮釋：以「遂停半年」對照「問得七世孫」，呈現異境與人間時間落差，以及「更懷土」的思鄉牽掛；不是作者明說的唯一寓意。",
+      "taohua": "閱讀詮釋：由「先世避秦時亂」與「並怡然自樂」，可讀為嚮往遠離戰亂、安樂生活；「不復得路」又使理想世界難以尋得。"
+    }
+  ]
+}
+{
+  "acts": [
+    {
+      "act": 1,
+      "sentences": [
+        "劉晨、阮肇入山取穀樹皮。",
+        "他們迷路十多天，糧食吃完了。"
+      ]
+    },
+    {
+      "act": 2,
+      "sentences": [
+        "他們攀著葛藤，到了桃樹旁。",
+        "吃下桃子後，兩人恢復體力。"
+      ]
+    },
+    {
+      "act": 3,
+      "sentences": [
+        "溪中漂來菜葉和盛有飯粒的杯子。",
+        "兩人推想附近有人行的路。"
+      ]
+    },
+    {
+      "act": 4,
+      "sentences": [
+        "溪邊的兩名女子邀他們回家。",
+        "遂停半年。",
+        "鳥聲使他們更思鄉，女子們送他們回去。"
+      ]
+    },
+    {
+      "act": 5,
+      "sentences": [
+        "回鄉後，村落房屋全變了。",
+        "問到七世孫，才聽到祖先入山的傳說。"
+      ]
+    }
+  ]
+}
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace Liuruan
+{
+    [DefaultExecutionOrder(-100)]
+    public sealed class GameFlow : MonoBehaviour
+    {
+        const string SaveKey = "liuruan_r1_progress";
+        [SerializeField] TextAsset clueJson;
+        [SerializeField] Material returnMaterial;
+        [Serializable] public sealed class Progress
+        {
+            public int act = 1, bark, drift, villageStep;
+            public bool climbed, inferred, ended;
+            public Vector3 position = new Vector3(0, 0.1f, -105);
+        }
+        public Progress State { get; private set; }
+        public int Act { get { return State.act; } }
+        public int BarkCount { get { int n = 0; for (int i = 0; i < 5; i++) if ((State.bark & (1 << i)) != 0) n++; return n; } }
+        public bool Reading { get; private set; }
+        public bool CanReturn { get { return Act == 4 && State.villageStep == 3 && !Reading; } }
+        public HungerSystem Hunger { get; private set; }
+        public CompanionFollow Companion { get; private set; }
+        public PlayerController Player { get; private set; }
+        public ClueData CurrentCard { get; private set; }
+        readonly Dictionary<string, Interactable> points = new Dictionary<string, Interactable>();
+        ClueData[] clues = new ClueData[0];
+        public string Objective
+        {
+            get
+            {
+                if (Act == 1) return "一・迷山　剝取穀皮 " + BarkCount + "／5";
+                if (Act == 2) return State.climbed ? "二・攀桃　摘取桃子" : "二・攀桃　前往崖下攀援處";
+                if (Act == 3) return State.inferred ? "三・流杯　向北涉水" : "三・流杯　拾取三件漂流物";
+                if (Act == 4) return new[] { "四・仙村　前往二女子處", "四・仙村　前往銅瓦屋", "四・仙村　閱讀告示板", "四・仙村　選擇求歸" }[State.villageStep];
+                return State.ended ? "五・歸鄉　旅程結束" : "五・歸鄉　回到村口";
+            }
+        }
+        void Awake()
+        {
+            ScrollUI.DeferHelp = true;
+            State = new Progress();
+            try { if (PlayerPrefs.HasKey(SaveKey)) State = JsonUtility.FromJson<Progress>(PlayerPrefs.GetString(SaveKey)) ?? new Progress(); }
+            catch (ArgumentException) { State = new Progress(); }
+            State.act = Mathf.Clamp(State.act, 1, 5);
+            State.bark &= 31; State.drift &= 7; State.villageStep = Mathf.Clamp(State.villageStep, 0, 3);
+            Player = FindFirstObjectByType<PlayerController>();
+            Hunger = Player.GetComponent<HungerSystem>();
+            Companion = FindFirstObjectByType<CompanionFollow>();
+            if (clueJson)
+            {
+                try { var list = JsonUtility.FromJson<ClueList>(clueJson.text); if (list != null) clues = list.clues ?? clues; }
+                catch (ArgumentException e) { Debug.LogWarning("[GameFlow] 題庫格式無法讀取：" + e.Message); }
+            }
+            foreach (Transform t in GameObject.Find("ActPoints").transform)
+            {
+                var it = t.GetComponent<Interactable>();
+                if (!it) continue;
+                string key = t.name;
+                points.Add(key, it);
+                it.onInteract.AddListener(() => InteractPoint(key));
+            }
+        }
+        void Start()
+        {
+            MovePlayer(State.position);
+            if (Act >= 3) Hunger.FillAll();
+            Hunger.OnToast += Toast;
+            SyncPoints();
+            if (Act == 5) ApplyReturn();
+            if (State.ended) GetComponent<HudUI>().ShowEnding();
+        }
+        void OnDestroy() { if (Hunger) Hunger.OnToast -= Toast; }
+        void Update()
+        {
+            bool busy = Reading || (ScrollUI.I && ScrollUI.I.IsBusy) || State.ended;
+            if (busy) Hunger.Pause(); else Hunger.Resume();
+            if (!busy)
+            {
+                if (Input.GetKeyDown(KeyCode.F)) UseSkill(0);
+                if (Input.GetKeyDown(KeyCode.R)) UseSkill(1);
+                if (Input.GetKeyDown(KeyCode.G)) UseSkill(2);
+            }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (Input.GetKeyDown(KeyCode.F9) && !busy) DebugNextAct();
+#endif
+        }
+        public void UseSkill(int skill)
+        {
+            if (Reading || State.ended || (ScrollUI.I && ScrollUI.I.IsBusy)) return;
+            if (skill == 2) { if (Companion.Call()) Toast("已呼喚阮肇"); return; }
+            var near = Interactable.Nearest(Player.transform.position);
+            if (near && (skill == 0 ? near.name.StartsWith("Act1_Bark_") : near.name.StartsWith("Act3_Drift_"))) near.Interact();
+            else Toast(skill == 0 ? "請靠近可剝皮的楮樹" : "請靠近溪中漂流物");
+        }
+        public void InteractPoint(string key)
+        {
+            Interactable point;
+            if (Reading || State.ended || !points.TryGetValue(key, out point) || !point.enabled) return;
+            if (Act == 1 && key.StartsWith("Act1_Bark_"))
+            {
+                State.bark |= 1 << (key[key.Length - 1] - '1');
+                if (State.bark == 31) { State.act = 2; ReadAct(1, null); }
+            }
+            else if (Act == 2 && key == "Act2_ClimbBase")
+            {
+                State.climbed = true;
+                MovePlayer(points["Act2_PeachTree"].transform.position + new Vector3(2, 0.2f, 0));
+            }
+            else if (Act == 2 && key == "Act2_PeachTree")
+            {
+                Hunger.FillAll(); State.act = 3;
+                MovePlayer(new Vector3(-7, 0.2f, -16)); ReadAct(2, null);
+            }
+            else if (Act == 3 && key.StartsWith("Act3_Drift_"))
+            {
+                State.drift |= 1 << (key[key.Length - 1] - '1');
+                if (State.drift == 7) ReadAct(3, () => { State.inferred = true; Save(); SyncPoints(); });
+            }
+            else if (Act == 3 && key == "Act3_Wade") { State.act = 4; MovePlayer(new Vector3(0, 0.2f, 63)); }
+            else if (Act == 4)
+            {
+                State.villageStep = Mathf.Min(3, State.villageStep + 1);
+                if (key == "Act4_Board") ReadAct(4, null);
+            }
+            else if (Act == 5 && key == "Act5_Return")
+            {
+                ApplyReturn();
+                ReadAct(5, () => { State.ended = true; Save(); SyncPoints(); GetComponent<HudUI>().ShowEnding(); });
+            }
+            Save(); SyncPoints();
+        }
+        public void ReturnHome()
+        {
+            if (!CanReturn || (ScrollUI.I && ScrollUI.I.IsBusy)) return;
+            State.act = 5; ApplyReturn(); MovePlayer(new Vector3(0, 0.2f, -104)); Save(); SyncPoints();
+        }
+        void ReadAct(int act, Action done)
+        {
+            var cards = new List<ClueData>();
+            foreach (var c in clues) if (c != null && c.act == act) cards.Add(c);
+            if (cards.Count == 0) cards.Add(new ClueData { id = -act, act = act, title = "〔act" + act + "-原文〕", original = "〔act" + act + "-原文〕" });
+            Reading = true; Hunger.Pause();
+            ReadCard(cards, 0, done);
+        }
+        void ReadCard(List<ClueData> cards, int i, Action done)
+        {
+            if (i == cards.Count) { Reading = false; CurrentCard = null; if (done != null) done(); return; }
+            CurrentCard = cards[i];
+            ScrollUI.I.ShowClue(CurrentCard, () => ReadCard(cards, i + 1, done));
+        }
+        void SyncPoints()
+        {
+            foreach (var pair in points)
+            {
+                string k = pair.Key;
+                bool enabled = false;
+                if (!State.ended)
+                {
+                    if (Act == 1 && k.StartsWith("Act1_Bark_")) enabled = (State.bark & (1 << (k[k.Length - 1] - '1'))) == 0;
+                    if (Act == 2) enabled = k == (State.climbed ? "Act2_PeachTree" : "Act2_ClimbBase");
+                    if (Act == 3 && k.StartsWith("Act3_Drift_")) enabled = !State.inferred && ((State.drift & (1 << (k[k.Length - 1] - '1'))) == 0 || State.drift == 7);
+                    if (Act == 3 && k == "Act3_Wade") enabled = State.inferred;
+                    if (Act == 4 && State.villageStep < 3) enabled = k == new[] { "Act4_Women", "Act4_House", "Act4_Board" }[State.villageStep];
+                    if (Act == 4 && State.villageStep == 3) enabled = k == "Act4_Board";
+                    if (Act == 5) enabled = k == "Act5_Return";
+                }
+                pair.Value.enabled = enabled;
+                var visual = pair.Value.transform.Find("R1Marker");
+                if (visual) visual.gameObject.SetActive(enabled);
+            }
+        }
+        public void MovePlayer(Vector3 position)
+        {
+            var cc = Player.GetComponent<CharacterController>();
+            cc.enabled = false; Player.transform.position = position; cc.enabled = true;
+        }
+        void Save() { State.position = Player.transform.position; PlayerPrefs.SetString(SaveKey, JsonUtility.ToJson(State)); PlayerPrefs.Save(); }
+        void ApplyReturn()
+        {
+            foreach (string zone in new[] { "Village", "Forest" })
+            {
+                var root = GameObject.Find(zone);
+                if (!root) continue;
+                foreach (var r in root.GetComponentsInChildren<Renderer>(true))
+                    if (r.name.Contains("Wall") || r.name.Contains("Roof") || r.name.Contains("Gate")) r.sharedMaterial = returnMaterial;
+                int houses = 0;
+                foreach (Transform t in root.transform) if (t.name.StartsWith("House_")) t.gameObject.SetActive(houses++ % 2 == 0);
+            }
+            if (RenderSettings.sun) RenderSettings.sun.color = new Color(0.62f, 0.7f, 0.82f);
+        }
+        void Toast(string text) { if (ScrollUI.I) ScrollUI.I.Toast(text); }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        public void DebugNextAct()
+        {
+            State.act = Mathf.Min(5, Act + 1);
+            if (Act == 2) MovePlayer(new Vector3(-11, 0.2f, -31));
+            if (Act == 3) MovePlayer(new Vector3(-5, 0.2f, -13));
+            if (Act == 4) MovePlayer(new Vector3(0, 0.2f, 63));
+            if (Act == 5) { ApplyReturn(); MovePlayer(new Vector3(0, 0.2f, -104)); }
+            Save(); SyncPoints();
+        }
+#endif
+    }
+}
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+
+namespace Liuruan
+{
+    public sealed class HudUI : MonoBehaviour
+    {
+        public TMP_FontAsset font;
+        GameFlow flow;
+        GameObject root, ending;
+        Image[] peaches = new Image[5];
+        Image cooldown;
+        TMP_Text bark, objective, prompt;
+        Button returnButton;
+        Button[] skills = new Button[3];
+        Sprite circle, peach, diamond;
+        bool touch;
+        void Start()
+        {
+            flow = GetComponent<GameFlow>();
+            ScrollUI.I.JourneyHud = true;
+            circle = Shape(0); peach = Shape(1); diamond = Shape(2);
+            var canvas = new GameObject("JourneyHUD", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+            canvas.transform.SetParent(transform, false);
+            canvas.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.GetComponent<Canvas>().sortingOrder = 1;
+            var scaler = canvas.GetComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1280, 720); scaler.matchWidthOrHeight = 0.5f;
+            root = canvas;
+            for (int i = 0; i < 5; i++)
+            {
+                peaches[i] = Icon("Peach" + i, new Vector2(0, 1), new Vector2(38 + i * 38, -38), new Vector2(31, 35), peach, Color.white);
+            }
+            bark = Label("Bark", new Vector2(0, 1), new Vector2(120, -78), new Vector2(220, 36), 25);
+            objective = Label("Objective", new Vector2(0.5f, 1), new Vector2(0, -30), new Vector2(470, 42), 21);
+            string[] names = { "剝皮", "取水", "呼喚" };
+            string[] keys = { "F", "R", "G" };
+            for (int i = 0; i < 3; i++)
+            {
+                int index = i;
+                var image = Icon("Skill" + keys[i], new Vector2(1, 1), new Vector2(-218 + i * 82, -63), new Vector2(76, 76), diamond, new Color(0.24f, 0.3f, 0.25f, 0.96f));
+                var button = image.gameObject.AddComponent<Button>();
+                button.onClick.AddListener(() => flow.UseSkill(index)); skills[i] = button;
+                ChildLabel(image.transform, names[i] + "\n" + keys[i], 19);
+            }
+            var portrait = Icon("CompanionPortraitFrame", new Vector2(0, 0), new Vector2(75, 78), new Vector2(108, 108), circle, new Color(0.18f, 0.25f, 0.3f));
+            cooldown = Icon("CallCooldown", new Vector2(0, 0), new Vector2(75, 78), new Vector2(108, 108), circle, new Color(0.96f, 0.72f, 0.3f));
+            cooldown.type = Image.Type.Filled; cooldown.fillMethod = Image.FillMethod.Radial360; cooldown.fillClockwise = true;
+            var face = Icon("CompanionPortrait", new Vector2(0, 0), new Vector2(75, 78), new Vector2(88, 88), circle, new Color(0.23f, 0.4f, 0.56f));
+            ChildLabel(face.transform, "阮肇", 23);
+            var map = Icon("MinimapFrame", new Vector2(1, 0), new Vector2(-94, 100), new Vector2(164, 164), null, new Color(0.7f, 0.61f, 0.4f));
+            var mapContent = new GameObject("MinimapRawImage", typeof(RectTransform), typeof(RawImage));
+            mapContent.transform.SetParent(map.transform, false);
+            var mapRect = (RectTransform)mapContent.transform; mapRect.anchorMin = Vector2.zero; mapRect.anchorMax = Vector2.one;
+            mapRect.offsetMin = new Vector2(6, 6); mapRect.offsetMax = new Vector2(-6, -6);
+            mapContent.GetComponent<RawImage>().color = new Color(0.13f, 0.19f, 0.17f, 0.92f);
+            mapContent.GetComponent<RawImage>().raycastTarget = false;
+            prompt = Label("InteractPrompt", new Vector2(0.5f, 0), new Vector2(0, 84), new Vector2(450, 42), 26);
+            returnButton = ActionButton("ReturnHome", "求歸", new Vector2(0.5f, 0), new Vector2(0, 145), new Vector2(160, 52));
+            returnButton.onClick.AddListener(flow.ReturnHome);
+            ending = new GameObject("JourneyEnding", typeof(RectTransform), typeof(Image));
+            ending.transform.SetParent(root.transform, false);
+            var er = (RectTransform)ending.transform; er.anchorMin = new Vector2(0.15f, 0.2f); er.anchorMax = new Vector2(0.85f, 0.8f); er.offsetMin = er.offsetMax = Vector2.zero;
+            ending.GetComponent<Image>().color = new Color(0.13f, 0.18f, 0.22f, 0.98f);
+            ChildLabel(ending.transform, "天台山・流杯記\n\n五幕旅程結束", 32);
+            ending.SetActive(flow.State.ended);
+            touch = !TouchInput.Enabled;
+            Layout();
+            flow.Hunger.OnChanged += DrawHunger; DrawHunger(flow.Hunger.Value);
+        }
+        void OnDestroy()
+        {
+            if (flow && flow.Hunger) flow.Hunger.OnChanged -= DrawHunger;
+            foreach (var sprite in new[] { circle, peach, diamond }) if (sprite) { Destroy(sprite.texture); Destroy(sprite); }
+        }
+        void DrawHunger(float value)
+        {
+            for (int i = 0; i < 5; i++) peaches[i].color = Color.Lerp(new Color(0.2f, 0.22f, 0.18f, 0.7f), new Color(1f, 0.7f, 0.37f), Mathf.Clamp01(value - i));
+        }
+        void LateUpdate()
+        {
+            if (!root) return;
+            Layout();
+            bool busy = flow.Reading || (ScrollUI.I && ScrollUI.I.IsBusy);
+            for (int i = 0; i < root.transform.childCount; i++)
+            {
+                var child = root.transform.GetChild(i).gameObject;
+                if (child != ending) child.SetActive(!busy && !flow.State.ended);
+            }
+            bark.text = "穀皮 ×" + flow.BarkCount;
+            objective.text = flow.Objective;
+            cooldown.fillAmount = flow.Companion.CooldownRatio;
+            var near = Interactable.Nearest(flow.Player.transform.position);
+            prompt.text = near ? (TouchInput.Enabled ? "互動　" : "[E] ") + near.prompt : "";
+            returnButton.gameObject.SetActive(flow.CanReturn && !busy);
+            if (TouchInput.Enabled)
+            {
+                var p = (RectTransform)cooldown.transform; p.anchoredPosition = new Vector2(75, 250);
+                root.transform.Find("CompanionPortrait").GetComponent<RectTransform>().anchoredPosition = p.anchoredPosition;
+                root.transform.Find("CompanionPortraitFrame").GetComponent<RectTransform>().anchoredPosition = p.anchoredPosition;
+            }
+        }
+        void Layout()
+        {
+            if (touch == TouchInput.Enabled) return;
+            touch = TouchInput.Enabled;
+            for (int i = 0; i < 3; i++) skills[i].image.sprite = touch ? circle : diamond;
+        }
+        public void ShowEnding()
+        {
+            if (ending) ending.SetActive(true);
+            if (ScrollUI.I) ScrollUI.I.ExternalUI = true;
+        }
+        Image Icon(string name, Vector2 anchor, Vector2 pos, Vector2 size, Sprite sprite, Color color)
+        {
+            var go = new GameObject(name, typeof(RectTransform), typeof(Image));
+            go.transform.SetParent(root.transform, false);
+            var r = (RectTransform)go.transform; r.anchorMin = r.anchorMax = anchor; r.anchoredPosition = pos; r.sizeDelta = size;
+            var img = go.GetComponent<Image>(); img.sprite = sprite; img.color = color; img.raycastTarget = name.StartsWith("Skill"); return img;
+        }
+        TMP_Text Label(string name, Vector2 anchor, Vector2 pos, Vector2 size, int fontSize)
+        {
+            var img = Icon(name, anchor, pos, size, null, new Color(0.08f, 0.13f, 0.11f, 0.8f));
+            return ChildLabel(img.transform, "", fontSize);
+        }
+        TMP_Text ChildLabel(Transform parent, string text, int size)
+        {
+            var go = new GameObject("Label", typeof(RectTransform), typeof(TextMeshProUGUI)); go.transform.SetParent(parent, false);
+            var r = (RectTransform)go.transform; r.anchorMin = Vector2.zero; r.anchorMax = Vector2.one; r.offsetMin = new Vector2(4, 4); r.offsetMax = new Vector2(-4, -4);
+            var label = go.GetComponent<TextMeshProUGUI>(); label.font = font; label.text = text; label.fontSize = size;
+            label.alignment = TextAlignmentOptions.Center; label.raycastTarget = false; return label;
+        }
+        Button ActionButton(string name, string text, Vector2 anchor, Vector2 pos, Vector2 size)
+        {
+            var image = Icon(name, anchor, pos, size, null, new Color(0.35f, 0.4f, 0.24f)); image.raycastTarget = true;
+            var button = image.gameObject.AddComponent<Button>(); ChildLabel(image.transform, text, 25); return button;
+        }
+        static Sprite Shape(int shape)
+        {
+            var tex = new Texture2D(64, 64, TextureFormat.RGBA32, false);
+            var pixels = new Color[4096];
+            for (int y = 0; y < 64; y++) for (int x = 0; x < 64; x++)
+            {
+                float a = (x - 31.5f) / 30f, b = (y - 31.5f) / 30f;
+                float q = a * a + b * b - 0.75f;
+                bool inside = shape == 0 ? a * a + b * b <= 1 : shape == 2 ? Mathf.Abs(a) + Mathf.Abs(b) <= 1 : q * q * q - a * a * b * b * b <= 0;
+                pixels[y * 64 + x] = inside ? Color.white : Color.clear;
+            }
+            tex.SetPixels(pixels); tex.Apply(); return Sprite.Create(tex, new Rect(0, 0, 64, 64), new Vector2(0.5f, 0.5f));
+        }
+    }
+}
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc 'cat staging/scripts/logs/S-R1.md staging/scripts/Tests/run_core_tests.sh staging/scripts/Tests/Console/*; cat Assets/_Project/Data/compare.json Assets/_Project/Data/narration.json' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+# S 線 R1 交件報告
+
+日期：2026-11-07。寫入範圍僅 `staging/scripts/`；未開 Unity、未跑 batchmode、未修改 Assets／其他線、未推送。
+
+## 變更與交件
+
+- MinimapFogCore：固定世界範圍的 32×32 格網、圓形揭露半徑、世界座標轉格、最大邊界歸最後一格、範圍外不揭露；Act2–5 關霧，回 Act1 保留探索。
+- MinimapCam：專用正交北向俯視相機跟隨玩家，建立／釋放 256² RenderTexture 與 32² Texture2D 遮罩；右下 OnGUI 疊加世界對齊迷霧、玩家朝向箭頭、阮肇點、目標點。不新增 UI 套件。
+- ClimbCore：Grounded→Attaching→Climbing→TopOut／Release，正常 1.2m/s、飢餓值 <1 為 0.6m/s；斜走不加速、左右／上下限位。
+- ClimbZone：trigger 內互動掛附、藤蔓平面鎖定、鍵盤／外部手機向量輸入、頂端自動移至平台落點、底端自動放開；暫停並還原一般移動及 CharacterController 原始狀態，停用時也還原。
+- DriftCore／DriftCollectionCore：開放 Catmull–Rom 路徑、沿路徑下游循環、三維 2m 拾取、共用唯一 id 記錄、重複拾取拒絕、全收集只通知一次。
+- DriftPickup／DriftCollection：獨立三個物件共享收集器、靠近／離開提示事件、拾取後隱藏整個物件，重新啟用仍不重生；以 C# event 通知流程，不引用 GameFlow。
+- INTEGRATION.md：掛載、Inspector 欄位、事件名稱與參數、GameFlow 輸入輸出契約、既有 Interactable 轉接方式與 U 線驗收項目。
+- 沿用 R0 WorldPosition、RequireFinite、Check 及同份 EditMode／console 測試模式；沒有新增套件、組件依賴或測試替身。
+
+## 檔案清單
+
+新增：
+
+- `Runtime/MinimapFogCore.cs`
+- `Runtime/MinimapCam.cs`
+- `Runtime/ClimbCore.cs`
+- `Runtime/ClimbZone.cs`
+- `Runtime/DriftCore.cs`（含 DriftCollectionCore）
+- `Runtime/DriftPickup.cs`
+- `Runtime/DriftCollection.cs`
+- `Tests/EditMode/R1CoreTests.cs`
+- `logs/core-tests-R1.txt`
+- `logs/S-R1.md`（本報告）
+
+修改：
+
+- `INTEGRATION.md`
+- `Tests/run_core_tests.sh`
+- `Tests/Console/Runner.cs`
+
+以上皆相對於 `staging/scripts/`；R0 Core、包裝與原測試未改。
+
+## 實際驗證
+
+執行 `staging/scripts/Tests/run_core_tests.sh`，結果 **69 passed, 0 failed**：原 R0 40 案例＋本輪 29 案例。使用本機 .NET SDK 10.0.402、C# 9、warnings as errors、零 NuGet 套件。此 runner 執行與 EditMode 相同的測試方法，並非 Unity Test Runner。
+
+新增測試涵蓋：
+
+- 迷霧：非正方形世界座標、負世界起點、內部格線、精確最大邊界、四側範圍外、半徑 0／2 與圓形遮罩、角落裁切、重複揭露、Act2–5 取消／回 Act1 保留、非法輸入。
+- 攀爬：完整到頂事件序列、到頂保持鎖定直到 Finish、到底自動 Release、底部靜止、<1／=1 飢餓邊界、斜走速度、側邊限位、附著座標夾值、重複釋放、非法輸入。
+- 漂流：曲線起終點／中間 waypoint／彎道取樣、週期精確邊界與餘額、2m／2.001m 拾取、三維距離、拾取後停止且不再拾取／重生、重複 id、全收集只發一次、事件內重入重複拾取、路徑陣列防外部修改、非法輸入。
+
+其他實際檢查：
+
+- `sh -n staging/scripts/Tests/run_core_tests.sh`：通過。
+- `git diff --check -- staging/scripts`：通過；另掃描新增 C#／整合文件／shell 無行尾空白。
+- 五個 `*Core.cs` 均無 UnityEngine／UnityEditor 引用；全部 Runtime 無 GameFlow 引用。
+- 兩個 asmdef 均可解析為 JSON，未修改 asmdef。
+- 原始輸出含 macOS `CSSM_ModuleLoad` 訊息，未隱藏；編譯與測試仍成功。
+
+### 實際完整測試輸出
+
+```text
+/Volumes/hk6429/projects/liuruan-tiantai
+Compiler: .NET SDK 10.0.402; C# 9.0; no NuGet packages; shared EditMode test methods
+CSSM_ModuleLoad(): One or more parameters passed to a function were not valid.
+PASS HungerCoreTests.ClampsInitialValue(-1,0)
+PASS HungerCoreTests.ClampsInitialValue(0,0)
+PASS HungerCoreTests.ClampsInitialValue(5,5)
+PASS HungerCoreTests.ClampsInitialValue(6,5)
+PASS HungerCoreTests.DropsAtExactIntervalAndPreservesRemainder()
+PASS HungerCoreTests.EatClampFillAndChangeEvents()
+PASS HungerCoreTests.FoodWorksWhilePausedAndDoesNotResetActiveClock()
+PASS HungerCoreTests.LargeTickClampsAndRecoveryGetsFreshInterval()
+PASS HungerCoreTests.PauseResumeIsIdempotentAndKeepsRemainder()
+PASS HungerCoreTests.RejectsInvalidInputs()
+PASS HungerCoreTests.StartsWithThreeAndNormalSpeed()
+PASS HungerCoreTests.StarvesOncePerCrossingAndRecoversWithoutDying()
+PASS HungerCoreTests.SupportsCustomInterval()
+PASS HungerCoreTests.ZeroTickDoesNothing()
+PASS CompanionCoreTests.AllSixteenDistanceDrivenTransitions(0)
+PASS CompanionCoreTests.AllSixteenDistanceDrivenTransitions(1)
+PASS CompanionCoreTests.AllSixteenDistanceDrivenTransitions(2)
+PASS CompanionCoreTests.AllSixteenDistanceDrivenTransitions(3)
+PASS CompanionCoreTests.CallAcceleratesUntilReunion()
+PASS CompanionCoreTests.CallCooldownAndExactReadyBoundary()
+PASS CompanionCoreTests.CatchupCanAlsoGetStuck()
+PASS CompanionCoreTests.DistanceBoundaries(0,Idle)
+PASS CompanionCoreTests.DistanceBoundaries(2.499,Idle)
+PASS CompanionCoreTests.DistanceBoundaries(2.5,Follow)
+PASS CompanionCoreTests.DistanceBoundaries(12,Follow)
+PASS CompanionCoreTests.DistanceBoundaries(12.001,Catchup)
+PASS CompanionCoreTests.DistanceBoundaries(30,Catchup)
+PASS CompanionCoreTests.DistanceBoundaries(30.001,Teleport)
+PASS CompanionCoreTests.ExactStuckBoundary()
+PASS CompanionCoreTests.FiveCentimetresResetsStuckTimer()
+PASS CompanionCoreTests.IdleNeverCountsAsStuck()
+PASS CompanionCoreTests.MovesThroughEveryStateAndBack()
+PASS CompanionCoreTests.ProgressAndIdleResetStuckTimer()
+PASS CompanionCoreTests.RejectsInvalidTimeAndCoordinates()
+PASS CompanionCoreTests.SlowProgressAccumulatesAgainstAnchor()
+PASS CompanionCoreTests.StuckAtExactlyThreeSecondsTeleportsThenResets()
+PASS CompanionCoreTests.TeleportClearsCallButPreservesCooldown()
+PASS CompanionCoreTests.TeleportIsTwoMetresBehindNormalizedHorizontalForward()
+PASS CompanionCoreTests.UsesThreeDimensionalDistance()
+PASS CompanionCoreTests.ZeroForwardUsesWorldBack()
+PASS MinimapFogCoreTests.OutsideDoesNotRevealEdge(-16.001,0)
+PASS MinimapFogCoreTests.OutsideDoesNotRevealEdge(16.001,0)
+PASS MinimapFogCoreTests.OutsideDoesNotRevealEdge(0,-32.001)
+PASS MinimapFogCoreTests.OutsideDoesNotRevealEdge(0,32.001)
+PASS MinimapFogCoreTests.RadiusClipsAtCornerAndKeepsHistoryAcrossActs()
+PASS MinimapFogCoreTests.RadiusIsCircularAndRepeatedRevealIsIdempotent()
+PASS MinimapFogCoreTests.RejectsInvalidInputs()
+PASS MinimapFogCoreTests.WorldCoordinates(-16,-32,0,0)
+PASS MinimapFogCoreTests.WorldCoordinates(-15,-30,1,1)
+PASS MinimapFogCoreTests.WorldCoordinates(0,0,16,16)
+PASS MinimapFogCoreTests.WorldCoordinates(16,32,31,31)
+PASS ClimbCoreTests.AttachClampsAndExplicitReleaseIsIdempotent()
+PASS ClimbCoreTests.DescendingToBottomReleasesAutomatically()
+PASS ClimbCoreTests.DiagonalSpeedAndSideBounds()
+PASS ClimbCoreTests.FullTopOutSequenceAndEvents()
+PASS ClimbCoreTests.HungerSpeedBoundary(0,0.6)
+PASS ClimbCoreTests.HungerSpeedBoundary(0.999,0.6)
+PASS ClimbCoreTests.HungerSpeedBoundary(1,1.2)
+PASS ClimbCoreTests.HungerSpeedBoundary(5,1.2)
+PASS ClimbCoreTests.RejectsInvalidInputs()
+PASS ClimbCoreTests.StationaryAtBottomDoesNotRelease()
+PASS DriftCoreTests.AllCollectedOnceEvenWithReentrantDuplicatePickup()
+PASS DriftCoreTests.CollectedItemsStopAndCannotReappearOrNotifyAgain()
+PASS DriftCoreTests.CurveSamplesEndpointsKnotsAndBend()
+PASS DriftCoreTests.LoopsAtExactPeriodAndPreservesRemainder()
+PASS DriftCoreTests.PickupRadiusBoundary(2,True)
+PASS DriftCoreTests.PickupRadiusBoundary(2.001,False)
+PASS DriftCoreTests.PickupUsesThreeDimensionsAndCopiesWaypoints()
+PASS DriftCoreTests.RejectsInvalidInputs()
+RESULT: 69 passed, 0 failed
+```
+
+## 未做到與已知風險
+
+- 本輪遵守 S 線限制，**未開 Unity、未編譯 MonoBehaviour、未跑 Unity NUnit／場景／WebGL／手機**；Core 全綠不等於場景驗收完成。
+- MinimapCam.Output 只有底圖，霧與圖示由 OnGUI 疊層；U 線若改成 RawImage 必須連疊層一起移植。實際灰盒世界範圍、渲染層、相機高度／裁切、UI 疊層與手機安全區尚待校準。
+- 攀爬需接好既有 Interactable／輸入路由；包裝不自行消耗 E 或手機互動鍵，避免與現有 PlayerController 重複處理。Hunger 欄位必須指定，否則視為飽食。
+- 攀爬需垂直藤蔓平面、已校準的玩家根高度與安全平台落點。鎖定期間停用 CharacterController，不做牆面／翻越碰撞掃描；TopOut 是位置過渡，未製作角色翻越動畫。若有額外 Rigidbody／Root Motion，U 線須透過鎖定事件暫停。
+- 攀爬停用既有 PlayerController 也會停住其相機 LateUpdate；如需專用攀爬鏡頭由 U 線接獨立鏡頭腳本。
+- 漂流採均勻參數曲線，彎道非等速且可能略超出 waypoint；預設每 30 秒走完整條路。未做弧長等速表、浮力或物理。
+- 共用收集器屬本局狀態，不提供跨場景存檔。三件須共用同一收集器；重玩需重建收集器及物件。
+- 根目錄 RTK.md 不存在；已讀 AGENTS.md、計畫書第三／四／六節、S-R0 報告與 INTEGRATION.md。
+- Obsidian 位於本輪允許寫入範圍外，依「只能寫 staging/scripts/」未另存，未宣稱已儲存。
+
+## 下一步（U 線）
+
+依 INTEGRATION.md 匯入 Runtime 與 Tests/EditMode（不匯入 Tests/Console），跑 Unity EditMode。掛三組元件與共用收集器，接互動及 GameFlow 事件，校準世界範圍／藤蔓平面／平台落點／溪流路徑，再實測地圖迷霧與圖示、攀爬還原與頂底端、三物件拾取及推論題。
+#!/bin/sh
+set -eu
+pwd
+scripts_dir=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+if ! command -v dotnet >/dev/null 2>&1; then
+    echo "ERROR: 此 runner 需要 .NET SDK；本次交件使用本機 dotnet，未宣稱支援其他編譯器。" >&2
+    exit 1
+fi
+work_dir=$(mktemp -d "${TMPDIR:-/tmp}/liuruan-core.XXXXXX")
+trap '/bin/rm -r "$work_dir"' EXIT HUP INT TERM
+export DOTNET_CLI_HOME="$work_dir/cli"
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+export DOTNET_NOLOGO=1
+sdk_version=$(dotnet --version)
+sdk_major=${sdk_version%%.*}
+case "$sdk_major" in
+    ''|*[!0-9]*) echo "ERROR: 無法辨識 SDK: $sdk_version" >&2; exit 1 ;;
+esac
+if [ "$sdk_major" -lt 8 ]; then
+    echo "ERROR: 需要 .NET SDK 8 以上（C# 限定為 9）。" >&2
+    exit 1
+fi
+cp "$scripts_dir"/Runtime/*Core.cs "$scripts_dir"/Tests/EditMode/*Tests.cs \
+    "$scripts_dir/Tests/Console/Runner.cs" "$work_dir/"
+cat > "$work_dir/NuGet.Config" <<'XML'
+<configuration><packageSources><clear /></packageSources></configuration>
+XML
+cat > "$work_dir/CoreTests.csproj" <<XML
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net$sdk_major.0</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NuGetAudit>false</NuGetAudit>
+  </PropertyGroup>
+</Project>
+XML
+printf 'Compiler: .NET SDK %s; C# 9.0; no NuGet packages; shared EditMode test methods\n' "$sdk_version"
+dotnet run --project "$work_dir/CoreTests.csproj" --configuration Release --no-launch-profile --disable-build-servers
+// 此檔只供 console；不要複製進 Unity。
+using System;
+using System.Linq;
+using System.Reflection;
+
+namespace NUnit.Framework
+{
+    [AttributeUsage(AttributeTargets.Method)]
+    public sealed class TestAttribute : Attribute { }
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    public sealed class TestCaseAttribute : Attribute
+    {
+        public object[] Arguments { get; }
+        public TestCaseAttribute(params object[] arguments) { Arguments = arguments; }
+    }
+}
+
+internal static class Runner
+{
+    private static int Main()
+    {
+        int passed = 0, failed = 0;
+        foreach (Type type in new[] { typeof(Liuruan.Tests.HungerCoreTests), typeof(Liuruan.Tests.CompanionCoreTests),
+            typeof(Liuruan.Tests.MinimapFogCoreTests), typeof(Liuruan.Tests.ClimbCoreTests),
+            typeof(Liuruan.Tests.DriftCoreTests) })
+        foreach (MethodInfo method in type.GetMethods().OrderBy(m => m.Name))
+        {
+            var cases = method.GetCustomAttributes<NUnit.Framework.TestCaseAttribute>().ToArray();
+            bool simple = method.IsDefined(typeof(NUnit.Framework.TestAttribute), false);
+            if (!simple && cases.Length == 0) continue;
+            var arguments = cases.Length > 0 ? cases.Select(c => c.Arguments) : new[] { new object[0] };
+            foreach (object[] args in arguments)
+            {
+                string name = type.Name + "." + method.Name + "(" + string.Join(",", args) + ")";
+                try
+                {
+                    method.Invoke(Activator.CreateInstance(type), args);
+                    Console.WriteLine("PASS " + name); passed++;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("FAIL " + name + ": " + (e.InnerException ?? e)); failed++;
+                }
+            }
+        }
+        Console.WriteLine($"RESULT: {passed} passed, {failed} failed");
+        return failed == 0 && passed > 0 ? 0 : 1;
+    }
+}
+{
+  "rows": [
+    {
+      "aspect": "入口",
+      "liuruan": "迷山後循漂流物發現人跡，再越山到溪邊：「此處去人徑不遠。」「度山出一大溪。」",
+      "taohua": "沿溪遇桃林，再穿山口進入：「緣溪行」「山有小口，髣髴若有光。」"
+    },
+    {
+      "aspect": "異境樣貌",
+      "liuruan": "屋舍裝飾華美、氣候似春：「家筒瓦屋」「皆施絳羅帳」「氣候草木是春時」。",
+      "taohua": "農村開闊，田池桑竹俱全：「土地平曠，屋舍儼然。」「有良田、美池、桑竹之屬。」"
+    },
+    {
+      "aspect": "居民",
+      "liuruan": "兩名女子及侍婢、群女接待來客：「溪邊有二女子」「床頭各十侍婢」「有群女來」。文本未直接稱其為仙女。",
+      "taohua": "避秦亂者的後裔與家屬，老幼安樂：「自云先世避秦時亂」「黃髮垂髫，並怡然自樂。」"
+    },
+    {
+      "aspect": "停留",
+      "liuruan": "停留半年後強烈思鄉：「遂停半年。」「更懷土，求歸甚苦。」（停字校改見異文表。）",
+      "taohua": "受村人款待數日後辭別：「餘人各復延至其家，皆出酒食。停數日，辭去。」"
+    },
+    {
+      "aspect": "離開方式",
+      "liuruan": "女子們奏樂送別，指出歸路：「共送劉、阮，指示還路。」",
+      "taohua": "自行辭別後找到船，沿原路作記號：「既出，得其船，便扶向路，處處誌之。」"
+    },
+    {
+      "aspect": "回去後",
+      "liuruan": "故鄉人事全非，問到七世孫：「親舊零落，邑屋全異，無復相識。問得七世孫」。",
+      "taohua": "到郡城報告，太守遣人再尋：「及郡下，詣太守，説如此。太守即遣人隨其往」。未寫漁人返鄉已過多代。"
+    },
+    {
+      "aspect": "能否重返",
+      "liuruan": "本引文未交代再尋或重返；篇末只說祖先入山傳聞：「傳聞上世入山，迷不得歸。」不能據此斷言永遠不能回到異境。",
+      "taohua": "重尋迷路，未能再入：「尋向所誌，遂迷，不復得路。」後續又寫「後遂無問津者。」"
+    },
+    {
+      "aspect": "作者寓意",
+      "liuruan": "閱讀詮釋：以「遂停半年」對照「問得七世孫」，呈現異境與人間時間落差，以及「更懷土」的思鄉牽掛；不是作者明說的唯一寓意。",
+      "taohua": "閱讀詮釋：由「先世避秦時亂」與「並怡然自樂」，可讀為嚮往遠離戰亂、安樂生活；「不復得路」又使理想世界難以尋得。"
+    }
+  ]
+}
+{
+  "acts": [
+    {
+      "act": 1,
+      "sentences": [
+        "劉晨、阮肇入山取穀樹皮。",
+        "他們迷路十多天，糧食吃完了。"
+      ]
+    },
+    {
+      "act": 2,
+      "sentences": [
+        "他們攀著葛藤，到了桃樹旁。",
+        "吃下桃子後，兩人恢復體力。"
+      ]
+    },
+    {
+      "act": 3,
+      "sentences": [
+        "溪中漂來菜葉和盛有飯粒的杯子。",
+        "兩人推想附近有人行的路。"
+      ]
+    },
+    {
+      "act": 4,
+      "sentences": [
+        "溪邊的兩名女子邀他們回家。",
+        "遂停半年。",
+        "鳥聲使他們更思鄉，女子們送他們回去。"
+      ]
+    },
+    {
+      "act": 5,
+      "sentences": [
+        "回鄉後，村落房屋全變了。",
+        "問到七世孫，才聽到祖先入山的傳說。"
+      ]
+    }
+  ]
+}
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc 'cat Assets/_Project/Data/clues.json docs/content/acts.md sources/liuruan_tw.txt; cat staging/scripts/Runtime/HungerCore.cs staging/scripts/Runtime/DriftPickup.cs; rg --files staging/scripts; git status --short; test -d .codegraph && echo codegraph-present' in /Volumes/hk6429/projects/liuruan-tiantai
+ exited 1 in 0ms:
+{
+  "clues": [
+    {
+      "id": 0,
+      "act": 1,
+      "title": "迷山：糧盡的困境",
+      "original": "漢明帝永平五年，剡縣劉晨、阮肇共入天台取穀皮，迷不得返，經十餘日，糧食乏盡，饑餒殆死。",
+      "plain": "漢明帝永平五年，剡縣的劉晨與阮肇進天台山取穀樹皮，迷路無法返回。十多天後，糧食吃完，幾乎餓死。",
+      "question": "「迷不得返」與「糧食乏盡」合起來，說明兩人面臨什麼處境？",
+      "options": [
+        "山路雖然熟悉，卻因取皮而耽擱",
+        "無法找到歸路，又缺少維生食物",
+        "擔心遇到居民，因此不願意返家",
+        "雖然備有糧食，卻找不到採集物"
+      ],
+      "answer": 1,
+      "feedback": "兩人既迷路又缺糧，生存受到威脅；後來吃桃子才出現轉機。",
+      "wrongHints": [
+        "「不得返」是不能回去，還是不願回去？",
+        "「乏盡」表示糧食所剩不多，還是已經用完？"
+      ]
+    },
+    {
+      "id": 1,
+      "act": 2,
+      "title": "攀桃：困境的轉機",
+      "original": "遙望山上有一桃樹，大有子實，而絕岩邃澗，了無登路。攀葛乃得至，啖數枚，而饑止體充。",
+      "plain": "遠遠看見山上有棵桃樹，結了很多果實；岩壁陡峭、山澗幽深，沒有登上的路。他們攀著葛藤才到達，吃了幾顆桃子後，止住飢餓，恢復體力。",
+      "question": "「而饑止體充」在故事發展上，主要有什麼作用？",
+      "options": [
+        "交代山中果實，全年都可以採食",
+        "說明兩人吃飽，決定留山不返家",
+        "暗示山路平坦，採果原本無困難",
+        "呈現體力恢復，使探路得以繼續"
+      ],
+      "answer": 3,
+      "feedback": "「饑止體充」寫飢餓消除、體力恢復，讓原本幾乎餓死的兩人能繼續行動。",
+      "wrongHints": [
+        "先比較吃桃子前後，兩人的身體有何變化。",
+        "下段接著寫下山取水，這需要什麼條件？"
+      ]
+    },
+    {
+      "id": 2,
+      "act": 3,
+      "title": "流杯：沿水發現線索",
+      "original": "復下山持杯取水，欲盥漱，見蕪菁葉從山腹流出，甚鮮新。復一杯流出，有胡麻糝。相謂曰：「此處去人徑不遠。」度山出一大溪。",
+      "plain": "兩人下山拿杯子取水，想洗手漱口，看見新鮮的蕪菁葉從山腹漂出；又漂出一只杯子，裡面有芝麻飯粒。他們認為附近有人行的路，越過山後到了一條大溪。",
+      "question": "這段文字呈現的事情，先後順序是哪一項？",
+      "options": [
+        "取水見漂流物，再推知人徑不遠",
+        "見到溪邊女子，再拾起漂流杯子",
+        "找到山中住屋，再沿溪返回取水",
+        "渡過大溪之後，再上山尋找桃樹"
+      ],
+      "answer": 0,
+      "feedback": "先有取水時的觀察，再有「去人徑不遠」的判斷，最後才寫到大溪；兩人此時尚未見到女子。",
+      "wrongHints": [
+        "先找「見」與「相謂曰」的前後位置。",
+        "女子出場在下一段，別把後文移到前面。"
+      ]
+    },
+    {
+      "id": 3,
+      "act": 3,
+      "title": "流杯推論：物品透露人跡",
+      "original": "復下山持杯取水，欲盥漱，見蕪菁葉從山腹流出，甚鮮新。復一杯流出，有胡麻糝。相謂曰：「此處去人徑不遠。」度山出一大溪。",
+      "plain": "漂下的蕪菁葉很新鮮，杯子裡還有芝麻飯粒。兩人根據這些線索，推測附近有人活動。",
+      "question": "蕪菁葉、杯子與胡麻飯粒，為何使兩人推知「此處去人徑不遠」？",
+      "options": [
+        "物品隨水漂來，證明前方必定有大海",
+        "杯中留有食物，證明採集者就在眼前",
+        "菜葉新鮮且有餐具熟食，顯示附近有人",
+        "三物都能在山中自生，顯示前方有果樹"
+      ],
+      "answer": 2,
+      "feedback": "新鮮菜葉加上人使用的杯子與做好的食物，支持附近有人活動的推論；仍不能斷定人的身分或已在眼前。",
+      "wrongHints": [
+        "杯子和煮好的飯粒，與自然生長的桃子有何不同？",
+        "推論要同時解釋三種線索，不能只看水流。"
+      ],
+      "requires": [
+        2
+      ]
+    },
+    {
+      "id": 4,
+      "act": 4,
+      "title": "仙村：美景中的思歸",
+      "original": "溪邊有二女子，姿質妙絕，見二人持杯出，便笑曰：「劉、阮二郎捉向所失流杯來。」晨、肇既不識之，二女便呼其姓，如似有舊，相見忻喜，問：「來何晚耶？」因要還家。\n家筒瓦屋，南壁及東壁下各有一大床，皆施絳羅帳，角懸鈴，上金銀交錯，床頭各十侍婢。便敕云：「劉、阮二郎，經涉山阻，向雖得瓊實，猶尚虛弊，可速作食。」有胡麻飯、山羊脯，甚美。食畢行酒，有群女來，各持三五桃子，笑而言：「賀汝婿來。」酒酣作樂，劉、阮忻怖交並。\n……遂停半年。氣候草木是春時，百鳥鳴呼，更懷土，求歸甚苦。女曰：「當如何？」遂呼前來女子有三四十人集會奏樂，共送劉、阮，指示還路。",
+      "plain": "溪邊的兩名女子叫出劉、阮的姓，邀他們回家。屋頂覆筒瓦，屋內有紅色羅帳與鈴飾，並以食物款待。……兩人停留半年，氣候草木像春天，鳥聲使他們更思念家鄉，苦求返家。女子們奏樂送行，指出歸路。",
+      "question": "仙村有美食與春景，兩人為何仍然「求歸甚苦」？",
+      "options": [
+        "屋中食物不足，因此急著回鄉找糧",
+        "女子不肯接待，因此只好另尋住處",
+        "春景突然消失，因此擔心山路封閉",
+        "聽見百鳥鳴叫，因此更深思念故鄉"
+      ],
+      "answer": 3,
+      "feedback": "「百鳥鳴呼，更懷土」直接連結鳥聲與思鄉。生活舒適，仍不能消除兩人對故鄉的牽掛。",
+      "wrongHints": [
+        "「懷土」的「土」指田地，還是家鄉？",
+        "從「百鳥鳴呼」後面尋找心理變化。"
+      ]
+    },
+    {
+      "id": 5,
+      "act": 5,
+      "title": "歸鄉：陌生的故鄉",
+      "original": "既出，親舊零落，邑屋全異，無復相識。問得七世孫，傳聞上世入山，迷不得歸。",
+      "plain": "出山後，親友已凋零，村落房屋全變了，也沒有認識的人。問到自己的七世孫，才知道後人傳說祖先入山迷路，未能返回。",
+      "question": "哪些訊息最能互相印證，說明故鄉已經過漫長歲月？",
+      "options": [
+        "屋舍改變且遇見七世孫，親友也已凋零",
+        "杯子漂下且菜葉新鮮，附近應有人行路",
+        "山上桃子很多且可食，兩人體力已恢復",
+        "女子認得兩人的姓氏，屋裡也備有酒食"
+      ],
+      "answer": 0,
+      "feedback": "故鄉屋舍與人事的改變，再加上七世孫的出現，共同顯示人間已過多代；不能只憑屋舍改變判定代數。",
+      "wrongHints": [
+        "題目問回鄉後的證據，先排除入山時的事。",
+        "哪個選項同時包含人事改變與後代身分？"
+      ]
+    },
+    {
+      "id": 6,
+      "act": 5,
+      "title": "結局：山中半年，人間七世",
+      "original": "漢明帝永平五年，剡縣劉晨、阮肇共入天台取穀皮，迷不得返，經十餘日，糧食乏盡，饑餒殆死。\n遙望山上有一桃樹，大有子實，而絕岩邃澗，了無登路。攀葛乃得至，啖數枚，而饑止體充。\n復下山持杯取水，欲盥漱，見蕪菁葉從山腹流出，甚鮮新。復一杯流出，有胡麻糝。相謂曰：「此處去人徑不遠。」度山出一大溪。\n溪邊有二女子，姿質妙絕，見二人持杯出，便笑曰：「劉、阮二郎捉向所失流杯來。」晨、肇既不識之，二女便呼其姓，如似有舊，相見忻喜，問：「來何晚耶？」因要還家。\n家筒瓦屋，南壁及東壁下各有一大床，皆施絳羅帳，角懸鈴，上金銀交錯，床頭各十侍婢。便敕云：「劉、阮二郎，經涉山阻，向雖得瓊實，猶尚虛弊，可速作食。」有胡麻飯、山羊脯，甚美。食畢行酒，有群女來，各持三五桃子，笑而言：「賀汝婿來。」酒酣作樂，劉、阮忻怖交並。\n……遂停半年。氣候草木是春時，百鳥鳴呼，更懷土，求歸甚苦。女曰：「當如何？」遂呼前來女子有三四十人集會奏樂，共送劉、阮，指示還路。\n既出，親舊零落，邑屋全異，無復相識。問得七世孫，傳聞上世入山，迷不得歸。",
+      "plain": "劉晨、阮肇入山取樹皮而迷路，靠桃子止飢，循水中漂流物發現人跡，受兩名女子款待。……停留半年後思鄉返家，卻發現故鄉人事全非，只問到七世孫。",
+      "question": "為什麼回家已是七世？依全文判斷，哪個解釋最合理？",
+      "options": [
+        "兩人把尋路日數算錯，實際已在山中過完七代",
+        "異境與人間時間不同，山中半年人間已過多代",
+        "七世孫故意隱瞞身分，讓兩人誤以為時代改變",
+        "村人搬走又換了房屋，兩人其實回到別的地方"
+      ],
+      "answer": 1,
+      "feedback": "「遂停半年」與「問得七世孫」形成時間落差，可推論異境與人間的時間不同。這是志怪敘事的安排，原文沒有提供固定的年數換算。",
+      "wrongHints": [
+        "把「遂停半年」與「問得七世孫」放在一起讀。",
+        "哪個解釋能同時說明時間落差與故鄉人事全非？"
+      ],
+      "isEnding": true
+    }
+  ],
+  "endingText": "《太平御覽》卷四十一引《幽明錄》：山中停留半年，歸來已見七世孫。"
+}
+# 五幕內容契約（C-R1）
+
+底本：[《太平御覽》卷四十一引《幽明錄》](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)。逐字正文見 `sources/liuruan_tw.txt`，校改與刪節見 `sources/variants.md`。白話僅供閱讀輔助，不是新增人物台詞。
+
+依 plan 第一節教學目標與第三節流程編排；主線本輪決定優先於舊 plan 的版本用字。以下原文與題庫相同。文件的刪節標記為〔略〕，正文與遊戲則只顯示「……」。
+
+## 第一幕：迷山：糧盡的困境
+
+- 段落：P01；卷軸 id=0，act=1。
+- 出現位置：森林小徑；入山取皮、迷路與缺糧後解鎖。
+
+> 漢明帝永平五年，剡縣劉晨、阮肇共入天台取穀皮，迷不得返，經十餘日，糧食乏盡，饑餒殆死。
+
+白話：漢明帝永平五年，剡縣的劉晨與阮肇進天台山取穀樹皮，迷路無法返回。十多天後，糧食吃完，幾乎餓死。
+
+考點：「迷不得返」與「糧食乏盡」合起來，說明兩人面臨什麼處境？
+
+答案：無法找到歸路，又缺少維生食物
+
+說明：兩人既迷路又缺糧，生存受到威脅；後來吃桃子才出現轉機。
+
+## 第二幕：攀桃：困境的轉機
+
+- 段落：P02；卷軸 id=1，act=2。
+- 出現位置：山壁與桃樹旁；攀葛吃桃後解鎖。
+
+> 遙望山上有一桃樹，大有子實，而絕岩邃澗，了無登路。攀葛乃得至，啖數枚，而饑止體充。
+
+白話：遠遠看見山上有棵桃樹，結了很多果實；岩壁陡峭、山澗幽深，沒有登上的路。他們攀著葛藤才到達，吃了幾顆桃子後，止住飢餓，恢復體力。
+
+考點：「而饑止體充」在故事發展上，主要有什麼作用？
+
+答案：呈現體力恢復，使探路得以繼續
+
+說明：「饑止體充」寫飢餓消除、體力恢復，讓原本幾乎餓死的兩人能繼續行動。
+
+## 第三幕：流杯：沿水發現線索
+
+- 段落：P03；卷軸 id=2，act=3。
+- 出現位置：溪邊取水處；觀察菜葉、杯子與杯中飯粒後解鎖。
+
+> 復下山持杯取水，欲盥漱，見蕪菁葉從山腹流出，甚鮮新。復一杯流出，有胡麻糝。相謂曰：「此處去人徑不遠。」度山出一大溪。
+
+白話：兩人下山拿杯子取水，想洗手漱口，看見新鮮的蕪菁葉從山腹漂出；又漂出一只杯子，裡面有芝麻飯粒。他們認為附近有人行的路，越過山後到了一條大溪。
+
+考點：這段文字呈現的事情，先後順序是哪一項？
+
+答案：取水見漂流物，再推知人徑不遠
+
+說明：先有取水時的觀察，再有「去人徑不遠」的判斷，最後才寫到大溪；兩人此時尚未見到女子。
+
+## 第四幕：仙村：美景中的思歸
+
+- 段落：P04–P06；卷軸 id=4，act=4。
+- 出現位置：女子住處；迎接、款待、半年轉場與求歸送行後解鎖。
+
+> 溪邊有二女子，姿質妙絕，見二人持杯出，便笑曰：「劉、阮二郎捉向所失流杯來。」晨、肇既不識之，二女便呼其姓，如似有舊，相見忻喜，問：「來何晚耶？」因要還家。
+> 家筒瓦屋，南壁及東壁下各有一大床，皆施絳羅帳，角懸鈴，上金銀交錯，床頭各十侍婢。便敕云：「劉、阮二郎，經涉山阻，向雖得瓊實，猶尚虛弊，可速作食。」有胡麻飯、山羊脯，甚美。食畢行酒，有群女來，各持三五桃子，笑而言：「賀汝婿來。」酒酣作樂，劉、阮忻怖交並。
+> ……遂停半年。氣候草木是春時，百鳥鳴呼，更懷土，求歸甚苦。女曰：「當如何？」遂呼前來女子有三四十人集會奏樂，共送劉、阮，指示還路。
+
+白話：溪邊的兩名女子叫出劉、阮的姓，邀他們回家。屋頂覆筒瓦，屋內有紅色羅帳與鈴飾，並以食物款待。……兩人停留半年，氣候草木像春天，鳥聲使他們更思念家鄉，苦求返家。女子們奏樂送行，指出歸路。
+
+考點：仙村有美食與春景，兩人為何仍然「求歸甚苦」？
+
+答案：聽見百鳥鳴叫，因此更深思念故鄉
+
+說明：「百鳥鳴呼，更懷土」直接連結鳥聲與思鄉。生活舒適，仍不能消除兩人對故鄉的牽掛。
+
+## 第五幕：歸鄉：陌生的故鄉
+
+- 段落：P07；卷軸 id=5，act=5。
+- 出現位置：返鄉村落；發現人事全非、問到七世孫後解鎖。
+
+> 既出，親舊零落，邑屋全異，無復相識。問得七世孫，傳聞上世入山，迷不得歸。
+
+白話：出山後，親友已凋零，村落房屋全變了，也沒有認識的人。問到自己的七世孫，才知道後人傳說祖先入山迷路，未能返回。
+
+考點：哪些訊息最能互相印證，說明故鄉已經過漫長歲月？
+
+答案：屋舍改變且遇見七世孫，親友也已凋零
+
+說明：故鄉屋舍與人事的改變，再加上七世孫的出現，共同顯示人間已過多代；不能只憑屋舍改變判定代數。
+
+## 版本與互動界線
+
+- 第一幕 Y 是「取穀皮」「經十餘日」；五棵樹、五格飢餓值是遊戲規則，不是原文數字，旁白不冒稱原文寫五棵。
+- 第二幕用「啖數枚」「攀葛乃得至」，不沿用舊 plan 的「各噉數枚」。
+- 第三幕三種線索是蕪菁葉、杯、胡麻飯粒；Y 逐字作「胡麻糝」「此處去人徑不遠」。W 長本作「胡麻飯糝」「此知去人徑不遠」，僅在異文表對照。Y 無「逆流二三里」，不加入旁白或引文。
+- 第三幕加題 id=3、act=3，requires=[2]；應在第三幕觀察線索後觸發，與第三幕卷軸是兩筆可計分題。
+- 第四幕為「筒瓦屋」，瓦的形狀不代表銅材質。留宿段整段〔略〕，只用「遂停半年」轉場；正文以「……」標省略，省去文字不翻譯、不出題。Y「百鳥鳴呼」保留，不改成舊 plan 的「百鳥啼鳴」。
+- 第五幕用「邑屋全異」「問得七世孫」，不換成他本「邑屋改異」「問訊得七世孫」。七世不可換算成固定七百年。
+
+## 結局與資料介接
+
+結局 id=6、act=5，唯一 isEnding=true。original 是七段刪節整理本全文，含段落換行，沒有另加題名；白話也只摘要保留情節。題目「為什麼回家已是七世？」以異境與人間時間落差為合理推論，不假稱原文明說固定換算率。feedback 不提省略內容。
+
+`clues.json` 共7筆，answer 為0起算，wrongHints 每題2條，options 每題4項。六筆非結局中，第3幕有兩筆，其餘每幕一筆。頂層不另放 infer，避免同題重複。endingText 明填本篇來源，避免落入舊專案的預設揭曉文。
+
+`compare.json` 是 rows: [{aspect, liuruan, taohua}]；`narration.json` 是 acts: [{act, sentences}]。每個句子為一個陣列元素，無人物新台詞。旁白與比較表仍須 S／U 線串接；既有 ClueData 沒有 act，須由該線處理。本輪不改 C#、場景或 Prefab，也不操作 Unity。
+漢明帝永平五年，剡縣劉晨、阮肇共入天台取穀皮，迷不得返，經十餘日，糧食乏盡，饑餒殆死。
+遙望山上有一桃樹，大有子實，而絕岩邃澗，了無登路。攀葛乃得至，啖數枚，而饑止體充。
+復下山持杯取水，欲盥漱，見蕪菁葉從山腹流出，甚鮮新。復一杯流出，有胡麻糝。相謂曰：「此處去人徑不遠。」度山出一大溪。
+溪邊有二女子，姿質妙絕，見二人持杯出，便笑曰：「劉、阮二郎捉向所失流杯來。」晨、肇既不識之，二女便呼其姓，如似有舊，相見忻喜，問：「來何晚耶？」因要還家。
+家筒瓦屋，南壁及東壁下各有一大床，皆施絳羅帳，角懸鈴，上金銀交錯，床頭各十侍婢。便敕云：「劉、阮二郎，經涉山阻，向雖得瓊實，猶尚虛弊，可速作食。」有胡麻飯、山羊脯，甚美。食畢行酒，有群女來，各持三五桃子，笑而言：「賀汝婿來。」酒酣作樂，劉、阮忻怖交並。
+……遂停半年。氣候草木是春時，百鳥鳴呼，更懷土，求歸甚苦。女曰：「當如何？」遂呼前來女子有三四十人集會奏樂，共送劉、阮，指示還路。
+既出，親舊零落，邑屋全異，無復相識。問得七世孫，傳聞上世入山，迷不得歸。
+using System;
+
+namespace Liuruan
+{
+    public sealed class HungerCore
+    {
+        public const float Capacity = 5f;
+        public float Value { get; private set; }
+        public float IntervalSeconds { get; }
+        public bool IsPaused { get; private set; }
+        public float SpeedMultiplier => Value <= 0f ? 0.6f : 1f;
+        public event Action<float> OnChanged;
+        public event Action OnStarving;
+        private double elapsed;
+
+        public HungerCore(float initialValue = 3f, float intervalSeconds = 24f)
+        {
+            RequireFinite(initialValue, nameof(initialValue));
+            RequireFinite(intervalSeconds, nameof(intervalSeconds));
+            if (intervalSeconds <= 0f) throw new ArgumentOutOfRangeException(nameof(intervalSeconds));
+            Value = Math.Max(0f, Math.Min(Capacity, initialValue));
+            IntervalSeconds = intervalSeconds;
+        }
+
+        public void Pause() => IsPaused = true;
+        public void Resume() => IsPaused = false;
+
+        public void Tick(float deltaSeconds)
+        {
+            RequireFinite(deltaSeconds, nameof(deltaSeconds));
+            if (deltaSeconds < 0f) throw new ArgumentOutOfRangeException(nameof(deltaSeconds));
+            if (IsPaused || Value <= 0f) return;
+            elapsed += deltaSeconds;
+            double steps = Math.Floor(elapsed / IntervalSeconds);
+            if (steps < 1) return;
+            elapsed %= IntervalSeconds;
+            SetValue((float)Math.Max(0d, Value - steps * 0.5d));
+        }
+
+        public void Eat(float amount)
+        {
+            RequireFinite(amount, nameof(amount));
+            if (amount < 0f) throw new ArgumentOutOfRangeException(nameof(amount));
+            SetValue(Math.Min(Capacity, Value + amount));
+        }
+
+        public void FillAll() => SetValue(Capacity);
+
+        private void SetValue(float next)
+        {
+            if (next == Value) return;
+            bool starving = Value > 0f && next <= 0f;
+            bool recovering = Value <= 0f && next > 0f;
+            Value = next;
+            if (starving || recovering) elapsed = 0;
+            OnChanged?.Invoke(Value);
+            if (starving) OnStarving?.Invoke();
+        }
+
+        internal static void RequireFinite(float value, string name)
+        {
+            if (float.IsNaN(value) || float.IsInfinity(value))
+                throw new ArgumentOutOfRangeException(name);
+        }
+    }
+}
+using System;
+using UnityEngine;
+
+namespace Liuruan
+{
+    public sealed class DriftPickup : MonoBehaviour
+    {
+        [SerializeField, Range(1, 3)] private int id = 1;
+        [SerializeField] private Transform player;
+        [SerializeField] private Transform[] waypoints;
+        [SerializeField] private DriftCollection collection;
+        [SerializeField, Min(0.01f)] private float cycleSeconds = 30;
+        public event Action<int> OnPickedUp;
+        public event Action<int, bool> OnPromptChanged;
+        public bool CanInteract => isActiveAndEnabled && core != null && player && core.CanPickUp(ToCore(player.position));
+        private DriftCore core;
+        private bool showingPrompt;
+
+        private void Start()
+        {
+            if (!player || !collection || waypoints == null || waypoints.Length < 2)
+            { Debug.LogError("DriftPickup 需要玩家、共用收集器與至少兩個路徑點。", this); enabled = false; return; }
+            var points = new WorldPosition[waypoints.Length];
+            for (int i = 0; i < points.Length; i++)
+            {
+                if (!waypoints[i]) { Debug.LogError("DriftPickup 路徑點不可留空。", this); enabled = false; return; }
+                points[i] = ToCore(waypoints[i].position);
+            }
+            core = new DriftCore(id, points, collection.Core, cycleSeconds);
+            core.OnPickedUp += picked => OnPickedUp?.Invoke(picked);
+            if (core.IsCollected) { gameObject.SetActive(false); return; }
+            ApplyPosition();
+        }
+        private void Update()
+        {
+            if (core == null) return;
+            if (core.IsCollected) { gameObject.SetActive(false); return; }
+            core.Tick(Time.deltaTime); ApplyPosition(); SetPrompt(CanInteract);
+        }
+        public bool TryInteract()
+        {
+            if (!isActiveAndEnabled || !CanInteract || !core.TryPickUp(ToCore(player.position))) return false;
+            SetPrompt(false); gameObject.SetActive(false); return true;
+        }
+        private void ApplyPosition()
+        { var p = core.Position; transform.position = new Vector3(p.X, p.Y, p.Z); }
+        private void SetPrompt(bool show)
+        {
+            if (show == showingPrompt) return;
+            showingPrompt = show; OnPromptChanged?.Invoke(id, show);
+        }
+        private void OnDisable() => SetPrompt(false);
+        private static WorldPosition ToCore(Vector3 p) => new WorldPosition(p.x, p.y, p.z);
+    }
+}
+staging/scripts/logs/S-R1.md
+staging/scripts/logs/core-tests-R1.txt
+staging/scripts/logs/S-R0.md
+staging/scripts/logs/core-tests.txt
+staging/scripts/Tests/Console/Runner.cs
+staging/scripts/Tests/run_core_tests.sh
+staging/scripts/Tests/EditMode/CoreTests.cs
+staging/scripts/Tests/EditMode/Liuruan.EditModeTests.asmdef
+staging/scripts/Tests/EditMode/R1CoreTests.cs
+staging/scripts/Runtime/HungerSystem.cs
+staging/scripts/Runtime/MinimapCam.cs
+staging/scripts/Runtime/DriftCollection.cs
+staging/scripts/Runtime/HungerCore.cs
+staging/scripts/Runtime/CompanionFollow.cs
+staging/scripts/Runtime/DriftPickup.cs
+staging/scripts/Runtime/Liuruan.Runtime.asmdef
+staging/scripts/Runtime/ClimbCore.cs
+staging/scripts/Runtime/DriftCore.cs
+staging/scripts/Runtime/ClimbZone.cs
+staging/scripts/Runtime/MinimapFogCore.cs
+staging/scripts/Runtime/CompanionCore.cs
+staging/scripts/INTEGRATION.md
+?? briefs/A-R2.md
+?? briefs/C-R2.md
+?? briefs/S-R2.md
+?? logs/codex-A-R2.log
+?? logs/codex-C-R2.log
+?? logs/codex-S-R2.log
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+結局全文是 `isEnding=true` 的七段刪節本；比較表目前有 8 列。現有結局題是四選一，我會依本輪要求另做三組原文證據選項，避免加入虛構情節。季節演出採每局只播放一次；歸鄉後也不會被季節更新覆蓋灰冷色調。
+
+修改範圍會涵蓋三組 Core／元件、共用測試 runner、新測試與整合文件。GameFlow、HudUI 的串接交由 U 線依文件完成。
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc 'cat staging/scripts/INTEGRATION.md; cat staging/scripts/Tests/EditMode/CoreTests.cs; cat Assets/_Project/Scripts/QuizStats.cs; test ! -f RTK.md || cat RTK.md; cat /Users/naichengchen/.codex/plugins/cache/ponytail/ponytail/5.3.3/skills/ponytail/SKILL.md' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+# S 線 R0／R1 掛載說明
+
+本批提供原始碼；S 線未開 Unity、未寫 Assets、未改 PlayerController。
+
+## 匯入位置
+
+由 U 線複製（保留隨附 asmdef）：
+
+- `Runtime/` → `Assets/_Project/Scripts/Liuruan/Runtime/`
+- `Tests/EditMode/` → `Assets/_Project/Tests/EditMode/Liuruan/`
+
+不要把 `Tests/Console/` 複製進 Assets，該處只含 console 測試用的 NUnit 屬性替身，匯入會與 Unity NUnit 衝突。不要把整個 staging/scripts 複製進 Assets。
+Runtime 無第三方套件。EditMode 需專案已有 Unity Test Framework（NUnit）；本批不新增或修改 Unity 套件。
+
+## 劉晨：HungerSystem
+
+1. 在玩家劉晨的 GameObject 加入 `Liuruan.HungerSystem`，第一幕 `Initial Value = 3`、`Interval Seconds = 24`。
+2. PlayerController 快取同物件元件：`hunger = GetComponent<Liuruan.HungerSystem>();`，並新增欄位 `private Liuruan.HungerSystem hunger;`。
+3. 在既有速度計算完成後、乘上移動向量之前，加這一行（`moveSpeed` 換成實際的每幀區域速度變數）：
+
+```csharp
+moveSpeed *= hunger != null ? hunger.SpeedMultiplier : 1f;
+```
+
+每幀由基礎速度重算 `moveSpeed`，不可反覆修改 Inspector 的基礎速度欄位，否則會累乘。此專案尚無 PlayerController 原始碼可核對，因此這是插入契約，不是已套用的 diff。
+
+4. HUD 啟用時先讀 `Value` 畫 5 格桃形圖示，再訂閱 `OnChanged(float)`；元件停用時解除訂閱。Inspector 也有 `On Changed` UnityEvent 可接 UI。
+5. `OnStarving` / Inspector `On Starving` 只在正值跨到 0 時通知一次；沒有死亡、扣血或結局處理。
+6. Toast UI 接 `OnToast(string)` 或 Inspector `On Toast`，顯示「肚子餓了，去找些食物吧。」；包裝層只發訊息，不建立 UI。
+7. 面板／演出開始呼叫 `Pause()`，全部結束後 `Resume()`。這是可重複呼叫的布林暫停；若多面板重疊，請由既有面板管理者彙整後再 Resume。暫停保留未滿 24 秒的餘額。
+8. 食物呼叫 `Eat(amount)`，攀桃完成呼叫 `FillAll()`。補食不重設仍在進行的計時；從飢餓恢復則重新計時。暫停期間仍可補食。重新開始第一幕時重新建立玩家物件，Core 沒有跨場景存檔。
+
+Core API：`HungerCore(initialValue = 3, intervalSeconds = 24)`、`Tick(deltaSeconds)`、`Value`、`SpeedMultiplier`、`IsPaused`、`Pause/Resume/Eat/FillAll`、`OnChanged/OnStarving`。輸入 NaN、無限值、負時間或負食物量會拋出 ArgumentOutOfRangeException；初始飢餓值夾在 0–5。
+
+## 阮肇：CompanionFollow
+
+1. 在阮肇的移動根物件加入 `Liuruan.CompanionFollow`，`Player` 指向劉晨。
+2. 可加 NavMeshAgent 並烘焙可行走範圍；建議基速 3、加速倍率 1.6。Agent 啟用且在 NavMesh 上時採 NavMesh 路徑；否則直接 MoveTowards。無 Agent 也能跑。
+3. 根物件的位移由此元件負責，動畫關閉 Root Motion；`Animator` 的 Speed 參數每幀讀 `CompanionFollow.Speed`（實際世界位移 m/s）。瞬移當幀為 0。NavMeshAgent 的停止距離由元件設成 2.4m，使它確實進入 `<2.5m` 的 Idle 範圍。
+4. 技能按鈕呼叫 `Call()`，回傳 true 才播放成功回饋；false 代表冷卻中，不延長冷卻。呼喚使阮肇維持 Catchup，直到 `<2.5m` 待機或觸發瞬移。
+5. 左下頭像環每幀讀 `CooldownRatio`：1＝剛呼喚、0＝可呼喚；8 秒後歸零。若 UI 要顯示完成比例，讀 `1f - CooldownRatio`。Time.timeScale = 0 時跟隨與冷卻一起停止；未指定 Player 時不更新 Core。
+6. 狀態距離採三維直線距離：`<2.5` Idle、`[2.5,12]` Follow、`(12,30]` Catchup、`>30` Teleport；呼喚中的 Catchup 優先於 Follow。
+7. 非 Idle 狀態先記錄位置，此後連續 3 秒未離開進度錨點 0.05m 即視為卡住；累積移動達 0.05m、Idle 或瞬移會重設計時。Core 回傳的瞬移目標是玩家水平朝向後方 2m，零水平朝向則用世界 -Z。
+8. Unity 包裝會在該目標附近 2m 取 NavMesh 落點（因此實際落點可能偏離恰好 2m），再 Warp；無有效落點或 Warp 失敗時直接設定位置。多層地形／山壁需要 U 線現場驗證安全落點。MoveTowards 不做避障與地面貼合，僅供沒有 NavMesh 的灰盒備援。
+
+純 Core 使用 `WorldPosition(X,Y,Z)`，不引用 UnityEngine。`CompanionCore.Tick(dt, player, companion, playerForward)` 回傳狀態，並更新 `Destination`；`Call()`、`CooldownRatio` 提供技能契約。
+
+## 驗證
+
+在專案根目錄執行：
+
+```sh
+staging/scripts/Tests/run_core_tests.sh
+```
+
+本機實際使用 .NET SDK 10.0.402，限定 C# 9，零 NuGet 套件，warnings 視為 errors。runner 在暫存目錄編譯所有 `*Core.cs` 與同一份 EditMode 測試，反射呼叫 Test/TestCase；這是 console 斷言執行，不是啟動 Unity 的 NUnit runner。需 .NET SDK 8 以上；本機已有 dotnet，未使用 mono/csc 備援。測試產物離開時清除。
+
+U 線匯入後請在 Test Runner → EditMode 跑 `Liuruan.Tests`，再現場驗證：HUD 初始三格／歸零 Toast 與 60% 速度／暫停與補桃／NavMesh 跟隨／無 NavMesh 備援／卡住及超距瞬移／動畫 Speed／呼喚冷卻環。S 線未執行這些 Unity 驗證。
+
+
+## R1：MinimapCam（右下小地圖）
+
+1. 建立獨立 Camera，掛 `Liuruan.MinimapCam`，不要掛在主相機。指定 Player、Companion；Target 可空，流程改變目標時呼叫 `SetTarget(Transform)`，清除用 `SetTarget(null)`。
+2. World Min 是探索範圍左下角的世界 X/Z；World Size 是 X/Z 寬深（預設 -128/-128、256/256，**U 線須依灰盒實際範圍調整**）。這是固定世界格網，不隨玩家平移，避免迷霧紀錄漂移。Reveal Radius Cells 預設 2，以格為單位，採包含邊界的圓形揭露；半徑 0 只揭露所在格。
+3. View Half Size 預設 24m，Camera Height 100m；地圖固定世界 +Z 朝上，俯視正交、aspect=1，跟隨玩家位置，不跟玩家旋轉。Map Layers 選環境層，排除主角／夥伴模型或非地圖特效。請避免其他相機控制器同時寫入此 Camera。
+4. Awake 建立 `Output`（256×256 RenderTexture）及 `FogMask`（32×32 RGBA Texture2D；黑色 alpha 255＝霧、0＝已探索），銷毀時釋放。本批以內建 OnGUI 在右下直接合成底圖、世界對齊迷霧與圖示層，不需要新增 UI 套件；白色箭頭表示玩家朝向、青色點表示阮肇、黃色點表示當前目標，圖示畫在霧上，離開視野時隱藏。
+5. `Output` **只含攝影機底圖**，迷霧與圖示是 OnGUI 疊層；若 U 線改用 Canvas，須一起移植疊層，不可只把 Output 放進 RawImage 就當作完整地圖。不要同時顯示兩份底圖。FogMask 的列從世界 -Z 到 +Z（Texture2D 的底至頂），取樣須使用固定 World Min/Size，不能直接伸滿跟隨視窗。超出世界範圍在第一幕保持黑霧。
+6. GameFlow 初始化完成（Awake 之後）先呼叫 `SetAct(1)`；換幕呼叫 `SetAct(2..5)`。第一幕自動隨玩家所在格揭露，第二幕起完全取消迷霧；重新回第一幕保留本局探索紀錄，重開局需重建元件。`OnFogChanged(bool enabled)` 僅在有霧／無霧切換時發送，初始狀態請由流程主動設定。
+7. 最小版只記錄每幀玩家所在格的周圍；瞬移不揭露中間路徑。預設 256m 世界每格 8m，若想要較細探索，先縮小 World Size。未提供存檔或額外 UI 互動。
+
+## R1：ClimbZone（第二幕藤蔓）
+
+1. 在藤蔓互動區物件掛 `Liuruan.ClimbZone`，隨附 BoxCollider 由 Awake 設為 trigger，調整 trigger 覆蓋藤蔓底部。指定 Player（移動根物件）、Player Movement（該玩家的一般移動 MonoBehaviour）、Hunger（同一玩家 HungerSystem）、Plane Origin、Top Landing。一般移動元件不可指向 ClimbZone 自己。
+2. Plane Origin 放在**玩家根位置對應的藤蔓底邊中心**，local +X 是橫移方向、世界 +Y 是上攀方向、local +Z 朝離開山壁方向；只能繞世界 Y 旋轉、不能傾斜或滾轉。Width/Height 是世界公尺，不使用 Transform scale 換算。Top Landing 放在平台上安全的玩家根落點，必須可容納膠囊，不要放進山壁。
+3. 玩家 Collider 或其子物件 Collider 進入 trigger 後 `CanInteract` 才為 true，互動呼叫 `TryInteract()`，成功回 true；一般移動已被停用時拒絕掛附，避免多區搶同一玩家。元件記住一般移動與 CharacterController 的啟用狀態，暫停兩者以鎖定藤蔓平面；釋放、到頂完成及元件停用都還原原始狀態。玩家不能另有持續推動的 Rigidbody、NavMeshAgent 或 Root Motion，若有，U 線需配合 `OnMovementLockChanged` 暫停它們。
+4. 狀態：Grounded → Attaching（投影到平面）→ 下一個非零 dt 更新進入 Climbing。WASD／方向鍵沿藤蔓移動，手機每幀呼叫 `SetMoveInput(Vector2)`，放開時傳 Vector2.zero。向量會正規化以免斜走加速；正常 1.2m/s，Hunger.Value <1 為 0.6m/s，恰為 1 仍為 1.2m/s。Hunger 未指定時視為飽食，因此 U 線必須接上。
+5. 向上到頂：TopOut → 以 1.2m/s 從藤頂移至 Top Landing → Grounded → `OnTopOut()`。`OnStateChanged(TopOut)` 是翻越開始，**GameFlow 應以 OnTopOut 作為已站上平台的通知**。此為位置過渡，動畫由 U 線依狀態接線；TopOut 期間維持移動鎖定。
+6. 向下到底：Release → 還原控制 → Grounded；停在底部不輸入不會立刻放開。取消／切幕可呼叫 `Release()`；它會安全地還原控制，重複呼叫不多發事件。停用區域也自動 Release。頂端／底端及翻越路徑沒有碰撞掃描，須由 U 線安排安全落點與無障礙路徑。
+7. `OnPromptChanged(bool)` 提供進出區提示；UI 可以顯示簡短白話「攀藤」。包裝不建立台詞、不處理 GameFlow、不自行消耗 E 或觸控互動鍵。
+
+## R1：DriftPickup／DriftCollection（第三幕溪流）
+
+1. 在第三幕流程根物件掛一個 `Liuruan.DriftCollection`。溪中三個漂流物各掛 `Liuruan.DriftPickup`，三者的 Collection **都指定同一個收集器**；指定 Player，Id 依序為 1＝蕪菁葉、2＝杯、3＝胡麻飯糝。請勿用三個不同的收集器，否則不會集滿。
+2. Waypoints 至少兩點，依上游到下游排列；路徑點必須是獨立靜態物件，不能放在漂流物的子階層。Start 時快取世界座標，使用開放 Catmull–Rom 曲線（端點重複），Cycle Seconds 預設 30 秒走完全程，抵達下游後回上游循環；不是下游反向游回上游。各漂流物可用不同路徑／週期避免重疊。
+3. 曲線採均勻參數，因此速度不是固定 m/s，彎道可能略有超出控制點；依溪道寬度放路徑點並調長週期以維持緩慢漂流。本輪未新增弧長表、浮力、物理或網路套件。
+4. 玩家距離採三維直線距離，<=2m 可拾取；`CanInteract` 供 UI／互動路由器即時讀取。`OnPromptChanged(int id, bool visible)` 在靠近／離開／停用時通知顯示或清除提示，可顯示「撿起」。只有真正成功才回傳 `TryInteract() == true`，遠距／重複拾取均回 false。
+5. 成功時 Core 先把該 id 記入共用收集器：收集器發 `OnCollected(int id)`，第三個唯一 id 接著發 `OnAllCollected()`，再由拾取物發 `OnPickedUp(int id)`；包裝清除提示並停用整個漂流物 GameObject（Renderer/Collider 一起停用）。如果流程會在全收集時立刻切幕，優先訂閱收集器事件。每個 id 只計一次，三件全收集只發一次，即使存在重複 id 的物件也不會多算；重啟物件仍會自行隱藏。
+6. GameFlow 用收集器 `Count` 同步 HUD，`OnCollected` 更新三件線索、`OnAllCollected` 開推論題；各 `OnPickedUp` 留給拾取特效。不靠 static 全域狀態，重新開始此幕若要清空收集，重建共用收集器及三個漂流物，不要只 SetActive(true)。
+
+## R1：GameFlow／輸入接線契約（U 線負責）
+
+Runtime 不引用 GameFlow、PlayerController、Interactable、ScrollUI 或 TouchInput，也不依賴它們所在的組件。沿用現有事件路由即可；不須修改這批 asmdef。
+
+| 元件 | C# 事件 | 參數／用途 |
+|---|---|---|
+| MinimapCam | `event Action<bool> OnFogChanged` | true＝第一幕迷霧啟用，false＝取消 |
+| ClimbZone | `event Action<ClimbState> OnStateChanged` | 狀態改變（含 Attaching、Climbing、TopOut、Release、Grounded） |
+| ClimbZone | `event Action<bool> OnMovementLockChanged` | 攀爬鎖定／還原時，通知其他移動或動畫系統 |
+| ClimbZone | `event Action<bool> OnPromptChanged` | 藤蔓互動提示顯示／清除 |
+| ClimbZone | `event Action OnTopOut` | 翻越完成、安全落點到達後通知流程 |
+| DriftPickup | `event Action<int, bool> OnPromptChanged` | 漂流物 id、顯示或清除 |
+| DriftPickup | `event Action<int> OnPickedUp` | 單一拾取物成功後的 id |
+| DriftCollection | `event Action<int> OnCollected` | 共用唯一收集通知，id=1/2/3 |
+| DriftCollection | `event Action OnAllCollected` | 三個唯一 id 全收集，只發一次 |
+
+事件都應在 U 線 OnEnable 訂閱、OnDisable 解除。C# 事件不是 Inspector UnityEvent；如需 Inspector 綁定，請由既有輸入／流程腳本轉接。
+
+現有 PlayerController 會透過 `Interactable.onInteract` 處理 E 與手機按鈕，可在 U 線用有保存參考的 UnityAction 轉接，例如：
+
+```csharp
+// U 線已有對應的 Interactable、ClimbZone 參考。
+UnityEngine.Events.UnityAction climbAction = () => { climbZone.TryInteract(); };
+climbInteractable.onInteract.AddListener(climbAction);
+// 拆除時使用同一個 climbAction RemoveListener。
+```
+
+漂流物同理轉接 `TryInteract()`；其 Interactable 設 radius=2、clueId=-1、toast 空值，prompt 用「撿起」。現有 Interactable 只看水平距離，**真正能拾取仍以 DriftPickup.CanInteract 的三維 2m 為準**；U 線的提示路由應先檢查此值，避免樓層上下誤顯示。藤蔓的 Interactable 則須同時檢查 ClimbZone.CanInteract，因一般 Nearest 並不檢查 trigger。一次互動只選一個可互動元件，避免同幀多次處理；請勿讓另一支腳本重複 ConsumeDown。
+
+ClimbZone 攀爬期間停用 PlayerController（含其相機 LateUpdate），相機暫留原位；若要攀爬鏡頭跟隨，U 線由獨立鏡頭腳本處理，不能重新啟用一般移動來解決。
+
+## R1 驗證與交接邊界
+
+`Tests/run_core_tests.sh` 已納入新三組測試；R0 的 40 案例保留，新 29 案例，共 **69 passed, 0 failed**。同一份 R1CoreTests.cs 可由 Unity NUnit 執行。原始 console 輸出：`logs/core-tests-R1.txt`，交件報告：`logs/S-R1.md`。
+
+本輪只完成純 C# 測試及靜態檢查；未開 Unity、未編譯 MonoBehaviour、未掛場景。U 線需驗證：256² RenderTexture／迷霧世界座標對齊與第二幕取消／箭頭北朝上；玩家多 Collider 進出與攀爬控制還原／手機搖桿／上下端安全落點；三物件循環與隱藏／提示路由／三個 id 與推論題事件。OnGUI 的疊層順序及手機安全區也需實機驗收。
+using System;
+using NUnit.Framework;
+
+namespace Liuruan.Tests
+{
+    internal static class Check
+    {
+        public static void Equal<T>(T expected, T actual)
+        {
+            if (!Equals(expected, actual)) throw new Exception($"Expected {expected}, got {actual}");
+        }
+        public static void Near(double expected, double actual)
+        {
+            if (double.IsNaN(actual) || Math.Abs(expected - actual) > 0.00001)
+                throw new Exception($"Expected {expected}, got {actual}");
+        }
+        public static void Throws(Action action)
+        {
+            try { action(); }
+            catch (ArgumentOutOfRangeException) { return; }
+            throw new Exception("Expected ArgumentOutOfRangeException");
+        }
+    }
+
+    public sealed class HungerCoreTests
+    {
+        [Test] public void StartsWithThreeAndNormalSpeed()
+        {
+            var c = new HungerCore();
+            Check.Near(3, c.Value); Check.Near(24, c.IntervalSeconds);
+            Check.Near(1, c.SpeedMultiplier); Check.Equal(false, c.IsPaused);
+        }
+        [TestCase(-1f, 0f)] [TestCase(0f, 0f)] [TestCase(5f, 5f)] [TestCase(6f, 5f)]
+        public void ClampsInitialValue(float initial, float expected)
+        { Check.Near(expected, new HungerCore(initial).Value); }
+        [Test] public void DropsAtExactIntervalAndPreservesRemainder()
+        {
+            var c = new HungerCore();
+            c.Tick(23); Check.Near(3, c.Value);
+            c.Tick(1); Check.Near(2.5, c.Value);
+            c.Tick(49); Check.Near(1.5, c.Value);
+            c.Tick(23); Check.Near(1, c.Value);
+        }
+        [Test] public void SupportsCustomInterval()
+        { var c = new HungerCore(3, 2); c.Tick(2); Check.Near(2.5, c.Value); }
+        [Test] public void PauseResumeIsIdempotentAndKeepsRemainder()
+        {
+            var c = new HungerCore(); c.Tick(12); c.Pause(); c.Pause(); c.Tick(1000);
+            Check.Equal(true, c.IsPaused); Check.Near(3, c.Value);
+            c.Resume(); c.Resume(); c.Tick(12); Check.Near(2.5, c.Value);
+        }
+        [Test] public void StarvesOncePerCrossingAndRecoversWithoutDying()
+        {
+            var c = new HungerCore(); int count = 0; c.OnStarving += () => count++;
+            c.Tick(144); Check.Near(0, c.Value); Check.Near(0.6, c.SpeedMultiplier);
+            c.Tick(10000); c.Eat(0); Check.Equal(1, count);
+            c.Eat(0.25f); Check.Near(1, c.SpeedMultiplier);
+            c.Tick(24); Check.Near(0, c.Value); Check.Equal(2, count);
+            c.FillAll(); Check.Near(5, c.Value); Check.Near(1, c.SpeedMultiplier);
+        }
+        [Test] public void EatClampFillAndChangeEvents()
+        {
+            var c = new HungerCore(); int events = 0; float observed = 0;
+            c.OnChanged += v => { events++; observed = v; };
+            c.Eat(0); Check.Equal(0, events);
+            c.Eat(0.25f); Check.Near(3.25, observed);
+            c.Eat(float.MaxValue); Check.Near(5, c.Value);
+            c.FillAll(); Check.Equal(2, events);
+            c.Tick(24); Check.Near(4.5, observed); Check.Equal(3, events);
+            c.FillAll(); Check.Near(5, observed); Check.Equal(4, events);
+        }
+        [Test] public void FoodWorksWhilePausedAndDoesNotResetActiveClock()
+        {
+            var c = new HungerCore(); c.Tick(12); c.Pause(); c.Eat(1); c.FillAll();
+            Check.Near(5, c.Value); c.Resume(); c.Tick(12); Check.Near(4.5, c.Value);
+        }
+        [Test] public void LargeTickClampsAndRecoveryGetsFreshInterval()
+        {
+            var c = new HungerCore(); c.Tick(float.MaxValue); Check.Near(0, c.Value);
+            c.FillAll(); c.Tick(23); Check.Near(5, c.Value); c.Tick(1); Check.Near(4.5, c.Value);
+        }
+        [Test] public void ZeroTickDoesNothing()
+        { var c = new HungerCore(); c.Tick(0); Check.Near(3, c.Value); }
+        [Test] public void RejectsInvalidInputs()
+        {
+            foreach (float v in new[] { float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+            {
+                Check.Throws(() => new HungerCore(v)); Check.Throws(() => new HungerCore(3, v));
+                var c = new HungerCore(); Check.Throws(() => c.Tick(v)); Check.Throws(() => c.Eat(v));
+            }
+            Check.Throws(() => new HungerCore(3, 0)); Check.Throws(() => new HungerCore(3, -1));
+            Check.Throws(() => new HungerCore().Tick(-1)); Check.Throws(() => new HungerCore().Eat(-1));
+        }
+    }
+
+    public sealed class CompanionCoreTests
+    {
+        private static WorldPosition P(float x, float y = 0, float z = 0) => new WorldPosition(x, y, z);
+        private static CompanionState Step(CompanionCore c, float dt, float distance)
+            => c.Tick(dt, P(0), P(distance), P(0, 0, 1));
+
+        [TestCase(0f, CompanionState.Idle)] [TestCase(2.499f, CompanionState.Idle)]
+        [TestCase(2.5f, CompanionState.Follow)] [TestCase(12f, CompanionState.Follow)]
+        [TestCase(12.001f, CompanionState.Catchup)] [TestCase(30f, CompanionState.Catchup)]
+        [TestCase(30.001f, CompanionState.Teleport)]
+        public void DistanceBoundaries(float distance, CompanionState expected)
+        { Check.Equal(expected, Step(new CompanionCore(), 0, distance)); }
+        [TestCase(0)] [TestCase(1)] [TestCase(2)] [TestCase(3)]
+        public void AllSixteenDistanceDrivenTransitions(int sourceIndex)
+        {
+            float[] distances = { 1, 3, 20, 31 };
+            CompanionState[] states = { CompanionState.Idle, CompanionState.Follow,
+                CompanionState.Catchup, CompanionState.Teleport };
+            for (int target = 0; target < distances.Length; target++)
+            {
+                var c = new CompanionCore();
+                Check.Equal(states[sourceIndex], Step(c, 0, distances[sourceIndex]));
+                Check.Equal(states[target], Step(c, 0, distances[target]));
+            }
+        }
+        [Test] public void MovesThroughEveryStateAndBack()
+        {
+            var c = new CompanionCore(); Check.Equal(CompanionState.Idle, c.State);
+            Check.Equal(CompanionState.Follow, Step(c, 0, 3));
+            Check.Equal(CompanionState.Catchup, Step(c, 0, 13));
+            Check.Equal(CompanionState.Follow, Step(c, 0, 12));
+            Check.Equal(CompanionState.Idle, Step(c, 0, 2));
+            Check.Equal(CompanionState.Teleport, Step(c, 0, 31));
+            Check.Equal(CompanionState.Idle, Step(c, 0, 2));
+        }
+        [Test] public void TeleportIsTwoMetresBehindNormalizedHorizontalForward()
+        {
+            var c = new CompanionCore(); c.Tick(0, P(10, 4, 10), P(100), P(3, 7, 4));
+            Check.Near(8.8, c.Destination.X); Check.Near(4, c.Destination.Y); Check.Near(8.4, c.Destination.Z);
+        }
+        [Test] public void ZeroForwardUsesWorldBack()
+        {
+            var c = new CompanionCore(); c.Tick(0, P(10, 4, 10), P(100), P(0));
+            Check.Near(10, c.Destination.X); Check.Near(4, c.Destination.Y); Check.Near(8, c.Destination.Z);
+        }
+        [Test] public void UsesThreeDimensionalDistance()
+        {
+            var c = new CompanionCore();
+            Check.Equal(CompanionState.Catchup, c.Tick(0, P(0), P(0, 13), P(0)));
+        }
+        [Test] public void StuckAtExactlyThreeSecondsTeleportsThenResets()
+        {
+            var c = new CompanionCore(); Step(c, 0, 5);
+            Check.Equal(CompanionState.Follow, Step(c, 2.999f, 5));
+            Check.Equal(CompanionState.Teleport, Step(c, 0.002f, 5));
+            Check.Equal(CompanionState.Follow, Step(c, 0, 5));
+        }
+        [Test] public void ExactStuckBoundary()
+        {
+            var c = new CompanionCore(); Step(c, 0, 5);
+            Check.Equal(CompanionState.Teleport, Step(c, 3, 5));
+        }
+        [Test] public void ProgressAndIdleResetStuckTimer()
+        {
+            var c = new CompanionCore(); Step(c, 0, 5); Step(c, 2, 5);
+            Check.Equal(CompanionState.Follow, Step(c, 2, 5.1f));
+            Step(c, 2, 5.1f); Step(c, 100, 1);
+            Check.Equal(CompanionState.Follow, Step(c, 0, 5.1f));
+        }
+        [Test] public void SlowProgressAccumulatesAgainstAnchor()
+        {
+            var c = new CompanionCore(); Step(c, 0, 5);
+            Step(c, 1, 5.02f); Step(c, 1, 5.04f);
+            Check.Equal(CompanionState.Follow, Step(c, 1, 5.06f));
+        }
+        [Test] public void FiveCentimetresResetsStuckTimer()
+        {
+            var c = new CompanionCore(); Step(c, 0, 5); Step(c, 2, 5);
+            Check.Equal(CompanionState.Follow, Step(c, 1, 5.05f));
+            Check.Equal(CompanionState.Follow, Step(c, 2.99f, 5.05f));
+        }
+        [Test] public void CatchupCanAlsoGetStuck()
+        {
+            var c = new CompanionCore(); Step(c, 0, 20);
+            Check.Equal(CompanionState.Teleport, Step(c, 3, 20));
+        }
+        [Test] public void IdleNeverCountsAsStuck()
+        { var c = new CompanionCore(); Step(c, 0, 1); Check.Equal(CompanionState.Idle, Step(c, 100, 1)); }
+        [Test] public void CallCooldownAndExactReadyBoundary()
+        {
+            var c = new CompanionCore(); Check.Near(0, c.CooldownRatio);
+            Check.Equal(true, c.Call()); Check.Near(1, c.CooldownRatio);
+            Check.Equal(false, c.Call()); Step(c, 4, 1); Check.Near(0.5, c.CooldownRatio);
+            Check.Equal(false, c.Call()); Check.Near(0.5, c.CooldownRatio);
+            Step(c, 4, 1); Check.Near(0, c.CooldownRatio); Check.Equal(true, c.Call());
+            Step(c, 100, 1); Check.Near(0, c.CooldownRatio);
+        }
+        [Test] public void CallAcceleratesUntilReunion()
+        {
+            var c = new CompanionCore(); c.Call();
+            Check.Equal(CompanionState.Catchup, Step(c, 0, 3));
+            Check.Equal(CompanionState.Catchup, Step(c, 8, 4));
+            Check.Equal(CompanionState.Idle, Step(c, 0, 2));
+            Check.Equal(CompanionState.Follow, Step(c, 0, 3));
+            Check.Near(0, c.Destination.X);
+        }
+        [Test] public void TeleportClearsCallButPreservesCooldown()
+        {
+            var c = new CompanionCore(); c.Call(); Step(c, 1, 31);
+            Check.Near(0.875, c.CooldownRatio);
+            Check.Equal(CompanionState.Follow, Step(c, 0, 3));
+        }
+        [Test] public void RejectsInvalidTimeAndCoordinates()
+        {
+            var c = new CompanionCore(); Check.Throws(() => Step(c, -1, 3));
+            foreach (float v in new[] { float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+            {
+                Check.Throws(() => Step(c, v, 3)); Check.Throws(() => P(v));
+                Check.Throws(() => P(0, v)); Check.Throws(() => P(0, 0, v));
+            }
+        }
+    }
+}
+using UnityEngine;
+
+namespace Liuruan
+{
+    /// 作答紀錄（PlayerPrefs）：每題答對前的作答次數、是否已答對、答對前是否看過白話。
+    /// 題號 = 線索 id；結局推論題 = 固定 InferId（100，不與線索 id 撞號）。首答正確 = 已答對且只答了 1 次。
+    /// 小遊戲不計分，見 ClueManager.IsScored。
+    public static class QuizStats
+    {
+        /// 推論題固定題號；線索 id 必須小於它（check.py 另驗）
+        public const int InferId = 100;
+        /// 線索題號上限（不含推論題），依 ClueManager 實際最大 id
+        static int MaxClueId => ClueManager.I != null && ClueManager.I.Clues.Count > 0 ? ClueManager.I.Clues[ClueManager.I.Clues.Count - 1].id : ClueManager.EndingId;
+        static System.Collections.Generic.IEnumerable<int> Ids()
+        {
+            for (int i = 0; i <= MaxClueId; i++) yield return i;
+            yield return InferId;
+        }
+        const int ClearMax = 64; // 重新開始時一律清到這裡，不依賴 ClueManager 是否在場
+
+        static string TriesKey(int id) => $"liuruan_q{id}_tries";
+        static string SolvedKey(int id) => $"liuruan_q{id}_solved";
+        static string PlainKey(int id) => $"liuruan_q{id}_plain";
+
+        public static bool Solved(int id) => PlayerPrefs.GetInt(SolvedKey(id), 0) == 1;
+        public static int Tries(int id) => PlayerPrefs.GetInt(TriesKey(id), 0);
+        public static bool SawPlain(int id) => PlayerPrefs.GetInt(PlainKey(id), 0) == 1;
+        public static bool FirstTryCorrect(int id) => Solved(id) && Tries(id) == 1;
+
+        static bool Scored(int id) => ClueManager.I == null || ClueManager.I.IsScored(id);
+
+        /// 只記「第一次答對之前」的作答，重看已答對的卷軸不改成績。
+        public static void Record(int id, bool correct)
+        {
+            if (Solved(id)) return;
+            PlayerPrefs.SetInt(TriesKey(id), Tries(id) + 1);
+            if (correct) PlayerPrefs.SetInt(SolvedKey(id), 1);
+            PlayerPrefs.Save();
+        }
+
+        public static void MarkPlain(int id)
+        {
+            if (Solved(id) || SawPlain(id)) return;
+            PlayerPrefs.SetInt(PlainKey(id), 1);
+            PlayerPrefs.Save();
+        }
+
+        public static int ScoredCount()
+        {
+            int n = 0;
+            foreach (int i in Ids()) if (Scored(i)) n++;
+            return n;
+        }
+
+        public static int FirstTryCount()
+        {
+            int n = 0;
+            foreach (int i in Ids()) if (Scored(i) && FirstTryCorrect(i)) n++;
+            return n;
+        }
+
+        /// 有白話的計分題中，沒看白話就答對的題數
+        public static int NoPlainCount()
+        {
+            int n = 0;
+            for (int i = 0; i <= MaxClueId; i++) if (Scored(i) && Solved(i) && !SawPlain(i)) n++;
+            return n;
+        }
+
+        /// 有白話的計分題數（NoPlainCount 的分母；推論題沒有白話，不算）
+        public static int PlainScoredCount()
+        {
+            int n = 0;
+            for (int i = 0; i <= MaxClueId; i++) if (Scored(i)) n++;
+            return n;
+        }
+
+        public static int TotalTries()
+        {
+            int n = 0;
+            foreach (int i in Ids()) if (Scored(i)) n += Tries(i);
+            return n;
+        }
+
+        public static void Clear()
+        {
+            for (int i = 0; i <= Mathf.Max(InferId, ClearMax); i++)
+            {
+                PlayerPrefs.DeleteKey(TriesKey(i));
+                PlayerPrefs.DeleteKey(SolvedKey(i));
+                PlayerPrefs.DeleteKey(PlainKey(i));
+            }
+            PlayerPrefs.Save();
+        }
+    }
+}
+---
+name: ponytail
+description: >
+  Lazy senior dev mode: the smallest change that fully solves the task, and a
+  reply a busy human understands in one read. Use on any coding task (writing,
+  fixing, refactoring, reviewing, choosing dependencies) and when the user says
+  "ponytail", "be lazy", "simplest solution", "yagni", or complains about
+  over-engineering or bloat. Levels: lite, full (default), ultra.
+argument-hint: "[lite|full|ultra|off]"
+license: MIT
+---
+
+# Ponytail
+
+You are a lazy senior developer. The best code is the code never written. You solve the whole problem with the least new code. End your reply with one or two lines: what you skipped or did not check, and any risk the user must know.
+
+Active for the whole session until the user says "stop ponytail" or "normal mode". Switch level: `/ponytail lite|full|ultra`.
+
+## Before you write
+
+Read the task and the code it touches. List every place your change must reach: callers, tests, fixtures, config, exports. Check what your change could break for users: data it would destroy or expose, callers that stop working. That is scope. Extra features are not.
+
+## The smallest complete change
+
+Take the first option that fully works:
+
+1. Does it need to exist? Skip features, options and flexibility nobody asked for, and name them in one line. A vague request ("build me X") gets the smallest version that does the core job.
+2. Already in this codebase (a helper, component, service, pattern)? Use it the way the surrounding code does.
+3. Standard library or a platform feature? Use it, unless the project has its own. A house component beats a native widget.
+4. An installed dependency? Use it. Never add a dependency for a few lines.
+5. Can it be one line a reader gets at a glance? One line.
+6. Otherwise: the minimum code that works.
+
+- Be lazy about the solution, never about the change itself: finish every part the task needs, including the callers, tests and fixtures your change breaks.
+- No abstraction, wrapper, type conversion, option, config, boilerplate or "for later" code nobody asked for. Keep values in the form the platform already gives you. Deletion beats addition. Keep the structure the codebase already has: its layers, interfaces and conventions.
+- The shortest working diff wins, once you know everything it must touch. A one-liner that needs decoding is not short.
+- Comment only the why the code cannot show, in one line.
+- Bug fix: before you edit, grep every caller of the function you touch, then fix the root cause once in the shared code.
+- Code you move or merge keeps its error handling and validation.
+- Between options of equal size, take the one that is correct on edge cases.
+- Lazy code without its check is unfinished: new non-trivial logic (a branch, a loop, a parser, money or security, or a whole new script or app) leaves one small test or an assert-based self-check. Trivial changes need none.
+- A shortcut with a known limit gets a code comment in this form: `shortcut: <the limit>, <when to upgrade>`.
+
+Never cut: validation at trust boundaries, error handling that prevents data loss, security, accessibility, the calibration real hardware needs, anything the user asked for.
+
+## Levels
+
+| Level | Behavior |
+|-------|----------|
+| **lite** | Build what was asked. Name the smaller option in one line and let the user pick. |
+| **full** | The rules above. Default. |
+| **ultra** | Also question the request: before building, push back on any part the need does not justify. |
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+本輪會套用 `ponytail` 技能：沿用現有 Core、包裝與測試方式，不新增套件或 UI。成績卡的「答對率」會定義為六筆非結局閱讀題的首答正確率，與現有 QuizStats 的首答紀錄一致；剝皮數、漂流物數及遊玩時間由流程傳入。
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "cat > staging/scripts/Runtime/SeasonCore.cs <<'EOF'
+using System;
+
+namespace Liuruan
+{
+    public enum Season { Spring, Summer, Autumn, Winter }
+
+    public readonly struct SeasonBlend
+    {
+        public Season Current { get; }
+        public Season Next { get; }
+        public float Weight { get; }
+        public SeasonBlend(Season current, Season next, float weight)
+        { Current = current; Next = next; Weight = weight; }
+    }
+
+    public sealed class SeasonCore
+    {
+        public const float DurationSeconds = 6f;
+        public float Progress { get; private set; }
+        public bool IsPlaying { get; private set; }
+        public bool IsHome { get; private set; }
+        public SeasonBlend Blend => Sample(Progress);
+        public event Action OnBirdsSing;
+        private bool started;
+        private double elapsed;
+
+        public static SeasonBlend Sample(float progress)
+        {
+            HungerCore.RequireFinite(progress, nameof(progress));
+            float p = Math.Max(0, Math.Min(1, progress));
+            if (p == 1) return new SeasonBlend(Season.Spring, Season.Summer, 0);
+            float scaled = p * 4;
+            int index = (int)scaled;
+            return new SeasonBlend((Season)index, (Season)((index + 1) % 4), scaled - index);
+        }
+        public bool PlayHalfYear()
+        {
+            if (started || IsHome) return false;
+            started = true; IsPlaying = true; return true;
+        }
+        public void Tick(float deltaSeconds)
+        {
+            HungerCore.RequireFinite(deltaSeconds, nameof(deltaSeconds));
+            if (deltaSeconds < 0) throw new ArgumentOutOfRangeException(nameof(deltaSeconds));
+            if ("'!IsPlaying) return;
+            elapsed = Math.Min(DurationSeconds, elapsed + deltaSeconds);
+            Progress = (float)(elapsed / DurationSeconds);
+            if (elapsed < DurationSeconds) return;
+            IsPlaying = false;
+            OnBirdsSing?.Invoke();
+        }
+        public bool SwapToHome()
+        {
+            if (IsHome) return false;
+            IsHome = true; IsPlaying = false; return true;
+        }
+    }
+}
+EOF
+cat > staging/scripts/Runtime/SeasonSwap.cs <<'"'EOF'
+using System;
+using UnityEngine;
+
+namespace Liuruan
+{
+    public sealed class SeasonSwap : MonoBehaviour
+    {
+        [Serializable] public struct Palette
+        {
+            public Color canopy, ground, fog, light;
+            public Palette(Color canopy, Color ground, Color fog, Color light)
+            { this.canopy = canopy; this.ground = ground; this.fog = fog; this.light = light; }
+        }
+        [SerializeField] private Palette spring = new Palette(new Color(.55f,.8f,.4f), new Color(.5f,.65f,.3f), new Color(.8f,.9f,.8f), new Color(1,.95f,.8f));
+        [SerializeField] private Palette summer = new Palette(new Color(.2f,.65f,.25f), new Color(.35f,.55f,.2f), new Color(.7f,.85f,.85f), new Color(1,1,.9f));
+        [SerializeField] private Palette autumn = new Palette(new Color(.9f,.5f,.2f), new Color(.6f,.45f,.25f), new Color(.8f,.7f,.6f), new Color(1,.8f,.6f));
+        [SerializeField] private Palette winter = new Palette(new Color(.7f,.75f,.8f), new Color(.75f,.8f,.85f), new Color(.8f,.85f,.9f), new Color(.7f,.8f,1));
+        [SerializeField] private Renderer[] canopyRenderers = new Renderer[0];
+        [SerializeField] private Renderer[] groundRenderers = new Renderer[0];
+        [SerializeField] private string colorProperty = \"_BaseColor\";
+        [SerializeField] private Light sun;
+        [SerializeField] private GameObject immortalVillageRoot, homeVillageRoot;
+        [SerializeField] private Material skyReturn;
+        [SerializeField] private Color returnLight = new Color(.62f,.7f,.82f);
+        public event Action OnBirdsSing;
+        public event Action OnHomeSwapped;
+        public bool IsPlaying => core.IsPlaying;
+        public bool IsHome => core.IsHome;
+        private readonly SeasonCore core = new SeasonCore();
+        private MaterialPropertyBlock block;
+        private void Awake()
+        {
+            block = new MaterialPropertyBlock();
+            core.OnBirdsSing += BirdsSing;
+        }
+        public void PlayHalfYear()
+        { if (core.PlayHalfYear()) ApplySeason(); }
+        private void Update()
+        {
+            if ("'!core.IsPlaying) return;
+            core.Tick(Time.deltaTime);
+            if (!core.IsHome) ApplySeason();
+        }
+        private void BirdsSing()
+        {
+            ApplySeason();
+            OnBirdsSing?.Invoke();
+        }
+        public void SwapToHome()
+        {
+            if (!immortalVillageRoot || !homeVillageRoot || immortalVillageRoot == homeVillageRoot || !skyReturn || !sun)
+            { Debug.LogError("SeasonSwap 需要兩組不同的村落根物件、sky_return 材質與主光源。", this); return; }
+            if (!core.SwapToHome()) return;
+            immortalVillageRoot.SetActive(false); homeVillageRoot.SetActive(true);
+            RenderSettings.skybox = skyReturn; sun.color = returnLight;
+            OnHomeSwapped?.Invoke();
+        }
+        private void ApplySeason()
+        {
+            var blend = core.Blend;
+            Palette a = GetPalette(blend.Current), b = GetPalette(blend.Next);
+            Paint(canopyRenderers, Color.Lerp(a.canopy, b.canopy, blend.Weight));
+            Paint(groundRenderers, Color.Lerp(a.ground, b.ground, blend.Weight));
+            RenderSettings.fogColor = Color.Lerp(a.fog, b.fog, blend.Weight);
+            if (sun) sun.color = Color.Lerp(a.light, b.light, blend.Weight);
+        }
+        private Palette GetPalette(Season season)
+        {
+            switch (season)
+            {
+                case Season.Summer: return summer;
+                case Season.Autumn: return autumn;
+                case Season.Winter: return winter;
+                default: return spring;
+            }
+        }
+        private void Paint(Renderer[] renderers, Color color)
+        {
+            if (block == null) block = new MaterialPropertyBlock();
+            foreach (var renderer in renderers)
+            {
+                if (!renderer) continue;
+                renderer.GetPropertyBlock(block); block.SetColor(colorProperty, color); renderer.SetPropertyBlock(block);
+            }
+        }
+    }
+}
+EOF
+cat > staging/scripts/Runtime/CharacterBobCore.cs <<'"'EOF'
+using System;
+
+namespace Liuruan
+{
+    public readonly struct BobPose
+    {
+        public float Height { get; }
+        public float RollDegrees { get; }
+        public float LeanDegrees { get; }
+        public float Scale { get; }
+        public BobPose(float height, float roll, float lean, float scale)
+        { Height = height; RollDegrees = roll; LeanDegrees = lean; Scale = scale; }
+    }
+
+    public sealed class CharacterBobCore
+    {
+        private readonly float maxSpeed, baseFrequency, frequencyPerSpeed, bounce, sway, lean, breath, breathFrequency;
+        private double stepPhase, breathPhase;
+        public CharacterBobCore(float maxSpeed = 8, float baseFrequency = 1, float frequencyPerSpeed = .4f,
+            float bounce = .06f, float sway = 3, float lean = 8, float breath = .015f, float breathFrequency = .3f)
+        {
+            foreach (float value in new[] { maxSpeed, baseFrequency, frequencyPerSpeed, bounce, sway, lean, breath, breathFrequency })
+            {
+                HungerCore.RequireFinite(value, nameof(value));
+                if (value < 0) throw new ArgumentOutOfRangeException(nameof(value));
+            }
+            if (maxSpeed == 0 || breath > .015f) throw new ArgumentOutOfRangeException(nameof(maxSpeed));
+            this.maxSpeed = maxSpeed; this.baseFrequency = baseFrequency; this.frequencyPerSpeed = frequencyPerSpeed;
+            this.bounce = bounce; this.sway = sway; this.lean = lean; this.breath = breath; this.breathFrequency = breathFrequency;
+        }
+        public float Frequency(float speed)
+        {
+            speed = ClampSpeed(speed);
+            return speed == 0 ? 0 : (float)Math.Min(float.MaxValue, baseFrequency + (double)frequencyPerSpeed * speed);
+        }
+        public BobPose Tick(float deltaSeconds, float speed)
+        {
+            HungerCore.RequireFinite(deltaSeconds, nameof(deltaSeconds));
+            if (deltaSeconds < 0) throw new ArgumentOutOfRangeException(nameof(deltaSeconds));
+            speed = ClampSpeed(speed);
+            const double tau = Math.PI * 2;
+            breathPhase = (breathPhase + deltaSeconds * (double)breathFrequency * tau) % tau;
+            if (speed == 0)
+            {
+                stepPhase = 0;
+                return new BobPose(0, 0, 0, 1 + breath * (float)Math.Sin(breathPhase));
+            }
+            stepPhase = (stepPhase + deltaSeconds * (double)Frequency(speed) * tau) % tau;
+            float strength = Math.Min(1, speed / maxSpeed);
+            return new BobPose(bounce * strength * (float)Math.Abs(Math.Sin(stepPhase)),
+                sway * strength * (float)Math.Sin(stepPhase * .5), lean * strength, 1);
+        }
+        private float ClampSpeed(float speed)
+        {
+            HungerCore.RequireFinite(speed, nameof(speed));
+            if (speed < 0) throw new ArgumentOutOfRangeException(nameof(speed));
+            return Math.Min(maxSpeed, speed);
+        }
+    }
+}
+EOF
+cat > staging/scripts/Runtime/CharacterBob.cs <<'EOF'
+using System;
+using UnityEngine;
+
+namespace Liuruan
+{
+    public sealed class CharacterBob : MonoBehaviour
+    {
+        [SerializeField] private Transform motionRoot;
+        [SerializeField] private bool autoMeasure = true;
+        [SerializeField, Min(.01f)] private float maxSpeed = 8;
+        [SerializeField, Min(0)] private float baseFrequency = 1, frequencyPerSpeed = .4f;
+        [SerializeField, Min(0)] private float bounce = .06f, sway = 3, lean = 8;
+        [SerializeField, Range(0,.015f)] private float breath = .015f;
+        [SerializeField, Min(0)] private float breathFrequency = .3f;
+        private CharacterBobCore core;
+        private Vector3 basePosition, baseScale, previous;
+        private Quaternion baseRotation;
+        private float externalSpeed;
+        private void Awake()
+        {
+            if ("'!motionRoot) motionRoot = transform.parent;
+            if (!motionRoot || motionRoot == transform || motionRoot.IsChildOf(transform))
+            { Debug.LogError("CharacterBob 請掛在模型子物件，Motion Root 指向獨立的移動根物件。", this); enabled = false; return; }
+            basePosition = transform.localPosition; baseRotation = transform.localRotation; baseScale = transform.localScale;
+            try { core = new CharacterBobCore(maxSpeed, baseFrequency, frequencyPerSpeed, bounce, sway, lean, breath, breathFrequency); }
+            catch (ArgumentException e) { Debug.LogError("CharacterBob 參數無效：" + e.Message, this); enabled = false; }
+        }
+        private void OnEnable() { if (motionRoot) previous = motionRoot.position; }
+        public void SetSpeed(float speed)
+        {
+            HungerCore.RequireFinite(speed, nameof(speed));
+            if (speed < 0) throw new ArgumentOutOfRangeException(nameof(speed));
+            externalSpeed = speed; autoMeasure = false;
+        }
+        private void LateUpdate()
+        {
+            if (core == null || !motionRoot) return;
+            Vector3 now = motionRoot.position, delta = now - previous; previous = now;
+            float speed = autoMeasure ? (Time.deltaTime > 0 ? new Vector2(delta.x, delta.z).magnitude / Time.deltaTime : 0) : externalSpeed;
+            BobPose pose = core.Tick(Time.deltaTime, speed);
+            transform.localPosition = basePosition + Vector3.up * pose.Height;
+            transform.localRotation = baseRotation * Quaternion.Euler(pose.LeanDegrees, 0, pose.RollDegrees);
+            transform.localScale = baseScale * pose.Scale;
+        }
+        private void OnDisable()
+        {
+            if (core == null) return;
+            transform.localPosition = basePosition; transform.localRotation = baseRotation; transform.localScale = baseScale;
+        }
+    }
+}
+EOF' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "cat > staging/scripts/Runtime/EpilogueCore.cs <<'EOF'
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
+namespace Liuruan
+{
+    [Serializable] public sealed class EpilogueClueDocument { public EpilogueClue[] clues = null; }
+    [Serializable] public sealed class EpilogueClue
+    {
+        public int id = 0;
+        public bool isEnding = false;
+        public string original = null;
+    }
+    [Serializable] public sealed class EpilogueCompareDocument { public EpilogueCompareRow[] rows = null; }
+    [Serializable] public sealed class EpilogueCompareRow
+    { public string aspect = null, liuruan = null, taohua = null; }
+
+    public readonly struct ReadingResult
+    {
+        public int Id { get; }
+        public bool FirstTryCorrect { get; }
+        public ReadingResult(int id, bool firstTryCorrect) { Id = id; FirstTryCorrect = firstTryCorrect; }
+    }
+    public sealed class EndingQuestion
+    {
+        public string Prompt => \"為什麼找到的是七世孫？\";
+        public ReadOnlyCollection<string> Options { get; } = Array.AsReadOnly(new[] {
+            \"「攀葛乃得至」與「而饑止體充」\",
+            \"「遂停半年」與「問得七世孫」\",
+            \"「見蕪菁葉從山腹流出」與「此處去人徑不遠」\" });
+        public int AnswerIndex => 1;
+        public string Explanation => \"「遂停半年」與「問得七世孫」；以異境與人間時間落差為合理推論，不假稱原文明說固定換算率。\";
+    }
+    public readonly struct ComparisonRow
+    {
+        public string Aspect { get; }
+        public string Liuruan { get; }
+        public string Taohua { get; }
+        public ComparisonRow(EpilogueCompareRow row)
+        { Aspect = row.aspect; Liuruan = row.liuruan; Taohua = row.taohua; }
+    }
+    public readonly struct EndingScore
+    {
+        public int BarkCount { get; }
+        public int DriftCount { get; }
+        public int ReadingCorrect { get; }
+        public int ReadingTotal { get; }
+        public float ReadingAccuracy => ReadingTotal == 0 ? 0 : (float)ReadingCorrect / ReadingTotal;
+        public float TotalSeconds { get; }
+        public EndingScore(int bark, int drift, int correct, int total, float seconds)
+        {
+            HungerCore.RequireFinite(seconds, nameof(seconds));
+            if (bark < 0 || bark > 5 || drift < 0 || drift > 3 || total < 0 || correct < 0 || correct > total || seconds < 0)
+                throw new ArgumentOutOfRangeException(nameof(bark));
+            BarkCount = bark; DriftCount = drift; ReadingCorrect = correct; ReadingTotal = total; TotalSeconds = seconds;
+        }
+    }
+    public sealed class EpilogueModel
+    {
+        public ReadOnlyCollection<string> Paragraphs { get; }
+        public EndingQuestion Question { get; } = new EndingQuestion();
+        public ReadOnlyCollection<ComparisonRow> Comparison { get; }
+        public EndingScore Score { get; }
+        internal EpilogueModel(string[] paragraphs, ComparisonRow[] comparison, EndingScore score)
+        { Paragraphs = Array.AsReadOnly(paragraphs); Comparison = Array.AsReadOnly(comparison); Score = score; }
+    }
+    public static class EpilogueCore
+    {
+        public static EpilogueModel Build(EpilogueClueDocument clues, EpilogueCompareDocument compare,
+            int bark, int drift, ReadingResult[] readings, float totalSeconds)
+        {
+            if (clues?.clues == null || compare?.rows == null || readings == null)
+                throw new ArgumentException(\"結局需要 clues、compare 與閱讀成績。\");
+            EpilogueClue ending = null;
+            var ids = new HashSet<int>();
+            var readingIds = new HashSet<int>();
+            foreach (var clue in clues.clues)
+            {
+                if (clue == null || clue.id < 0 || "'!ids.Add(clue.id)) throw new ArgumentException("線索 id 無效或重複。");
+                if (clue.isEnding)
+                {
+                    if (ending != null) throw new ArgumentException("結局全文必須恰有一筆。");
+                    ending = clue;
+                }
+                else readingIds.Add(clue.id);
+            }
+            if (ending == null || string.IsNullOrWhiteSpace(ending.original)) throw new ArgumentException("缺少結局全文。");
+            var paragraphs = ending.original.Replace("'"\\r\\n\", \"\\n\").Replace('\\r', '\\n')
+                .Split(new[] { '\\n' }, StringSplitOptions.RemoveEmptyEntries);
+            int correct = 0;
+            var seen = new HashSet<int>();
+            foreach (var result in readings)
+            {
+                if ("'!readingIds.Contains(result.Id) || !seen.Add(result.Id)) throw new ArgumentException("閱讀成績 id 無效或重複。");
+                if (result.FirstTryCorrect) correct++;
+            }
+            var rows = new ComparisonRow[compare.rows.Length];
+            for (int i = 0; i < rows.Length; i++)
+            {
+                var row = compare.rows[i];
+                if (row == null || string.IsNullOrWhiteSpace(row.aspect) || string.IsNullOrWhiteSpace(row.liuruan) || string.IsNullOrWhiteSpace(row.taohua))
+                    throw new ArgumentException("比較表欄位不可空白。");
+                rows[i] = new ComparisonRow(row);
+            }
+            return new EpilogueModel(paragraphs, rows, new EndingScore(bark, drift, correct, readingIds.Count, totalSeconds));
+        }
+    }
+}
+EOF
+cat > staging/scripts/Runtime/EpilogueDirector.cs <<'"'EOF'
+using System;
+using UnityEngine;
+
+namespace Liuruan
+{
+    public sealed class EpilogueDirector : MonoBehaviour
+    {
+        [SerializeField] private TextAsset cluesJson, compareJson;
+        public EpilogueModel Model { get; private set; }
+        public event Action<EpilogueModel> OnReady;
+        public event Action<string> OnError;
+
+        public bool Present(int barkCount, int driftCount, ReadingResult[] readings, float totalSeconds)
+        {
+            EpilogueModel model;
+            try
+            {
+                if ("'!cluesJson || !compareJson) throw new ArgumentException("EpilogueDirector 請指定 clues.json 與 compare.json。");
+                model = EpilogueCore.Build(JsonUtility.FromJson<EpilogueClueDocument>(cluesJson.text),
+                    JsonUtility.FromJson<EpilogueCompareDocument>(compareJson.text), barkCount, driftCount, readings, totalSeconds);
+            }
+            catch (ArgumentException e)
+            {
+                Model = null;
+                Debug.LogError("結局資料無法讀取：" + e.Message, this);
+                OnError?.Invoke(e.Message); return false;
+            }
+            Model = model; OnReady?.Invoke(Model); return true;
+        }
+    }
+}
+EOF
+python3 - <<'"'PY'
+p='staging/scripts/Runtime/CharacterBobCore.cs'
+s=open(p).read().replace('Math.Sin(stepPhase * .5)', 'Math.Sin(stepPhase)')
+open(p,'w').write(s)
+p='staging/scripts/Tests/Console/Runner.cs'
+s=open(p).read().replace('typeof(Liuruan.Tests.DriftCoreTests) })','typeof(Liuruan.Tests.DriftCoreTests), typeof(Liuruan.Tests.SeasonCoreTests),\\n            typeof(Liuruan.Tests.EpilogueCoreTests), typeof(Liuruan.Tests.CharacterBobCoreTests) })')
+open(p,'w').write(s)
+p='staging/scripts/Tests/run_core_tests.sh'
+s=open(p).read().replace('work_dir="'$(mktemp'"', 'export LIURUAN_PROJECT_ROOT="'$(CDPATH= cd -- "$scripts_dir/../.." && pwd)'"\\n# R2 的結局測試直接讀取 C 線 JSON／原文，避免複製過期 fixture。\\nwork_dir="'$(mktemp'"')
+open(p,'w').write(s)
+PY" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+三組 Core 與元件已寫入。接下來會測季節邊界、混色連續性與重複呼叫，也會直接讀取 C 線的 JSON 和原文，核對全文分段、8 列比較資料、答案索引及計分。
+
+角色動畫會掛在模型子物件，保留移動根物件由既有控制器管理；停用時還原模型原本的位移、旋轉與縮放。
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "cat > staging/scripts/Tests/EditMode/R2CoreTests.cs <<'EOF'
+using System;
+using System.IO;
+using NUnit.Framework;
+
+namespace Liuruan.Tests
+{
+    public sealed class SeasonCoreTests
+    {
+        [TestCase(0f, Season.Spring, Season.Summer)]
+        [TestCase(.25f, Season.Summer, Season.Autumn)]
+        [TestCase(.5f, Season.Autumn, Season.Winter)]
+        [TestCase(.75f, Season.Winter, Season.Spring)]
+        [TestCase(1f, Season.Spring, Season.Summer)]
+        public void ExactBoundaries(float progress, Season current, Season next)
+        {
+            var b = SeasonCore.Sample(progress);
+            Check.Equal(current, b.Current); Check.Equal(next, b.Next); Check.Near(0, b.Weight);
+        }
+        private static double Mix(float progress)
+        {
+            var b = SeasonCore.Sample(progress);
+            double[] palette = { .2, .8, .4, .1 };
+            return palette[(int)b.Current] * (1 - b.Weight) + palette[(int)b.Next] * b.Weight;
+        }
+        [Test] public void WeightsAndBlendedValuesAreContinuousAcrossEveryBoundary()
+        {
+            foreach (float boundary in new[] { .25f, .5f, .75f, 1f })
+            {
+                Check.Near(Mix(boundary), Mix(boundary - .000001f));
+                if (boundary < 1) Check.Near(Mix(boundary), Mix(boundary + .000001f));
+            }
+            for (int i = 0; i < 1000; i++)
+            {
+                var b = SeasonCore.Sample(i / 1000f);
+                Check.Equal(true, b.Weight >= 0 && b.Weight <= 1);
+            }
+            Check.Near(.5, SeasonCore.Sample(.125f).Weight);
+            Check.Equal(Season.Spring, SeasonCore.Sample(-1).Current);
+            Check.Equal(Season.Spring, SeasonCore.Sample(2).Current);
+        }
+        [Test] public void SixSecondsEndsInSpringAndBirdsOnlyOnceEvenWithReentry()
+        {
+            var c = new SeasonCore(); int birds = 0;
+            c.OnBirdsSing += () => { birds++; Check.Equal(false, c.PlayHalfYear()); c.Tick(100); };
+            c.Tick(10); Check.Near(0, c.Progress);
+            Check.Equal(true, c.PlayHalfYear()); c.Tick(3);
+            Check.Equal(false, c.PlayHalfYear()); Check.Near(.5, c.Progress);
+            c.Tick(2.99f); Check.Equal(0, birds); c.Tick(.02f);
+            Check.Equal(1, birds); Check.Equal(false, c.IsPlaying);
+            Check.Equal(Season.Spring, c.Blend.Current); Check.Near(1, c.Progress);
+            c.Tick(float.MaxValue); Check.Equal(false, c.PlayHalfYear()); Check.Equal(1, birds);
+        }
+        [Test] public void ExactDurationAndRepeatedHomeCallsAreIdempotent()
+        {
+            var c = new SeasonCore(); int birds = 0; c.OnBirdsSing += () => birds++;
+            c.PlayHalfYear(); c.Tick(6); Check.Equal(1, birds);
+            Check.Equal(true, c.SwapToHome()); Check.Equal(false, c.SwapToHome());
+            Check.Equal(false, c.PlayHalfYear()); c.Tick(6); Check.Equal(1, birds);
+        }
+        [Test] public void EarlyReturnCancelsSeasonWithoutLateBirds()
+        {
+            var c = new SeasonCore(); int birds = 0; c.OnBirdsSing += () => birds++;
+            c.PlayHalfYear(); c.Tick(1); c.SwapToHome(); c.Tick(6);
+            Check.Equal(true, c.IsHome); Check.Equal(false, c.IsPlaying); Check.Equal(0, birds);
+            Check.Equal(false, c.PlayHalfYear());
+            var home = new SeasonCore(); home.SwapToHome(); Check.Equal(false, home.PlayHalfYear());
+        }
+        [Test] public void RejectsInvalidInputs()
+        {
+            Check.Throws(() => new SeasonCore().Tick(-1));
+            foreach (float value in new[] { float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+            { Check.Throws(() => SeasonCore.Sample(value)); Check.Throws(() => new SeasonCore().Tick(value)); }
+        }
+    }
+
+    public sealed class EpilogueCoreTests
+    {
+        private static string Root
+        {
+            get
+            {
+#if UNITY_5_3_OR_NEWER
+                return Path.GetDirectoryName(UnityEngine.Application.dataPath);
+#else
+                return Environment.GetEnvironmentVariable(\"LIURUAN_PROJECT_ROOT\") ?? Directory.GetCurrentDirectory();
+#endif
+            }
+        }
+        private static T Read<T>(string path)
+        {
+            string json = File.ReadAllText(Path.Combine(Root, path));
+#if UNITY_5_3_OR_NEWER
+            return UnityEngine.JsonUtility.FromJson<T>(json);
+#else
+            return System.Text.Json.JsonSerializer.Deserialize<T>(json, new System.Text.Json.JsonSerializerOptions { IncludeFields = true });
+#endif
+        }
+        private static EpilogueClueDocument Clues() => Read<EpilogueClueDocument>(\"Assets/_Project/Data/clues.json\");
+        private static EpilogueCompareDocument Compare() => Read<EpilogueCompareDocument>(\"Assets/_Project/Data/compare.json\");
+        private static EpilogueModel Build(ReadingResult[] readings = null) => EpilogueCore.Build(Clues(), Compare(), 5, 3, readings ?? new ReadingResult[0], 900);
+        private static void Reject(Action action)
+        {
+            try { action(); } catch (ArgumentException) { return; }
+            throw new Exception(\"Expected ArgumentException\");
+        }
+        [Test] public void RealJsonRowsMatchEveryFieldAndModelCopiesData()
+        {
+            var clues = Clues(); var compare = Compare();
+            var model = EpilogueCore.Build(clues, compare, 0, 0, new ReadingResult[0], 0);
+            Check.Equal(compare.rows.Length, model.Comparison.Count);
+            for (int i = 0; i < compare.rows.Length; i++)
+            {
+                Check.Equal(compare.rows[i].aspect, model.Comparison[i].Aspect);
+                Check.Equal(compare.rows[i].liuruan, model.Comparison[i].Liuruan);
+                Check.Equal(compare.rows[i].taohua, model.Comparison[i].Taohua);
+            }
+            string first = model.Comparison[0].Aspect;
+            compare.rows[0].aspect = \"changed\"; Check.Equal(first, model.Comparison[0].Aspect);
+        }
+        [Test] public void EndingParagraphsAreFullSourceVerbatimAndRetainOmission()
+        {
+            var model = Build();
+            string source = File.ReadAllText(Path.Combine(Root, \"sources/liuruan_tw.txt\")).TrimEnd('\\r', '\\n').Replace(\"\\r\\n\", \"\\n\");
+            Check.Equal(source, string.Join(\"\\n\", model.Paragraphs));
+            Check.Equal(7, model.Paragraphs.Count);
+            Check.Equal(true, model.Paragraphs[5].StartsWith(\"……遂停半年。\"));
+            Check.Equal(false, source.Contains(\"各就一帳宿\"));
+        }
+        [Test] public void ThreeEvidenceOptionsAndAnswerIndexMatchSourceAndActs()
+        {
+            var q = Build().Question;
+            Check.Equal(\"為什麼找到的是七世孫？\", q.Prompt); Check.Equal(3, q.Options.Count); Check.Equal(1, q.AnswerIndex);
+            Check.Equal(\"「遂停半年」與「問得七世孫」\", q.Options[q.AnswerIndex]);
+            string source = File.ReadAllText(Path.Combine(Root, \"sources/liuruan_tw.txt\"));
+            foreach (string option in q.Options)
+            foreach (string quote in option.Split(new[] { '「', '」' }, StringSplitOptions.RemoveEmptyEntries))
+                if (quote "'!= "與") Check.Equal(true, source.Contains(quote));
+            string acts = File.ReadAllText(Path.Combine(Root, "docs/content/acts.md"));
+            Check.Equal(true, acts.Contains("以異境與人間時間落差為合理推論，不假稱原文明說固定換算率。"));
+            Check.Equal(true, q.Explanation.Contains("以異境與人間時間落差為合理推論，不假稱原文明說固定換算率。"));
+        }
+        [Test] public void ScoresUseAllNonEndingCardsAndFirstTryOnly()
+        {
+            var model = Build(new[] { new ReadingResult(0, true), new ReadingResult(1, false), new ReadingResult(3, true) });
+            Check.Equal(5, model.Score.BarkCount); Check.Equal(3, model.Score.DriftCount);
+            Check.Equal(2, model.Score.ReadingCorrect); Check.Equal(6, model.Score.ReadingTotal);
+            Check.Near(2d / 6, model.Score.ReadingAccuracy); Check.Near(900, model.Score.TotalSeconds);
+            Check.Near(0, Build().Score.ReadingAccuracy);
+            Check.Near(0, new EndingScore(0, 0, 0, 0, 0).ReadingAccuracy);
+            var all = new System.Collections.Generic.List<ReadingResult>();
+            foreach (var clue in Clues().clues) if (!clue.isEnding) all.Add(new ReadingResult(clue.id, true));
+            Check.Near(1, Build(all.ToArray()).Score.ReadingAccuracy);
+        }
+        [Test] public void RejectsDuplicateUnknownAndEndingScoreIds()
+        {
+            Reject(() => Build(new[] { new ReadingResult(0, true), new ReadingResult(0, true) }));
+            Reject(() => Build(new[] { new ReadingResult(999, true) }));
+            Reject(() => Build(new[] { new ReadingResult(6, true) }));
+        }
+        [Test] public void RejectsMissingAmbiguousOrBrokenData()
+        {
+            Reject(() => EpilogueCore.Build(null, Compare(), 0, 0, new ReadingResult[0], 0));
+            Reject(() => EpilogueCore.Build(Clues(), null, 0, 0, new ReadingResult[0], 0));
+            var c = Clues(); c.clues[6].isEnding = false;
+            Reject(() => EpilogueCore.Build(c, Compare(), 0, 0, new ReadingResult[0], 0));
+            c.clues[6].isEnding = true; c.clues[0].isEnding = true;
+            Reject(() => EpilogueCore.Build(c, Compare(), 0, 0, new ReadingResult[0], 0));
+            var compare = Compare(); compare.rows[0].aspect = " ";
+            Reject(() => EpilogueCore.Build(Clues(), compare, 0, 0, new ReadingResult[0], 0));
+            c = Clues(); c.clues[0].id = c.clues[1].id;
+            Reject(() => EpilogueCore.Build(c, Compare(), 0, 0, new ReadingResult[0], 0));
+        }
+        [Test] public void RejectsInvalidScoreInputs()
+        {
+            Check.Throws(() => new EndingScore(-1, 0, 0, 0, 0)); Check.Throws(() => new EndingScore(6, 0, 0, 0, 0));
+            Check.Throws(() => new EndingScore(0, 4, 0, 0, 0)); Check.Throws(() => new EndingScore(0, -1, 0, 0, 0));
+            Check.Throws(() => new EndingScore(0, 0, 2, 1, 0)); Check.Throws(() => new EndingScore(0, 0, 0, 0, -1));
+            foreach (float value in new[] { float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+                Check.Throws(() => new EndingScore(0, 0, 0, 0, value));
+        }
+    }
+
+    public sealed class CharacterBobCoreTests
+    {
+        [Test] public void IdleHasNoBounceSwayOrLeanAndBreathStaysWithinOnePointFivePercent()
+        {
+            var c = new CharacterBobCore(); bool breathing = false;
+            c.Tick(.2f, 4);
+            for (int i = 0; i < 1000; i++)
+            {
+                var p = c.Tick(.01f, 0);
+                Check.Near(0, p.Height); Check.Near(0, p.RollDegrees); Check.Near(0, p.LeanDegrees);
+                Check.Equal(true, p.Scale >= .985f && p.Scale <= 1.015f);
+                breathing |= Math.Abs(p.Scale - 1) > .01;
+            }
+            Check.Equal(true, breathing);
+        }
+        [Test] public void FrequencyIsMonotonicAndCapsAtMaxSpeed()
+        {
+            var c = new CharacterBobCore(); Check.Near(0, c.Frequency(0));
+            float previous = 0;
+            for (int i = 1; i <= 80; i++)
+            { float next = c.Frequency(i / 10f); Check.Equal(true, next > previous); previous = next; }
+            Check.Near(c.Frequency(8), c.Frequency(float.MaxValue));
+        }
+        [Test] public void MovementUsesConfigAndZeroTimeDoesNotAdvancePose()
+        {
+            var c = new CharacterBobCore(4, 1, 0, .1f, 5, 10);
+            var pose = c.Tick(.25f, 4);
+            Check.Near(.1, pose.Height); Check.Near(5, pose.RollDegrees); Check.Near(10, pose.LeanDegrees); Check.Near(1, pose.Scale);
+            var still = c.Tick(0, 4); Check.Near(pose.Height, still.Height); Check.Near(pose.RollDegrees, still.RollDegrees);
+        }
+        [Test] public void FiniteForHugeInputsAndLongRunningPhase()
+        {
+            var c = new CharacterBobCore();
+            foreach (float speed in new[] { 0, .001f, 1, 8, float.MaxValue })
+            foreach (float dt in new[] { 0, .016f, 1000, float.MaxValue })
+            {
+                var p = c.Tick(dt, speed);
+                foreach (float value in new[] { p.Height, p.RollDegrees, p.LeanDegrees, p.Scale })
+                    Check.Equal(true, !float.IsNaN(value) && !float.IsInfinity(value));
+            }
+        }
+        [Test] public void RejectsInvalidSpeedTimeAndSettings()
+        {
+            var c = new CharacterBobCore();
+            Check.Throws(() => c.Tick(-1, 0)); Check.Throws(() => c.Tick(0, -1));
+            Check.Throws(() => new CharacterBobCore(0)); Check.Throws(() => new CharacterBobCore(breath: .02f));
+            Check.Throws(() => new CharacterBobCore(bounce: -1));
+            foreach (float value in new[] { float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+            {
+                Check.Throws(() => c.Tick(value, 0)); Check.Throws(() => c.Tick(0, value));
+                Check.Throws(() => c.Frequency(value)); Check.Throws(() => new CharacterBobCore(maxSpeed: value));
+            }
+        }
+    }
+}
+EOF
+staging/scripts/Tests/run_core_tests.sh > staging/scripts/logs/core-tests-R2.txt 2>&1
+ tail -6 staging/scripts/logs/core-tests-R2.txt' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 4795ms:
+PASS CharacterBobCoreTests.FiniteForHugeInputsAndLongRunningPhase()
+PASS CharacterBobCoreTests.FrequencyIsMonotonicAndCapsAtMaxSpeed()
+PASS CharacterBobCoreTests.IdleHasNoBounceSwayOrLeanAndBreathStaysWithinOnePointFivePercent()
+PASS CharacterBobCoreTests.MovementUsesConfigAndZeroTimeDoesNotAdvancePose()
+PASS CharacterBobCoreTests.RejectsInvalidSpeedTimeAndSettings()
+RESULT: 91 passed, 0 failed
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "cat >> staging/scripts/INTEGRATION.md <<'EOF'
+
+## R2：SeasonSwap（半年演出／歸鄉換景）
+
+1. 在不隨兩村停用的流程物件掛 "'`Liuruan.SeasonSwap`。Inspector 有 Spring／Summer／Autumn／Winter 四組 Palette，各含 Canopy、Ground、Fog、Light。Canopy Renderers／Ground Renderers 指定要變色的 Renderer（多材質 Renderer 會套用同一顏色），Sun 指定主方向光。預設 Color Property 是 URP Lit 的 `_BaseColor`；自訂 shader 若不使用此屬性，必須填實際顏色屬性名稱。以 MaterialPropertyBlock 改色，不修改 sharedMaterial 資產；不要讓別支動畫同時覆寫相同色彩欄位。
+2. Immortal Village Root／Home Village Root 指定兩組獨立且互不包含的村落根物件，初始仙村開、歸鄉村關由場景設定；Sky Return 指定 A 線 `sky_return` 材質，Return Light 預設灰冷 (0.62, 0.7, 0.82)。不會用名稱尋找物件。換景前會檢查兩根物件、天空與光源，缺欄位時記錯誤並保留原景，補齊後可重呼叫。
+3. 第四幕「遂停半年」開始時呼叫 `PlayHalfYear()`；6 秒依春→夏→秋→冬→春混色，完成先套用春色，再發 `OnBirdsSing()` 一次。用這個事件接 AudioSource.Play 與開放求歸／恢復輸入；旁白用 narration.json 現有句子，鳥鳴文字以底本「百鳥鳴呼」為準。本元件不管理音訊、玩家移動、飢餓或面板暫停，流程須在演出期間集中管理鎖定。
+4. `PlayHalfYear()` 同一元件生命週期只生效一次，播放中／完成後重呼叫均不重設計時、不重發鳥鳴。`IsPlaying` 供流程查詢；Time.timeScale=0 或停用元件時演出暫停，重新啟用繼續，重玩重建元件。
+5. 第五幕／讀檔恢復 Act5 呼叫 `SwapToHome()`，關仙村、開歸鄉村、改 RenderSettings.skybox、主光轉灰冷，接著發 `OnHomeSwapped()`；重呼叫無作用。中途換景會取消季節且不補發鳥鳴，後續 PlayHalfYear 也無作用，避免春色蓋掉歸鄉光色。只改天空材質，不更新烘焙光照／反射探針；U 線驗證實際天空與環境光協調。
+6. Core：`SeasonCore.Sample(progress)` 有限值夾到 0–1；Current／Next 是混色兩端，Weight 是 Next 權重，Current 權重為 1−Weight。0/.25/.5/.75/1 對應春／夏／秋／冬／春、Weight=0。邊界時季節索引與權重會切換，但最後混色連續。`Tick(dt)` 拒絕負值及非有限值，完成時先停止再通知，事件內重入不重複播放。
+
+## R2：EpilogueDirector（只提供資料與事件）
+
+1. 在流程物件掛 `Liuruan.EpilogueDirector`，Clues Json 指定 C 線 clues.json，Compare Json 指定 compare.json。使用獨立的可序列化 DTO（EpilogueClueDocument／EpilogueCompareDocument），不改既有 ClueData、GameFlow、HudUI、QuizStats 或 asmdef；JSON 解析使用 Unity 內建 JsonUtility，Core 只接收純 C# DTO。
+2. 結局時呼叫 `Present(int barkCount, int driftCount, ReadingResult[] readings, float totalSeconds)`。成功回 true 並保存 `Model`、發 `OnReady(EpilogueModel)`；資料錯誤回 false、清除 Model、記錯誤並發 `OnError(string)`，不建立任何 UI。每次 Present 都重新產生當下快照並通知，開關結局頁由既有 UI 管理。
+3. Model.Paragraphs 從唯一 isEnding=true 的 original 依換行分段，保留文字與「……」省略標記，**不使用 endingText 當全文**。目前 7 段，與 sources/liuruan_tw.txt 相同；不補回留宿段。Model.Comparison 逐列保留 compare.json 的 Aspect／Liuruan／Taohua，目前 8 列；模型使用唯讀集合且不持有可變 DTO 列參考。
+4. Model.Question 是本輪三選一的原文證據題「為什麼找到的是七世孫？」。選項只引用底本原文，正解索引 **1（0 起算）**＝「遂停半年」與「問得七世孫」；解析的時間落差說法引用 docs/content/acts.md「結局與資料介接」現有說明，不主張固定七百年。這是有別於 clues.json 結局四選一的呈現資料，不改 C 線題庫，也不自動寫 QuizStats。U 線應只呈現一份結局題，避免 HudUI／ScrollUI 重複出題與重複計分。
+5. Score：BarkCount 為已剝皮棵數 0–5；DriftCount 為唯一漂流物數 0–3，**不是 GameFlow.State 的 bitmask 數值**。TotalSeconds 為流程傳入的有限非負秒數；流程自行累計本局有效遊玩時間及處理讀檔，包裝不讀 PlayerPrefs 或使用系統時間推算。
+6. ReadingResult 提供每筆非結局題的 id 與 FirstTryCorrect，可在 U 線用 `new ReadingResult(id, QuizStats.FirstTryCorrect(id))` 建立。ReadingTotal 從 clues.json 的非結局卡自動計數（目前 6，含第 3 幕兩題）；沒傳入的題算未首答正確，ReadingCorrect 只計 true。ReadingAccuracy=ReadingCorrect/ReadingTotal，0–1；UI 乘 100 顯示百分比，0 題時回 0。不含結局 id=6／InferId=100，拒絕重複或未知 id；不得直接用 QuizStats.FirstTryCount()/ScoredCount()，因其分母可能包含結局／推論題。
+7. `EpilogueCore.Build(...)` 可直接傳 DTO 作純 C# 使用，驗證結局唯一、線索 id 唯一、比較表欄位非空及成績範圍；無效輸入拋 ArgumentException（數值範圍為 ArgumentOutOfRangeException）。不含存檔、網路、UI 或全域狀態。
+
+## R2：CharacterBob（綁骨前模型動畫）
+
+1. 掛在模型的獨立子物件／視覺 pivot，不掛 CharacterController／NavMeshAgent 的移動根物件；Motion Root 指向其移動父物件（空欄預設直接父物件）。不可指向自己或自己的子物件。模型以 local +Z 朝前、+Y 朝上，U 線先校正 pivot 與縮放。本元件記住初始 localPosition／localRotation／localScale，停用時還原；不要和 Animator／Root Motion 同時寫同一個視覺 pivot。
+2. 預設 Auto Measure=true，在 LateUpdate 量測 Motion Root 世界水平 X/Z 位移÷deltaTime，不把垂直攀爬算走路；OnEnable 重設位置錨點，避免停用期間移動造成假速度。瞬移會被 Max Speed 夾住，但仍可能有一幀走路姿勢，瞬移流程可停用／重啟元件。
+3. 外部可每幀 `SetSpeed(float metersPerSecond)`，第一次呼叫就切到外部速度模式；放開須餵 0，速度不得為負／NaN／無限。亦可在 Inspector 取消 Auto Measure 後餵值。參數於 Awake 讀取，調整後重建元件或重新進入 Play Mode。
+4. 可調 Max Speed（預設 8）、Base Frequency（1 Hz）、Frequency Per Speed（0.4 Hz/(m/s)）、Bounce（0.06m）、Sway（3°）、Lean（8°）、Breath（0–0.015）與 Breath Frequency（0.3 Hz）。步頻隨速度增加至 Max Speed 封頂；彈跳、左右微擺與前傾強度按速度比例。速度 0 時上下彈跳／左右微擺／前傾均為 0，只做最多 ±1.5% 呼吸縮放；不建立事件或移動玩家。Core：`Frequency(speed)`、`Tick(dt,speed)` 回傳 BobPose（Height／RollDegrees／LeanDegrees／Scale）。
+
+## R2：GameFlow／HudUI 接線與驗收（U 線負責）
+
+已只讀現有 GameFlow.cs／HudUI.cs：GameFlow 的 Act4_Board 目前直接讀卡，ReturnHome／Start／Act5_Return／DebugNextAct 仍呼叫既有 ApplyReturn；HudUI.ShowEnding 仍是文字面板。**本輪未修改這些入口，匯入元件不會自動完成串接。**
+
+U 線需在適當的 Act4 半年節點呼叫 PlayHalfYear，OnBirdsSing 才允許求歸；把所有進入／恢復 Act5 的換景入口接到同一個 SeasonSwap，避免舊 ApplyReturn 同時改色；結局成功時組合唯一收集數、閱讀結果與時間，呼叫 Present，讓 OnReady 接現有結局 UI。SeasonSwap／EpilogueDirector 不引用 GameFlow 或 HudUI。
+
+| 元件 | C# 事件 | 用途 |
+|---|---|---|
+| SeasonSwap | `event Action OnBirdsSing` | 6 秒春回春完成，只發一次；接鳥鳴、求歸開放 |
+| SeasonSwap | `event Action OnHomeSwapped` | 成功換成歸鄉村，只發一次 |
+| EpilogueDirector | `event Action<EpilogueModel> OnReady` | 每次 Present 成功，提供整頁資料快照 |
+| EpilogueDirector | `event Action<string> OnError` | Present 資料錯誤，提供原因 |
+
+這些是 C# event，訂閱者在 OnEnable 訂閱、OnDisable 解除；初始化與呼叫安排在元件 Awake 之後。CharacterBob 無事件。
+
+`Tests/run_core_tests.sh` 本輪直接讀專案的 clues.json、compare.json、原文及 acts.md，不另複製 fixture；console 由 .NET 內建 System.Text.Json 解析欄位，Unity EditMode 分支使用 JsonUtility，原始資料唯讀。從任意 cwd 執行 runner 都會使用腳本推導的專案根目錄。實際結果 **91 passed, 0 failed**（原 69＋R2 22），完整輸出見 `logs/core-tests-R2.txt`。
+
+尚待 U 線：Unity 編譯與 EditMode；四季 Renderer shader 實際混色、6 秒與鳥鳴順序／暫停／重入／提前歸鄉；兩村根物件及 sky_return 指派、讀檔換景；結局排版與三選一互動／首答率／時間來源；玩家與阮肇不同速度、靜止呼吸、模型 pivot、停用還原及手機效能。S 線未開 Unity／未做 WebGL 或實機驗收。
+EOF
+sh -n staging/scripts/Tests/run_core_tests.sh
+git diff --check -- staging/scripts
+rg -n '"'UnityEngine|UnityEditor|GameFlow|HudUI' staging/scripts/Runtime/*Core.cs
+" in /Volumes/hk6429/projects/liuruan-tiantai
+ exited 1 in 0ms:
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+Core 測試已實際通過：**91 passed、0 failed**，包含原有 69 案例與本輪新增 22 案例。
+
+整合文件已列明 U 線尚須接上的入口：第四幕半年演出、第五幕各個換景／讀檔入口，以及現有結局面板。接著會完成靜態檢查，並把完整測試輸出貼入交件報告。
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "python3 - <<'PY'
+from pathlib import Path
+p=Path('staging/scripts/Runtime/SeasonSwap.cs')
+s=p.read_text().replace('''            if ("'!immortalVillageRoot || !homeVillageRoot || immortalVillageRoot == homeVillageRoot || !skyReturn || !sun)'"''','''            if (core.IsHome) return;
+            if ("'!immortalVillageRoot || !homeVillageRoot || immortalVillageRoot == homeVillageRoot || !skyReturn || !sun)'"''').replace('''            if ("'!core.SwapToHome()) return;'"''','''            if (immortalVillageRoot.transform.IsChildOf(homeVillageRoot.transform) ||
+                homeVillageRoot.transform.IsChildOf(immortalVillageRoot.transform) ||
+                transform.IsChildOf(immortalVillageRoot.transform) || transform.IsChildOf(homeVillageRoot.transform))
+            { Debug.LogError(\"SeasonSwap 流程物件須在兩村之外，且兩村根物件不可互相包含。\", this); return; }
+            if ("'!core.SwapToHome()) return;'"''')
+p.write_text(s)
+p=Path('staging/scripts/Runtime/CharacterBobCore.cs')
+s=p.read_text().replace('''            if (maxSpeed == 0 || breath > .015f) throw new ArgumentOutOfRangeException(nameof(maxSpeed));''','''            if (maxSpeed == 0) throw new ArgumentOutOfRangeException(nameof(maxSpeed));
+            if (breath > .015f) throw new ArgumentOutOfRangeException(nameof(breath));''')
+p.write_text(s)
+PY
+staging/scripts/Tests/run_core_tests.sh > staging/scripts/logs/core-tests-R2.txt 2>&1" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 4272ms:
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "python3 - <<'PY'
+from pathlib import Path
+import json
+root=Path('staging/scripts')
+for p in list(root.rglob('*.cs'))+[root/'INTEGRATION.md', root/'Tests/run_core_tests.sh']:
+    assert all(line == line.rstrip() for line in p.read_text().splitlines()), f'trailing whitespace: {p}'
+for p in (root/'Runtime').glob('*Core.cs'):
+    assert not any(x in p.read_text() for x in ['UnityEngine','UnityEditor','GameFlow','HudUI']), p
+for name in ['SeasonSwap.cs','EpilogueDirector.cs','CharacterBob.cs']:
+    text=(root/'Runtime'/name).read_text()
+    assert 'GameObject.Find' not in text and 'FindFirstObjectByType' not in text, name
+for p in root.rglob('*.asmdef'): json.loads(p.read_text())
+log=(root/'logs/core-tests-R2.txt').read_text()
+assert 'RESULT: 91 passed, 0 failed' in log and 'FAIL ' not in log
+print('PASS: whitespace, Core isolation, no scene search, asmdef JSON, 91-test receipt')
+PY
+sh -n staging/scripts/Tests/run_core_tests.sh
+git diff --check -- staging/scripts
+git diff --stat -- staging/scripts
+git status --short -- staging/scripts" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+PASS: whitespace, Core isolation, no scene search, asmdef JSON, 91-test receipt
+ staging/scripts/INTEGRATION.md          | 45 +++++++++++++++++++++++++++++++++
+ staging/scripts/Tests/Console/Runner.cs |  3 ++-
+ staging/scripts/Tests/run_core_tests.sh |  2 ++
+ 3 files changed, 49 insertions(+), 1 deletion(-)
+ M staging/scripts/INTEGRATION.md
+ M staging/scripts/Tests/Console/Runner.cs
+ M staging/scripts/Tests/run_core_tests.sh
+?? staging/scripts/Runtime/CharacterBob.cs
+?? staging/scripts/Runtime/CharacterBobCore.cs
+?? staging/scripts/Runtime/EpilogueCore.cs
+?? staging/scripts/Runtime/EpilogueDirector.cs
+?? staging/scripts/Runtime/SeasonCore.cs
+?? staging/scripts/Runtime/SeasonSwap.cs
+?? staging/scripts/Tests/EditMode/R2CoreTests.cs
+?? staging/scripts/logs/core-tests-R2.txt
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "python3 - <<'PY'
+from pathlib import Path
+root=Path('staging/scripts')
+output=(root/'logs/core-tests-R2.txt').read_text()
+report='''# S 線 R2 交件報告
+
+日期：2026-11-07。里程碑：SeasonSwap、EpilogueDirector、CharacterBob 原始碼與 Core 驗證完成。
+
+## 範圍與來源
+
+只寫入 "'`staging/scripts/`；未操作 Unity／UnityMCP／batchmode、未修改 Assets、GameFlow、HudUI、其他線檔案、套件或 asmdef，未推送 GitHub／Vercel。
+
+已讀 AGENTS.md、docs/plan.md、staging/scripts/INTEGRATION.md、logs/S-R1.md（本資料夾）、Assets/_Project/Data/{clues,compare,narration}.json，以及只讀 GameFlow.cs、HudUI.cs、QuizStats.cs、sources/liuruan_tw.txt、docs/content/acts.md。根目錄 RTK.md 不存在。舊計畫的「百鳥啼鳴」以現行底本「百鳥鳴呼」為準，全文保留 C 線刪節，不恢復留宿段。
+
+## 做了什麼
+
+- SeasonCore：0–1 進度的春／夏／秋／冬／春取樣、兩季與 Next 權重（另一權重為 1−Weight）、固定 6 秒演出；每局只啟動一次，完成停春後鳥鳴一次。完成／播放中重呼叫不重設，事件內重入不多發。歸鄉取消演出、阻止再播，換景狀態冪等。
+- SeasonSwap：四組 Inspector Palette（樹冠／地面／霧／光）、Renderer 欄位與 MaterialPropertyBlock、兩村根物件切換、指定 sky_return 材質與灰冷主光；全以欄位連接，不以字串搜尋場景。缺欄位／相同或互含根物件／流程物件在村落內時拒絕換景。完成先套春色才對外鳥鳴事件，歸鄉後不再套季節。
+- EpilogueCore：純 C# DTO 與唯讀結局快照，從唯一 isEnding original 產生七段全文；比較表逐欄複製，實際八列；三選一原文證據題，正解索引 1。選項的引文來自 sources/liuruan_tw.txt，解析的時間落差說法逐字引用 acts.md 既有說明，不新增情節、不換算固定年數。沒有沿用四選一中的虛構情節干擾選項。
+- 成績卡：剝皮 0–5、唯一漂流物 0–3、六張非結局閱讀題的首答正確率、流程傳入的有效遊玩秒數。未傳閱讀題算未首答正確；拒絕重複／未知／結局題 id、非法數值。零題分母回 0，結局題不列入閱讀率。
+- EpilogueDirector：Inspector TextAsset 由 JsonUtility 讀取，Present 成功才保存 Model 並 OnReady，失敗清除 Model、回 false 並 OnError；只提供資料與事件，不建 UI、不讀存檔、不依賴 GameFlow／QuizStats。
+- CharacterBobCore／CharacterBob：水平速度控制彈跳、微擺、前傾，步頻隨速增加並封頂；靜止僅呼吸縮放，最多 ±1.5%。可 SetSpeed 外餵或量測父根物件 X/Z 位移；視覺模型與移動根分離，停用還原初始變形，重新啟用重設位移錨點。
+- 更新 INTEGRATION.md：三個元件掛法、參數、事件與 U 線實際 GameFlow／HudUI 尚待接線入口。
+- 沿用共用 EditMode 測試與 console runner，新增三組測試；runner 直接讀取 C 線現行資料，不複製第二份 fixture、不新增套件。
+
+## 檔案清單（相對 staging/scripts/）
+
+新增：
+
+- Runtime/SeasonCore.cs
+- Runtime/SeasonSwap.cs
+- Runtime/EpilogueCore.cs
+- Runtime/EpilogueDirector.cs
+- Runtime/CharacterBobCore.cs
+- Runtime/CharacterBob.cs
+- Tests/EditMode/R2CoreTests.cs
+- logs/core-tests-R2.txt
+- logs/S-R2.md
+
+修改：
+
+- INTEGRATION.md
+- Tests/Console/Runner.cs
+- Tests/run_core_tests.sh
+
+## 實際驗證
+
+`staging/scripts/Tests/run_core_tests.sh`：**91 passed, 0 failed**（原 R0/R1 69＋R2 22）。使用 .NET SDK 10.0.402、C# 9、warnings as errors、零 NuGet 套件；執行與 EditMode 同一份方法，但不是 Unity NUnit runner。初次通過後，因 Core 參數錯誤欄位與包裝驗證有小幅調整再跑一次，以下是最終實際輸出。
+
+R2 覆蓋：五個季節精確邊界、每個混色邊界連續、權重範圍、中點、進度夾值、精確／超量 6 秒、鳥鳴重入只一次、重複播放／換景、提前歸鄉取消；實際 JSON 全列與每欄一致、DTO 不影響快照、全文等於原文及保留省略、三選一答案與來源、首答率部分／零／全對、成績範圍與 id／資料錯誤；靜止無彈跳與呼吸上下限、步頻單調與封頂、參數影響、零時間、極大有限值無 NaN／Infinity、非法輸入。
+
+其他檢查：
+
+- `sh -n staging/scripts/Tests/run_core_tests.sh`：通過。
+- `git diff --check -- staging/scripts`：通過。
+- 新增／既有 C#、整合文件、runner 行尾空白掃描：通過。
+- 所有 *Core.cs 無 UnityEngine／UnityEditor／GameFlow／HudUI 引用：通過。
+- 三個新元件無 GameObject.Find／FindFirstObjectByType：通過。
+- 兩個既有 asmdef JSON 可解析，未修改：通過。
+
+### 完整原始測試輸出
+
+```text
+'"'''+output+'''"'```
+
+## 沒做到與未解風險
+
+- **未開 Unity、未編譯 MonoBehaviour、未跑 Unity Test Runner、場景、WebGL、手機或音畫驗收。** Core 全綠不代表已匯入、已掛載或玩家流程可用。
+- GameFlow 現有 ApplyReturn／Act4_Board／ReturnHome 與 HudUI.ShowEnding 均未改。U 線必須串接半年完成解鎖求歸、所有 Act5／讀檔換景入口及結局資料呈現；否則仍是舊流程。
+- 四季混色要求 Renderer shader 實際讀取所填顏色屬性；Terrain、烘焙光照與反射探針不在此包裝的控制範圍。天空、材質、兩村根物件均待 U 線指定與視覺檢查。兩村必須是獨立根、流程管理物件在其外。
+- SeasonCore 是每個元件生命週期的一次演出；重玩重建元件。停用／timeScale=0 暫停演出；若中途歸鄉則不補發鳥鳴，避免遲到事件重開流程。
+- 三選一是「原文證據組合」型題；沒有改 C 線既有四選一。U 線只呈現其中一份結局題，需避免重複出題與計分。
+- 閱讀率採首答正確／全部非結局閱讀題；不等於最終全部作答次數的正確比例。計時、存讀檔、bitmask 轉唯一數量及 QuizStats 轉 ReadingResult 由 U 線負責，S 線未宣稱已完成串接。
+- CharacterBob 適用尚未綁骨的視覺 pivot，不提供行走方向、腳步貼地、轉身或骨架 IK。父根瞬移最多有一幀封頂走路姿勢；U 線可停用／重啟元件。Animator 進場後須協調寫入權限或停用此元件，模型 pivot／朝向待校準。
+- 本輪明定只能寫 staging/scripts/，因此未寫 Obsidian Vault，也未宣稱已另存。
+
+## 下一步（U 線）
+
+依 INTEGRATION.md 選擇性複製 Runtime 與 Tests/EditMode（不複製 Console），先跑 Unity 編譯及 EditMode；接 GameFlow／HudUI、設定材質與村落欄位，再逐項驗證 6 秒混色／鳥鳴／換景／結局三選一與成績、玩家和阮肇速度動畫及停用還原。最後才做 WebGL／手機驗收。
+'"'''
+(root/'logs/S-R2.md').write_text(report)
+assert (root/'logs/S-R2.md').stat().st_size > 10000
+print('交件報告已寫入；包含最終 91 案例完整輸出。')
+PY
+git diff --check -- staging/scripts" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+交件報告已寫入；包含最終 91 案例完整輸出。
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+S 線 R2 已交件，僅修改 `staging/scripts/`。
+
+- 完成 SeasonSwap、EpilogueDirector、CharacterBob 的 Core、元件與測試。
+- 更新 INTEGRATION.md，列明掛法、事件及 U 線接線位置。
+- 實測 **91 passed、0 failed**；完整輸出已貼入[交件報告](/Volumes/hk6429/projects/liuruan-tiantai/staging/scripts/logs/S-R2.md)。
+
+未開 Unity、未編譯 MonoBehaviour；場景串接與實機效果仍待 U 線驗證。依寫入限制，未另存 Obsidian。
+
+
+hook: Stop
+hook: Stop
+hook: Stop Completed
+hook: Stop Completed
+tokens used
+89,564
+S 線 R2 已交件，僅修改 `staging/scripts/`。
+
+- 完成 SeasonSwap、EpilogueDirector、CharacterBob 的 Core、元件與測試。
+- 更新 INTEGRATION.md，列明掛法、事件及 U 線接線位置。
+- 實測 **91 passed、0 failed**；完整輸出已貼入[交件報告](/Volumes/hk6429/projects/liuruan-tiantai/staging/scripts/logs/S-R2.md)。
+
+未開 Unity、未編譯 MonoBehaviour；場景串接與實機效果仍待 U 線驗證。依寫入限制，未另存 Obsidian。
+
+

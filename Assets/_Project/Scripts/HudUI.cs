@@ -7,20 +7,25 @@ namespace Liuruan
     public sealed class HudUI : MonoBehaviour
     {
         public TMP_FontAsset font;
+        public Sprite peachFull, peachHalf, peachEmpty, barkIcon, skillBark, skillWater, skillCall, portraitImage, portraitFrame;
         GameFlow flow;
         GameObject root, ending;
         Image[] peaches = new Image[5];
         Image cooldown;
         TMP_Text bark, objective, prompt;
         Button returnButton;
-        Button[] skills = new Button[3];
-        Sprite circle, peach, diamond;
-        bool touch;
+        Sprite circle;
+        TMP_Text endingText, birds;
+        EpilogueModel endingModel;
+        int endingPage;
+        readonly System.Collections.Generic.List<Button> endingOptions = new System.Collections.Generic.List<Button>();
+        public void ShowBirds() { birdsUntil = Time.unscaledTime + 5; }
+        float birdsUntil;
         void Start()
         {
             flow = GetComponent<GameFlow>();
             ScrollUI.I.JourneyHud = true;
-            circle = Shape(0); peach = Shape(1); diamond = Shape(2);
+            circle = Shape(0);
             var canvas = new GameObject("JourneyHUD", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             canvas.transform.SetParent(transform, false);
             canvas.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
@@ -31,58 +36,71 @@ namespace Liuruan
             root = canvas;
             for (int i = 0; i < 5; i++)
             {
-                peaches[i] = Icon("Peach" + i, new Vector2(0, 1), new Vector2(38 + i * 38, -38), new Vector2(31, 35), peach, Color.white);
+                peaches[i] = Icon("Peach" + i, new Vector2(0, 1), new Vector2(38 + i * 38, -38), new Vector2(31, 35), peachFull, Color.white);
             }
-            bark = Label("Bark", new Vector2(0, 1), new Vector2(120, -78), new Vector2(220, 36), 25);
+            Icon("BarkIcon", new Vector2(0, 1), new Vector2(33, -78), new Vector2(30, 30), barkIcon, Color.white);
+            bark = Label("Bark", new Vector2(0, 1), new Vector2(140, -78), new Vector2(180, 36), 25);
             objective = Label("Objective", new Vector2(0.5f, 1), new Vector2(0, -30), new Vector2(470, 42), 21);
             string[] names = { "剝皮", "取水", "呼喚" };
             string[] keys = { "F", "R", "G" };
             for (int i = 0; i < 3; i++)
             {
                 int index = i;
-                var image = Icon("Skill" + keys[i], new Vector2(1, 1), new Vector2(-218 + i * 82, -63), new Vector2(76, 76), diamond, new Color(0.24f, 0.3f, 0.25f, 0.96f));
+                var image = Icon("Skill" + keys[i], new Vector2(1, 1), new Vector2(-218 + i * 82, -63), new Vector2(76, 76), new[] { skillBark, skillWater, skillCall }[i], Color.white);
                 var button = image.gameObject.AddComponent<Button>();
-                button.onClick.AddListener(() => flow.UseSkill(index)); skills[i] = button;
+                button.onClick.AddListener(() => flow.UseSkill(index));
                 ChildLabel(image.transform, names[i] + "\n" + keys[i], 19);
             }
-            var portrait = Icon("CompanionPortraitFrame", new Vector2(0, 0), new Vector2(75, 78), new Vector2(108, 108), circle, new Color(0.18f, 0.25f, 0.3f));
+            var portrait = Icon("CompanionPortraitFrame", new Vector2(0, 0), new Vector2(75, 78), new Vector2(108, 108), portraitFrame, Color.white);
             cooldown = Icon("CallCooldown", new Vector2(0, 0), new Vector2(75, 78), new Vector2(108, 108), circle, new Color(0.96f, 0.72f, 0.3f));
             cooldown.type = Image.Type.Filled; cooldown.fillMethod = Image.FillMethod.Radial360; cooldown.fillClockwise = true;
-            var face = Icon("CompanionPortrait", new Vector2(0, 0), new Vector2(75, 78), new Vector2(88, 88), circle, new Color(0.23f, 0.4f, 0.56f));
-            ChildLabel(face.transform, "阮肇", 23);
-            var map = Icon("MinimapFrame", new Vector2(1, 0), new Vector2(-94, 100), new Vector2(164, 164), null, new Color(0.7f, 0.61f, 0.4f));
-            var mapContent = new GameObject("MinimapRawImage", typeof(RectTransform), typeof(RawImage));
-            mapContent.transform.SetParent(map.transform, false);
-            var mapRect = (RectTransform)mapContent.transform; mapRect.anchorMin = Vector2.zero; mapRect.anchorMax = Vector2.one;
-            mapRect.offsetMin = new Vector2(6, 6); mapRect.offsetMax = new Vector2(-6, -6);
-            mapContent.GetComponent<RawImage>().color = new Color(0.13f, 0.19f, 0.17f, 0.92f);
-            mapContent.GetComponent<RawImage>().raycastTarget = false;
+            Icon("CompanionPortrait", new Vector2(0, 0), new Vector2(75, 78), new Vector2(88, 88), portraitImage, Color.white);
+            portrait.transform.SetAsLastSibling();
+            var map = Icon("MinimapFrame", new Vector2(1, 0), new Vector2(-104, 104), new Vector2(184, 184), null, Color.clear);
+            if (flow.minimap) flow.minimap.HudFrame = (RectTransform)map.transform;
             prompt = Label("InteractPrompt", new Vector2(0.5f, 0), new Vector2(0, 84), new Vector2(450, 42), 26);
             returnButton = ActionButton("ReturnHome", "求歸", new Vector2(0.5f, 0), new Vector2(0, 145), new Vector2(160, 52));
             returnButton.onClick.AddListener(flow.ReturnHome);
+            birds = Label("Birds", new Vector2(.5f, 1), new Vector2(0, -80), new Vector2(250, 36), 21);
+            birds.text = "百鳥啼鳴";
             ending = new GameObject("JourneyEnding", typeof(RectTransform), typeof(Image));
             ending.transform.SetParent(root.transform, false);
-            var er = (RectTransform)ending.transform; er.anchorMin = new Vector2(0.15f, 0.2f); er.anchorMax = new Vector2(0.85f, 0.8f); er.offsetMin = er.offsetMax = Vector2.zero;
+            var er = (RectTransform)ending.transform; er.anchorMin = new Vector2(0.05f, 0.05f); er.anchorMax = new Vector2(0.95f, 0.95f); er.offsetMin = er.offsetMax = Vector2.zero;
             ending.GetComponent<Image>().color = new Color(0.13f, 0.18f, 0.22f, 0.98f);
-            ChildLabel(ending.transform, "天台山・流杯記\n\n五幕旅程結束", 32);
+            endingText = ChildLabel(ending.transform, "", 25);
+            var textRect = (RectTransform)endingText.transform;
+            textRect.offsetMin = new Vector2(35, 100); textRect.offsetMax = new Vector2(-35, -30);
+            endingText.alignment = TextAlignmentOptions.TopLeft;
+            EndingButton("EndingPrev", "上一頁", new Vector2(-130, 40), () => TurnEnding(-1));
+            EndingButton("EndingNext", "下一頁", new Vector2(130, 40), () => TurnEnding(1));
+            for (int i = 0; i < 3; i++)
+            {
+                int answer = i;
+                var button = EndingButton("EndingOption" + i, "", new Vector2(0, 340 - i * 90), () => AnswerEnding(answer));
+                ((RectTransform)button.transform).sizeDelta = new Vector2(950, 75);
+                endingOptions.Add(button);
+            }
             ending.SetActive(flow.State.ended);
-            touch = !TouchInput.Enabled;
-            Layout();
             flow.Hunger.OnChanged += DrawHunger; DrawHunger(flow.Hunger.Value);
+            if (flow.State.ended) ShowEnding();
         }
         void OnDestroy()
         {
             if (flow && flow.Hunger) flow.Hunger.OnChanged -= DrawHunger;
-            foreach (var sprite in new[] { circle, peach, diamond }) if (sprite) { Destroy(sprite.texture); Destroy(sprite); }
+            foreach (var sprite in new[] { circle }) if (sprite) { Destroy(sprite.texture); Destroy(sprite); }
         }
         void DrawHunger(float value)
         {
-            for (int i = 0; i < 5; i++) peaches[i].color = Color.Lerp(new Color(0.2f, 0.22f, 0.18f, 0.7f), new Color(1f, 0.7f, 0.37f), Mathf.Clamp01(value - i));
+            for (int i = 0; i < 5; i++)
+            {
+                float fill = Mathf.Clamp01(value - i);
+                peaches[i].sprite = fill >= 1 ? peachFull : fill > 0 ? peachHalf : peachEmpty;
+                peaches[i].color = Color.white;
+            }
         }
         void LateUpdate()
         {
             if (!root) return;
-            Layout();
             bool busy = flow.Reading || (ScrollUI.I && ScrollUI.I.IsBusy);
             for (int i = 0; i < root.transform.childCount; i++)
             {
@@ -95,6 +113,7 @@ namespace Liuruan
             var near = Interactable.Nearest(flow.Player.transform.position);
             prompt.text = near ? (TouchInput.Enabled ? "互動　" : "[E] ") + near.prompt : "";
             returnButton.gameObject.SetActive(flow.CanReturn && !busy);
+            birds.gameObject.SetActive(!flow.State.ended && Time.unscaledTime < birdsUntil);
             if (TouchInput.Enabled)
             {
                 var p = (RectTransform)cooldown.transform; p.anchoredPosition = new Vector2(75, 250);
@@ -102,16 +121,47 @@ namespace Liuruan
                 root.transform.Find("CompanionPortraitFrame").GetComponent<RectTransform>().anchoredPosition = p.anchoredPosition;
             }
         }
-        void Layout()
-        {
-            if (touch == TouchInput.Enabled) return;
-            touch = TouchInput.Enabled;
-            for (int i = 0; i < 3; i++) skills[i].image.sprite = touch ? circle : diamond;
-        }
         public void ShowEnding()
         {
-            if (ending) ending.SetActive(true);
+            if (!ending) return;
+            endingModel = flow.EndingModel();
+            if (endingModel == null) return;
+            endingPage = 0; DrawEnding(); ending.SetActive(true);
             if (ScrollUI.I) ScrollUI.I.ExternalUI = true;
+        }
+        Button EndingButton(string name, string text, Vector2 position, UnityEngine.Events.UnityAction action)
+        {
+            var button = ActionButton(name, text, new Vector2(.5f, 0), position, new Vector2(210, 50));
+            button.transform.SetParent(ending.transform, false); button.onClick.AddListener(action); return button;
+        }
+        void TurnEnding(int delta)
+        { endingPage = Mathf.Clamp(endingPage + delta, 0, endingModel.Paragraphs.Count + endingModel.Comparison.Count + 1); DrawEnding(); }
+        void DrawEnding()
+        {
+            int paragraphs = endingModel.Paragraphs.Count;
+            foreach (var button in endingOptions) button.gameObject.SetActive(endingPage == paragraphs);
+            if (endingPage < paragraphs) endingText.text = "全文　" + (endingPage + 1) + "／" + paragraphs + "\n\n" + endingModel.Paragraphs[endingPage];
+            else if (endingPage == paragraphs)
+            {
+                endingText.text = endingModel.Question.Prompt;
+                for (int i = 0; i < endingOptions.Count; i++) endingOptions[i].GetComponentInChildren<TMP_Text>().text = endingModel.Question.Options[i];
+            }
+            else if (endingPage <= paragraphs + endingModel.Comparison.Count)
+            {
+                var row = endingModel.Comparison[endingPage - paragraphs - 1];
+                endingText.text = "與〈桃花源記〉比較　" + (endingPage - paragraphs) + "／" + endingModel.Comparison.Count + "\n\n" + row.Aspect + "\n\n〈劉晨阮肇入天台〉\n" + row.Liuruan + "\n\n〈桃花源記〉\n" + row.Taohua;
+            }
+            else
+            {
+                var score = endingModel.Score;
+                endingText.text = "成績卡\n\n穀皮 " + score.BarkCount + "／5\n漂流物 " + score.DriftCount + "／3\n閱讀首答 " + score.ReadingCorrect + "／" + score.ReadingTotal + "（" + (score.ReadingAccuracy * 100).ToString("F0") + "%）\n有效遊玩 " + score.TotalSeconds.ToString("F0") + " 秒";
+            }
+        }
+        void AnswerEnding(int answer)
+        {
+            bool correct = answer == endingModel.Question.AnswerIndex;
+            QuizStats.Record(QuizStats.InferId, correct);
+            endingText.text = endingModel.Question.Prompt + "\n" + (correct ? "答對了。" : "再想一想。") + "\n" + endingModel.Question.Explanation;
         }
         Image Icon(string name, Vector2 anchor, Vector2 pos, Vector2 size, Sprite sprite, Color color)
         {

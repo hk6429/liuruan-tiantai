@@ -1,0 +1,8 @@
+S 線 R2 已交件，僅修改 `staging/scripts/`。
+
+- 完成 SeasonSwap、EpilogueDirector、CharacterBob 的 Core、元件與測試。
+- 更新 INTEGRATION.md，列明掛法、事件及 U 線接線位置。
+- 實測 **91 passed、0 failed**；完整輸出已貼入[交件報告](/Volumes/hk6429/projects/liuruan-tiantai/staging/scripts/logs/S-R2.md)。
+
+未開 Unity、未編譯 MonoBehaviour；場景串接與實機效果仍待 U 線驗證。依寫入限制，未另存 Obsidian。
+

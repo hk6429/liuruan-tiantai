@@ -23,6 +23,7 @@ namespace Liuruan
 
         CharacterController cc;
         HungerSystem hunger;
+        GameFlow flow;
         float yaw, pitch = 20f, vy;
         float interactHintAfter;
         static readonly int SpeedHash = Animator.StringToHash("Speed");
@@ -31,6 +32,7 @@ namespace Liuruan
         {
             cc = GetComponent<CharacterController>();
             hunger = GetComponent<HungerSystem>();
+            flow = FindFirstObjectByType<GameFlow>();
             if (cam == null && Camera.main != null) cam = Camera.main.transform;
             yaw = transform.eulerAngles.y;
             RestoreFoliage();
@@ -48,7 +50,7 @@ namespace Liuruan
         void Update()
         {
             // hotfix1：HTML 輸入框開著時不吃鍵盤（WASD、E 是在打字）
-            bool busy = (ScrollUI.I != null && ScrollUI.I.IsBusy);
+            bool busy = (ScrollUI.I != null && ScrollUI.I.IsBusy) || (flow && (flow.Reading || flow.SeasonPlaying || flow.State.ended));
             Vector3 move = Vector3.zero;
 
             if (!busy)
@@ -80,6 +82,7 @@ namespace Liuruan
             }
             else TouchInput.ConsumeLook();
 
+            if (!enabled || !cc.enabled) return; // 互動可能在本幀掛上藤蔓並鎖定控制。
             if (move.sqrMagnitude > 0.01f)
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(move), turnSpeed * Time.deltaTime);
 

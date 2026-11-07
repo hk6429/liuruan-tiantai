@@ -1,0 +1,10 @@
+已完成教師手冊、兩版學習單、上線文案、製作名錄與檢查器。
+
+- [教師手冊](docs/teacher/guide.md)
+- [可列印學習單](docs/teacher/worksheet.html)
+- [交件報告與完整檢查清單](docs/teacher/C-R2.md)
+
+引文實跑：**38 項通過、0 項失敗**；錯引負例也成功攔截。
+
+未開 Unity、未部署；列印視覺與實機操作尚未驗收，Noto 授權附件待補齊。Obsidian 因寫入範圍限制未儲存。
+

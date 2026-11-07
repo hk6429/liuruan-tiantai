@@ -18,8 +18,6 @@ public static class R1Setup
         var player = GameObject.Find("Player");
         Add<HungerSystem>(player);
         var companion = GameObject.Find("Companion");
-        var collider = companion.GetComponent<Collider>();
-        if (collider) UnityEngine.Object.DestroyImmediate(collider);
         var agent = Add<NavMeshAgent>(companion);
         agent.radius = 0.3f; agent.height = 1.8f; agent.baseOffset = 0.9f;
         var follow = Add<CompanionFollow>(companion);

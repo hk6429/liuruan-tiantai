@@ -8,6 +8,7 @@ namespace Liuruan
         [SerializeField] private Transform player;
         [SerializeField, Min(0f)] private float followSpeed = 3f;
         [SerializeField, Min(1f)] private float catchupMultiplier = 1.6f;
+        public Animator animator;
         private NavMeshAgent agent;
         private readonly CompanionCore core = new CompanionCore();
         private Vector3 previousPosition;
@@ -17,7 +18,7 @@ namespace Liuruan
         public bool Call() => core.Call();
         private bool AgentReady => agent != null && agent.enabled && agent.isOnNavMesh;
         private void Awake() => agent = GetComponent<NavMeshAgent>();
-        private void OnEnable() { previousPosition = transform.position; Speed = 0f; }
+        private void OnEnable() { previousPosition = transform.position; Speed = 0f; previousFacing = transform.position; }
 
         private void Update()
         {
@@ -59,6 +60,15 @@ namespace Liuruan
                 transform.position = Vector3.MoveTowards(transform.position, target, Mathf.Min(speed * dt, remaining));
             }
         }
+
+        private void LateUpdate()
+        {
+            if (animator) animator.SetFloat("Speed", Speed);
+            Vector3 direction = transform.position - previousFacing; direction.y = 0;
+            if (direction.sqrMagnitude > .0001f && direction.sqrMagnitude < 4) transform.rotation = Quaternion.LookRotation(direction);
+            previousFacing = transform.position;
+        }
+        private Vector3 previousFacing;
 
         private void OnDisable()
         {

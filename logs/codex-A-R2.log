@@ -1,0 +1,1723 @@
+OpenAI Codex v0.166.0
+--------
+workdir: /Volumes/hk6429/projects/liuruan-tiantai
+model: gpt-6.1-sol
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR] (network access enabled)
+reasoning effort: medium
+reasoning summaries: none
+session id: 01a1b41d-f599-71e3-833f-47922bc3d6ea
+--------
+user
+# A 線 R2：建物與道具概念圖（給 Dzine 轉 3D）
+
+先讀 AGENTS.md、docs/plan.md 第五節、staging/art/concept/ 的定調圖、staging/ref/*.jpg、你上一輪的 staging/art/R1/prompts.md。只能寫 staging/art/R2/。生圖一律用 codex 內建生圖（ChatGPT OAuth），不走 API。交件報告寫 staging/art/R2/A-R2.md（含每張的 prompt）。
+
+Dzine 轉 3D 規格（很重要）：**純淺灰底（#D9D9D9 左右）、單一主體完整不裁切、置中、3/4 俯視角、無地面陰影以外的背景物、無文字**。風格照定調圖：Q 版風格化、飽和暖色、手作黏土感的乾淨造型，跟參考影片一樣可愛。尺寸 1024×1024 PNG。
+
+要的 8 張（檔名照寫）：
+1. `house_tongwa.png`：仙村「筒瓦屋」——漢代小屋，圓筒瓦屋頂（青綠帶金邊、會反光），朱紅柱，比例 Q 版。
+2. `pavilion_luozhang.png`：亭子，四面垂「絳羅帳」（深紅薄紗），帳角各懸一只小銅鈴。
+3. `peach_tree.png`：結滿大顆粉紅桃子的桃樹，樹幹粗短，Q 版。
+4. `chu_tree.png`：楮樹（構樹），樹皮灰褐帶斑，可看出一片被剝開的樹皮。
+5. `drift_items.png`：一張圖三件漂浮物並排（間隔大，方便切開）：蕪菁葉（大綠葉）、漢代木杯（漆耳杯）、一小撮胡麻飯糝（一團米飯粒帶黑芝麻）。
+6. `home_house.png`：歸鄉村的漢代民居，破舊、灰冷色、茅草夾瓦、木門歪斜，與仙村成對比。
+7. `vine_cliff.png`：一段垂直岩壁，上面爬滿可攀的粗藤蔓，頂端有一小平台（第二幕攀援藤葛）。
+8. `village_board.png`：村中木製告示板（任務板），兩柱一橫匾、掛三張空白竹簡卡。
+
+驗收：8 張都存在、1024²、背景色均勻（四角取樣差異 < 8）、主體不碰邊（四邊留白 ≥ 6%）——寫一支 staging/art/R2/check.py 實測並把輸出貼報告；不合格的重生。另做 contact sheet `staging/art/R2/contact.png`。
+
+warning: Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.
+  user (/Users/naichengchen/.codex/config.toml): `features.rmcp_client` is ignored.
+  user (/Users/naichengchen/.codex/config.toml): `writable_roots` is ignored.
+warning: Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.
+  user (/Users/naichengchen/.codex/config.toml): `features.rmcp_client` is ignored.
+  user (/Users/naichengchen/.codex/config.toml): `writable_roots` is ignored.
+warning: Under-development features enabled: chronicle. Under-development features are incomplete and may behave unpredictably. To suppress this warning, set `suppress_unstable_features_warning = true` in /Users/naichengchen/.codex/config.toml.
+warning: Exceeded skills context budget. All skill descriptions were removed and 50 additional skills were not included in the model-visible skills list.
+hook: SessionStart
+hook: SessionStart
+hook: SessionStart Completed
+hook: SessionStart Completed
+hook: UserPromptSubmit
+hook: UserPromptSubmit
+hook: UserPromptSubmit Completed
+hook: UserPromptSubmit Completed
+codex
+我會先讀美術規格與參考圖，再用內建生圖製作 8 張素材，最後實測尺寸、背景與留白，整理總覽圖和交件報告。所有產出只寫入 `staging/art/R2/`。
+
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "cat AGENTS.md; cat RTK.md; sed -n '1,220p' docs/plan.md; cat staging/art/R1/prompts.md" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+# 天台山・流杯記（liuruan-tiantai）— Codex 接手說明
+
+Unity 6000.3.27f1 URP WebGL 國文遊戲，題材《幽明錄》〈劉晨阮肇入天台〉。回覆一律繁體中文（台灣）。
+計劃書：docs/plan.md（五幕：迷山／攀桃／流杯／仙村／歸鄉；四線 U/S/A/C）。
+參考畫面：staging/ref/*.jpg（UE5 Q 版小勇者影片截圖，風格與 HUD 版面照它）。
+骨架來源：/Volumes/hk6429/projects/liulaolao-garden（劉姥姥，只讀，絕不修改該專案）。
+
+## 鐵律
+- 只寫自己這條線被指定的資料夾，不碰別線的檔案。
+- 只有 U 線可以操作 Unity（UnityMCP 或 batchmode），其他線不得開 Unity。
+- 台詞與原文只用 sources/liuruan_tw.txt 逐字，不准自編情節或台詞；自撰限簡短白話旁白。
+- 女子留宿段（「各就一帳宿」起至「遂停半年」前）整段略過，只用旁白「遂停半年」帶過。
+- 不做戰鬥。不推 GitHub、不推 Vercel。生成產物不放 iCloud。
+- 刪檔用 /bin/rm；Blender 只能 headless（-b --factory-startup）。
+- 完成時在 logs/<線>-R<輪>.md 寫交件報告：做了什麼、檔案清單、怎麼驗證的、沒做到什麼。不得謊報。
+cat: RTK.md: No such file or directory
+---
+date: 2026-11-07
+type: 計劃書
+tags: [unity-webgl, 教育遊戲, 幽明錄, 劉晨阮肇, 桃花源記, 比較閱讀, 國文]
+---
+
+# 〈劉晨阮肇入天台〉Unity WebGL 教育遊戲計劃書（草案 v0.1）
+
+- 專案代號：`liuruan-tiantai`（實體路徑 `/Volumes/hk6429/projects/liuruan-tiantai`，`~/projects` 是 symlink，Codex 一律帶實體路徑）
+- 參考影片：`~/Downloads/F3-pUil44IpPP3fK.mp4`（UE5 Q 版小勇者，47 秒：帳篷村 → 開寶箱 → 木樁 → 光束森林小徑 → 營火帳篷）
+- 產線：沿用〈劉姥姥〉`~/projects/liulaolao-garden`（Unity 6000.3.27f1 URP WebGL＋Boot 場景包切塊＋R30 畫質工具）與 `/unity-webgl-edu-game` skill
+- 分工：**CC 規劃、寫任務書、驗收；Codex 執行**，每輪四線平行，只有 U 線碰 UnityMCP
+
+---
+
+## 一、教學目標
+
+| # | 目標 | 遊戲中怎麼學 |
+|---|---|---|
+| 1 | 讀懂志怪小說的敘事結構：入山 → 遇仙 → 留居 → 思歸 → 返鄉 | 五幕就是五段，每幕結束時解鎖原文 |
+| 2 | 抓線索推論：蕪菁葉、流杯、胡麻飯糝 →「此知去人徑不遠」 | 溪中漂流物三選一推論題 |
+| 3 | 「仙界一日，人間百年」的時間母題 | 結局村莊整個換樣，七世孫出場 |
+| 4 | 與〈桃花源記〉比較閱讀 | 結局比較表：入口、異境樣貌、離開方式、能否重返 |
+
+## 二、角色
+
+| 影片 | 本作 |
+|---|---|
+| 紅帽小勇者（玩家） | **劉晨**：Q 版漢代採藥人，頭巾、短褐、背簍、腰插小斧 |
+| 發光小象夥伴 | **阮肇**：AI 跟隨，會落後、會回頭催；左下頭像＝阮肇 |
+| 村民 | 二女子、三四十名仙女（遠景群像，用同一模型換色） |
+| 結局 NPC | 七世孫 |
+
+不做戰鬥。影片的劍盾改成小斧＋背簍；木樁靶場改成「取穀皮」的楮樹林。
+
+## 三、遊戲流程（五幕，約 15 分鐘，一節課可玩完＋討論）
+
+台詞與旁白**只引原文逐字**，自撰限簡短白話旁白，不加情節（劉姥姥鐵律沿用）。
+
+| 幕 | 影片對應段 | 原文情節 | 互動 | 考點 |
+|---|---|---|---|---|
+| 一、迷山 | 森林小徑＋光束 | 入天台山取穀皮，迷不得返，經十三日糧乏盡 | 剝 5 棵楮樹皮（＋穀皮計數）；HUD 5 格飢餓值隨時間遞減；小地圖逐漸起霧 | 「迷不得返」的處境 |
+| 二、攀桃 | 森林盡頭山壁 | 遙望山上桃樹，絕巖邃澗，攀援藤葛乃得至上，各噉數枚，飢止體充 | 沿藤蔓攀爬小段；摘桃，飢餓值回滿 | 困境轉折 |
+| 三、流杯 | 開寶箱 | 持杯取水，見蕪菁葉、一杯流出、有胡麻飯糝 →「此知去人徑不遠」 | 溪中三件漂流物＝三個寶箱，按 [E] 撿起；集滿後推論題；涉水逆流 | 線索推論 |
+| 四、仙村 | 帳篷村＋營火＋告示板 | 溪邊二女子喚「劉、阮二郎」；銅瓦屋、絳羅帳、帳角懸鈴；停半年，春時百鳥啼鳴，懷悲思求歸 | 村中任務告示板（原文段落卡）；季節由春轉春、鳥鳴；「求歸」選項 | 身在仙境的矛盾心理 |
+| 五、歸鄉 | （影片無，本作加碼） | 親舊零落，邑屋改異，無復相識；問訊得七世孫 | 回到第一幕起點的村子，整個換樣（同場景換一套建物＋陌生村民）；七世孫對話 | 時間母題＋比較閱讀 |
+
+結局：全文＋推論題（為什麼會是七世？）＋〈桃花源記〉比較表＋成績卡（沿用 QuizStats）。
+
+**待你決定**：原文中女子留宿的段落（「各就一帳宿」那段）國中不適合，建議**整段略過**，只用旁白「遂停半年」帶過。
+
+## 四、HUD（照影片版面）
+
+| 位置 | 影片 | 本作 |
+|---|---|---|
+| 左上 | 5 顆火焰＋「+25 Embers」 | 5 顆桃形飢餓值＋「穀皮 ×N」 |
+| 右上 | 3 個菱形技能格（G/R/F） | 剝皮／取水／呼喚阮肇（手機改成三顆圓鈕） |
+| 左下 | 小象頭像＋點狀冷卻環 | 阮肇頭像＋呼喚冷卻環 |
+| 右下 | 小地圖 | 小地圖（正交俯視 RenderTexture，第一幕會起霧） |
+| 中下 | `[E] Close the chest` | `[E] 撿起` 互動提示（手機改「互動」鈕） |
+
+## 五、美術定調
+
+- 整體：照影片的**風格化 Q 版＋暖陽光束**（頭身比約 1:2.5、飽和暖綠、強烈斜射陽光、柔和陰影）。跟劉姥姥的半寫實武俠不同，這次要可愛。
+- 天台山：松、竹、楮樹、藤蔓、絕巖、溪澗；光束用體積光假面片＋懸浮塵粒（不跑真體積光，WebGL 撐不住）。
+- 仙村：**銅瓦屋**（銅綠＋金邊屋瓦會反光）、絳紅羅帳、帳角懸鈴（風動＋音效）、桃花樹；比影片的帳篷村更夢幻。
+- 歸鄉村：同一塊地，換成破舊陌生的漢代民居、灰冷色調，與仙村形成反差。
+- 產線：codex-image2 概念圖 → **Dzine Normal**（10 點／件）轉 3D → headless Blender 瘦身 → Mixamo 自動綁骨 → Unity Humanoid。
+
+**Dzine 預算**：人物 4（劉晨、阮肇、仙女、七世孫）＋建物道具約 16 件 ≈ 20 件 × 10 點 ＝ 約 200 點。
+
+## 六、技術規劃（只列與劉姥姥不同處）
+
+| 項目 | 規劃 |
+|---|---|
+| 鏡頭 | 第三人稱跟隨＋碰撞縮距（沿用 CamOcclusion），比劉姥姥更低、更貼近，跟影片一樣 |
+| 場景 | 一個大地形分三區（森林／溪谷／村），Boot＋場景包切塊沿用 R30 |
+| 新系統 | `HungerSystem`、`CompanionFollow`（NavMesh 跟隨＋落後催促）、`MinimapCam`、`ClimbZone`、`DriftPickup`、`SeasonSwap`（歸鄉換景） |
+| 沿用 | BootLoader、PlayerController、TouchControls、QualityTier／QualityToggle、FontSubset（RebuildNoDialog）、ClueManager、QuizStats、EpilogueDirector、R30Lighting／R30Foliage、deploy.sh／verify.sh |
+| 包體 | data < 26,214,400 bytes；場景包每塊 20 MiB |
+| 部署 | CF Pages＋Netlify（不推 Vercel）；itch 等你說要再上；不推 GitHub（照劉姥姥） |
+
+## 七、四線分工與輪次
+
+| 線 | 負責 | 寫入範圍 | 工具 |
+|---|---|---|---|
+| **U** | Unity 組裝、建置 | `Assets/`、`ProjectSettings/` | Codex＋UnityMCP（唯一） |
+| **S** | 新系統 C# 原始碼（先在外部寫好、附 EditMode 測試） | `staging/scripts/` | Codex |
+| **A** | 美術：概念圖、天空、貼圖、草叢卡片 | `staging/art/` | Codex 生圖（codex-image2） |
+| **C** | 內容：原文校對、題目、比較表、教師手冊 | `sources/`、`Assets/_Project/Data/`、`docs/` | Codex |
+
+Dzine、Mixamo 要用瀏覽器，由 **CC 主線用 Chrome 操作**（Codex 碰不到你的 Chrome）。
+
+| 輪 | U | S | A | C | 驗收 |
+|---|---|---|---|---|---|
+| R0 開專案 | 從劉姥姥複製骨架、新建 Boot／Main、灰盒地形三區 | HungerSystem、CompanionFollow | 概念圖 6 張（森林、溪谷、仙村、歸鄉村、劉晨、阮肇） | 原文取得與校對（太平廣記卷 61 引幽明錄為底本）→ `sources/liuruan_tw.txt` | 你看概念圖定調 |
+| R1 白模可玩 | 灰盒走完五幕、HUD 版面 | MinimapCam、ClimbZone、DriftPickup | 天空全景、地面貼圖、草叢卡片 | clues.json＋題目＋比較表 | 瀏覽器實開灰盒版 |
+| R2 3D 生成 | 匯入 Dzine 模型 | SeasonSwap、EpilogueDirector 改寫 | 建物道具概念圖（單一主體淺灰底） | 教師手冊、學習單 | 主線跑 Dzine＋Mixamo |
+| R3 質感 | 地形、植被風動、光束、後製、仙村擺件密度 | 觸控三鈕、手機 HUD | 補圖、UI 圖示（桃、穀皮、頭像） | 字型子集字表、製作說明 | 改前改後對照圖 |
+| R4 審查 | 修正 | 修正 | 修正 | 四位專家走查（遊戲、國文、UX、效能） | 你說「全部修正」 |
+| R5 上線 | build＋場景包 | — | — | 上線文案 | deploy.sh＋verify.sh md5＋瀏覽器實開 |
+
+每輪派工規格（照劉姥姥）：任務書寫明寫入範圍、驗收條件、鐵律；`codex exec -C /Volumes/hk6429/projects/liuruan-tiantai -s workspace-write`；驗收看實際 diff 與檔案，不看回報文字；20 分鐘沒動靜視為卡住。
+
+## 八、需要你決定的事
+
+1. 女子留宿段：建議整段略過（見第三節）。
+2. 專案代號 `liuruan-tiantai`、遊戲名〈天台山・流杯記〉，可以嗎？
+3. Dzine 約 200 點，點數夠不夠？
+4. 上線範圍：只上 CF＋Netlify，還是比照劉姥姥也上 itch？
+
+## 九、風險
+
+| 風險 | 對策 |
+|---|---|
+| Q 版光束畫質在 WebGL 達不到影片水準 | 先做森林一區當樣板，你點頭再推其他區（skill 2.5 節） |
+| 原文版本差異（太平廣記／太平御覽／藝文類聚字句不同） | C 線列出異文表，以太平廣記為底本並註明 |
+| 阮肇 AI 跟隨卡地形 | NavMesh＋超距瞬移回身邊 |
+| UnityMCP 斷線（本 session 開頭就是 ECONNREFUSED） | 開工前請你開 Unity，Window → MCP for Unity → Start Server |
+# A 線 R1 提示詞與處理紀錄
+
+工具：內建 image_gen，單張依序生成。參考已檢視 staging/ref 全部八張與 concept 主場景、歸鄉、阮肇造型。
+所有圖像禁止文字、浮水印、影片原角色、劍盾與小象。
+圖集採兩欄三列。影像後製僅依本輪明確指定執行：尺寸、貼圖無縫、Sobel 法線、透明與圖集組裝。
+
+輸入圖像：peach_half / peach_empty 以本輪 ui/peach_full.png 為編修參考；portrait_ruanzhao 以 staging/art/concept/06_ruanzhao.png 為造型參考。其餘依已檢視的定調圖與下列提示詞新生成。
+fern 首次透明稿有淡色光暈，第二次改純洋紅底重生；後列同名提示詞為採用版本。
+全部共 24 次單張序列生圖，採用 23 張生成原稿；原稿留在 raw/。天空原稿 1774×887，最終等比放大到 2048×1024；其餘原稿 1254²，最終依規格縮小。
+地面：重疊區最小差異路徑裁接，再做 4 px 邊界過渡，輸出 2×2 tilecheck。法線：亮度近似高度，Gaussian 1.2 px、循環取樣 Sobel、強度 4、+Y 編碼，再做 8 px 邊界過渡。
+天空：96 px 左右過渡，上下 64 px 極點收斂；草叢：長草使用生成 alpha，其餘以洋紅底色差去背並縮邊 1 px；所有透明圖以 Lanczos 等比縮放並保留透明留白。
+ui_contact.png 與 foliage_contact.png 為含英文檔名的檢查圖，不是遊戲素材；正式遊戲圖像皆無文字。
+
+## sky/sky_day.png
+
+```text
+Use case: stylized-concept. Generate exactly ONE 2048x1024 PNG 2:1 full spherical EQUIRECTANGULAR 360x180 panorama for Unity skybox. Tiantai mountain distant rounded fantastic peaks beneath a sea of soft clouds, clear warm sunny day, golden sunlight, sky blue overhead and saturated warm green distant mountains. Hand-painted stylized chibi game environment matching the established cute rounded Tiantai concepts. Camera level, horizon absolutely horizontal at image midpoint. Full-sphere latitude longitude projection: zenith top and nadir bottom compressed appropriately, no perspective lens or fisheye. Left/right borders join continuously with matching clouds colors and mountain silhouettes. No foreground objects, people, buildings, text, watermark, original video hero, swords, shields or elephants.
+```
+
+## sky/sky_return.png
+
+```text
+Use case: stylized-concept. Exactly ONE 2048x1024 2:1 full spherical equirectangular latitude-longitude 360x180 panorama for a Unity skybox. Tiantai mountain distant rounded dramatic peaks and cloud sea, overcast grey cold early evening at return home, subdued slate blue grey clouds with a faint muted dusk band. Rounded hand-painted stylized chibi game environment, not photography, same terrain language as warm Tiantai concepts. Level horizontal horizon at image midpoint, no tilted horizon, no fisheye. Top zenith and bottom nadir in full-sphere projection, left and right edge clouds colors and mountain silhouettes must join seamlessly. Entirely distant atmosphere, no buildings no foreground trees no characters no text no watermark no swords shields elephants or original video hero.
+```
+
+## ground/grass.png
+
+```text
+Use case: stylized-concept. Exactly ONE square 1024x1024 albedo texture for a warm sunny chibi Tiantai mountain game, stylized HAND PAINTED broad readable brush shapes, saturated warm natural palette, not photographic. Orthographic top down material surface fills every pixel. Seamless tileable all four edges, consistent scale throughout, diffuse flat even lighting with NO directional cast shadows, no perspective, no horizon, no scene objects, no vignette, no text watermark characters swords shields or elephants. Material: dense short warm yellow-green meadow grass, small layered stylized blades forming a continuous ground carpet, subtly varied clumps and dark green recesses, no large flowers or rocks.
+```
+
+## ground/dirt_path.png
+
+```text
+Use case: stylized-concept. Exactly ONE square 1024x1024 albedo texture for a warm sunny chibi Tiantai mountain game, stylized HAND PAINTED broad readable brush shapes, saturated warm natural palette, not photographic. Orthographic top down material surface fills every pixel. Seamless tileable all four edges, consistent scale throughout, diffuse flat even lighting with NO directional cast shadows, no perspective, no horizon, no scene objects, no vignette, no text watermark characters swords shields or elephants. Material: warm ochre brown packed earthen footpath soil, soft stylized brush patches, sparse tiny rounded grains and worn earthy cracks, uniformly soil across entire image, no grass borders or literal winding path.
+```
+
+## ground/moss_rock.png
+
+```text
+Use case: stylized-concept. Exactly ONE square 1024x1024 albedo texture for a warm sunny chibi Tiantai mountain game, stylized HAND PAINTED broad readable brush shapes, saturated warm natural palette, not photographic. Orthographic top down material surface fills every pixel. Seamless tileable all four edges, consistent scale throughout, diffuse flat even lighting with NO directional cast shadows, no perspective, no horizon, no scene objects, no vignette, no text watermark characters swords shields or elephants. Material: weathered rounded warm-grey rock surface with irregular lush green moss islands, gentle softened cracks, hand-painted broad stone facets, no freestanding boulders.
+```
+
+## ground/riverbed_pebble.png
+
+```text
+Use case: stylized-concept. Exactly ONE square 1024x1024 albedo texture for a warm sunny chibi Tiantai mountain game, stylized HAND PAINTED broad readable brush shapes, saturated warm natural palette, not photographic. Orthographic top down material surface fills every pixel. Seamless tileable all four edges, consistent scale throughout, diffuse flat even lighting with NO directional cast shadows, no perspective, no horizon, no scene objects, no vignette, no text watermark characters swords shields or elephants. Material: closely packed small rounded riverbed pebbles, muted warm grey ochre jade and beige stones, gentle painted facets, shallow dark recesses, NO water or caustics.
+```
+
+## ground/village_stone.png
+
+```text
+Use case: stylized-concept. Exactly ONE square 1024x1024 albedo texture for a warm sunny chibi Tiantai mountain game, stylized HAND PAINTED broad readable brush shapes, saturated warm natural palette, not photographic. Orthographic top down material surface fills every pixel. Seamless tileable all four edges, consistent scale throughout, diffuse flat even lighting with NO directional cast shadows, no perspective, no horizon, no scene objects, no vignette, no text watermark characters swords shields or elephants. Material: ancient immortal village paving, large softly worn warm beige grey stone slabs in an irregular fitted tessellation, narrow moss-green joints, hand-painted chunky beveled edges, no decorative symbols.
+```
+
+## foliage/tall_grass.png
+
+```text
+Use case: stylized-concept. Generate exactly ONE isolated foliage billboard card PNG, square 1024x1024. TRUE transparent background alpha, no white or checkerboard image, no floor ground base pot or cast shadow. Front-facing plant cluster, entire silhouette visible with generous 8 percent transparent margins, plant grows from bottom center. Cute stylized hand-painted game art with chunky readable leaves matching warm sunny Tiantai chibi forest, saturated warm yellow-greens with gentle golden highlights, soft shading, not photo. No text watermark characters swords shields elephants. Subject: one tuft of long tapering arching grass blades, lush layered green blades, clean narrow silhouette tips and transparent gaps between blades.
+```
+
+## foliage/fern.png
+
+```text
+Use case: stylized-concept. Generate exactly ONE isolated foliage billboard card PNG, square 1024x1024. TRUE transparent background alpha, no white or checkerboard image, no floor ground base pot or cast shadow. Front-facing plant cluster, entire silhouette visible with generous 8 percent transparent margins, plant grows from bottom center. Cute stylized hand-painted game art with chunky readable leaves matching warm sunny Tiantai chibi forest, saturated warm yellow-greens with gentle golden highlights, soft shading, not photo. No text watermark characters swords shields elephants. Subject: one spreading fern clump, several arching stems with recognizably paired fern leaflets, soft yellow green new growth and deeper green mature fronds.
+```
+
+## foliage/fern.png
+
+```text
+Use case: stylized-concept. Generate exactly ONE isolated foliage billboard card PNG, square 1024x1024. Perfectly uniform flat solid MAGENTA #FF00FF background for chroma keying, completely hard clean plant silhouette, no halo no glow no fog, opaque plant leaves, no pink on subject, no floor ground base pot or cast shadow. Front-facing plant cluster, entire silhouette visible with generous 8 percent transparent margins, plant grows from bottom center. Cute stylized hand-painted game art with chunky readable leaves matching warm sunny Tiantai chibi forest, saturated warm yellow-greens with gentle golden highlights, soft shading, not photo. No text watermark characters swords shields elephants. Subject: one compact fully visible spreading fern clump with arching paired leaflets, transparent gaps to be keyed, every frond entirely within canvas, warm jade green and golden-green new growth, no haze between leaves.
+```
+
+## foliage/wildflowers.png
+
+```text
+Use case: stylized-concept. Generate exactly ONE isolated foliage billboard card PNG, square 1024x1024. Perfectly uniform flat solid MAGENTA #FF00FF background for chroma keying, completely hard clean plant silhouette, no halo no glow no fog, opaque plant leaves, no pink on subject, no floor ground base pot or cast shadow. Front-facing plant cluster, entire silhouette visible with generous 8 percent transparent margins, plant grows from bottom center. Cute stylized hand-painted game art with chunky readable leaves matching warm sunny Tiantai chibi forest, saturated warm yellow-greens with gentle golden highlights, soft shading, not photo. No text watermark characters swords shields elephants. Subject: one small clump of wild daisies, white petals with golden yellow centers on green leafy stems, several flowers at different heights, NO pink or purple petals.
+```
+
+## foliage/shrub.png
+
+```text
+Use case: stylized-concept. Generate exactly ONE isolated foliage billboard card PNG, square 1024x1024. Perfectly uniform flat solid MAGENTA #FF00FF background for chroma keying, completely hard clean plant silhouette, no halo no glow no fog, opaque plant leaves, no pink on subject, no floor ground base pot or cast shadow. Front-facing plant cluster, entire silhouette visible with generous 8 percent transparent margins, plant grows from bottom center. Cute stylized hand-painted game art with chunky readable leaves matching warm sunny Tiantai chibi forest, saturated warm yellow-greens with gentle golden highlights, soft shading, not photo. No text watermark characters swords shields elephants. Subject: one low broad rounded woodland shrub, compact small overlapping oval leaves, branching woody stems visible at base, no flowers or fruit, fully framed.
+```
+
+## foliage/bamboo.png
+
+```text
+Use case: stylized-concept. Generate exactly ONE isolated foliage billboard card PNG, square 1024x1024. Perfectly uniform flat solid MAGENTA #FF00FF background for chroma keying, completely hard clean plant silhouette, no halo no glow no fog, opaque plant leaves, no pink on subject, no floor ground base pot or cast shadow. Front-facing plant cluster, entire silhouette visible with generous 8 percent transparent margins, plant grows from bottom center. Cute stylized hand-painted game art with chunky readable leaves matching warm sunny Tiantai chibi forest, saturated warm yellow-greens with gentle golden highlights, soft shading, not photo. No text watermark characters swords shields elephants. Subject: one compact miniature bamboo thicket of three slender segmented bamboo canes with lanceolate leaf sprays, whole stems and tips visible, no clipping.
+```
+
+## foliage/hanging_vine.png
+
+```text
+Use case: stylized-concept. Generate exactly ONE isolated foliage billboard card PNG, square 1024x1024. Perfectly uniform flat solid MAGENTA #FF00FF background for chroma keying, completely hard clean plant silhouette, no halo no glow no fog, opaque plant leaves, no pink on subject, no floor ground base pot or cast shadow. Front-facing plant cluster, entire silhouette visible with generous 8 percent transparent margins, vines hang down from a short horizontal woody stem near top center. Cute stylized hand-painted game art with chunky readable leaves matching warm sunny Tiantai chibi forest, saturated warm yellow-greens with gentle golden highlights, soft shading, not photo. No text watermark characters swords shields elephants. Subject: one hanging vine curtain of five loosely separated trailing tendrils with small heart shaped warm green leaves, distinct lengths, entire top attachment and bottom tips visible with margins, suspended from above, NOT growing upward from the ground.
+```
+
+## ui/peach_full.png
+
+```text
+Use case: stylized-concept. Exactly ONE square game HUD icon, designed to be clear at 256x256. Cute chunky hand-painted sculpted chibi game style, warm golden edge accents and soft controlled shading matching warm wood and gold HUD of Tiantai game. Single centered subject fully visible with 10 percent margin. True transparent alpha background, no floor shadow, no halo or glow, no checkerboard. No text letters numbers watermark, no sword shield elephant or original video character. Subject: one whole full ripe pink-and-golden peach as a hunger meter symbol, rounded heartlike peach silhouette with a central cleft, tiny brown stem and one bright green leaf, delicate thin warm golden contour, bright filled peach flesh color, no frame.
+```
+
+## ui/peach_half.png
+
+```text
+Use case: stylized-concept. Exactly ONE square game HUD icon, designed to be clear at 256x256. Cute chunky hand-painted sculpted chibi game style, warm golden edge accents and soft controlled shading matching warm wood and gold HUD of Tiantai game. Single centered subject fully visible with 10 percent margin. True transparent alpha background, no floor shadow, no halo or glow, no checkerboard. No text letters numbers watermark, no sword shield elephant or original video character. Subject: Edit the supplied full peach HUD symbol into HALF hunger state. Preserve EXACT same entire peach silhouette, position, stem, leaf, scale and fine warm gold contour. LEFT HALF peach fruit remains ripe pink and golden filled; RIGHT HALF fruit becomes dark muted desaturated brown empty inset. Vertical division at middle, intact whole fruit shape, not a cut peach or bite. No fruit pit, no new props. Match reference precisely.
+```
+
+## ui/peach_empty.png
+
+```text
+Use case: stylized-concept. Exactly ONE square game HUD icon, designed to be clear at 256x256. Cute chunky hand-painted sculpted chibi game style, warm golden edge accents and soft controlled shading matching warm wood and gold HUD of Tiantai game. Single centered subject fully visible with 10 percent margin. True transparent alpha background, no floor shadow, no halo or glow, no checkerboard. No text letters numbers watermark, no sword shield elephant or original video character. Subject: Edit the supplied full peach HUD symbol into EMPTY hunger state. Preserve EXACT same entire peach silhouette, position, stem, leaf, scale and thin warm golden contour. Entire fruit interior now dark muted desaturated brown inset, only gold edge visible as empty peach shaped meter. Whole intact outline, no bite or fruit pit, no new props. Match reference precisely.
+```
+
+## ui/bark.png
+
+```text
+Use case: stylized-concept. Exactly ONE square game HUD icon, designed to be clear at 256x256. Cute chunky hand-painted sculpted chibi game style, warm golden edge accents and soft controlled shading matching warm wood and gold HUD of Tiantai game. Single centered subject fully visible with 10 percent margin. True transparent alpha background, no floor shadow, no halo or glow, no checkerboard. No text letters numbers watermark, no sword shield elephant or original video character. Subject: a small curled strip of PAPER MULBERRY TREE BARK, fibrous pale tan inner bark with rough brown outer bark edge, two short curled fibrous strips stacked, resource inventory icon, NOT grain husk or cereal, no frame.
+```
+
+## ui/skill_bark.png
+
+```text
+Use case: stylized-concept. Exactly ONE square game HUD icon, designed to be clear at 256x256. Cute chunky hand-painted sculpted chibi game style, warm golden edge accents and soft controlled shading matching warm wood and gold HUD of Tiantai game. Single centered subject fully visible with 10 percent margin. True transparent alpha background, no floor shadow, no halo or glow, no checkerboard. No text letters numbers watermark, no sword shield elephant or original video character. Subject: one circular dark walnut wooden skill medallion with thin warm gold rim, center pictogram of a short upright paper mulberry branch with its tan fibrous bark peeling back in one broad curl, simple readable harvesting bark action, no axe no weapon no letters. Icon and wooden disc opaque, outside disc transparent.
+```
+
+## ui/skill_water.png
+
+```text
+Use case: stylized-concept. Exactly ONE square game HUD icon, designed to be clear at 256x256. Cute chunky hand-painted sculpted chibi game style, warm golden edge accents and soft controlled shading matching warm wood and gold HUD of Tiantai game. Single centered subject fully visible with 10 percent margin. True transparent alpha background, no floor shadow, no halo or glow, no checkerboard. No text letters numbers watermark, no sword shield elephant or original video character. Subject: one circular dark walnut wooden skill medallion with thin warm gold rim matching the bark skill, center large clean turquoise blue water droplet above a small cupped tan hand, readable collect water action. Icon and wooden disc opaque, outside disc transparent, no text or glow.
+```
+
+## ui/skill_call.png
+
+```text
+Use case: stylized-concept. Exactly ONE square game HUD icon, designed to be clear at 256x256. Cute chunky hand-painted sculpted chibi game style, warm golden edge accents and soft controlled shading matching warm wood and gold HUD of Tiantai game. Single centered subject fully visible with 10 percent margin. True transparent alpha background, no floor shadow, no halo or glow, no checkerboard. No text letters numbers watermark, no sword shield elephant or original video character. Subject: one circular dark walnut wooden skill medallion with thin warm gold rim matching other skills, center simple warm cream side profile human head calling with a cupped hand near mouth and three gold sound wave arcs pointing right. Clear call companion action pictogram, no speech words no megaphone, no actual full character. Opaque medallion, transparent outside.
+```
+
+## ui/portrait_ruanzhao.png
+
+```text
+Use case: stylized-concept. Exactly ONE square game HUD icon, designed to be clear at 256x256. Cute chunky hand-painted sculpted chibi game style, warm golden edge accents and soft controlled shading matching warm wood and gold HUD of Tiantai game. Single centered subject fully visible with 10 percent margin. True transparent alpha background, no floor shadow, no halo or glow, no checkerboard. No text letters numbers watermark, no sword shield elephant or original video character. Subject: Input image is IDENTITY reference of Ruan Zhao, use EXACT same friendly young Chinese chibi face, huge brown eyes, dark brown parted hair and small topknot, broad woven straw conical hat, navy blue Han cross collar tunic and cream collar. Create close-up head and shoulders circular HUD portrait, head much larger than torso, face centered fully readable at 256px. No staff or basket needed in this close crop. Entire circular portrait with muted warm sage backdrop INSIDE circle, outside circle truly transparent, no wooden frame (separate asset). Do not redesign as another character, no red cap.
+```
+
+## ui/portrait_frame.png
+
+```text
+Use case: stylized-concept. Exactly ONE square game HUD icon, designed to be clear at 256x256. Cute chunky hand-painted sculpted chibi game style, warm golden edge accents and soft controlled shading matching warm wood and gold HUD of Tiantai game. Single centered subject fully visible with 10 percent margin. True transparent alpha background, no floor shadow, no halo or glow, no checkerboard. No text letters numbers watermark, no sword shield elephant or original video character. Subject: one EMPTY perfectly circular dark walnut WOODEN RING portrait frame with thin beveled warm GOLD inner and outer rims, restrained tiny gold cornerless accents, about 12 percent ring thickness. Center hole must be genuinely TRANSPARENT alpha, outside ring also transparent. Nothing inside hole, no portrait, no wood disc, no backdrop. Full frame with margin. Straight front view, symmetrical, not tilted or perspective.
+```
+
+## ui/minimap_frame.png
+
+```text
+Use case: stylized-concept. Exactly ONE square game HUD icon, designed to be clear at 256x256. Cute chunky hand-painted sculpted chibi game style, warm golden edge accents and soft controlled shading matching warm wood and gold HUD of Tiantai game. Single centered subject fully visible with 10 percent margin. True transparent alpha background, no floor shadow, no halo or glow, no checkerboard. No text letters numbers watermark, no sword shield elephant or original video character. Subject: one EMPTY SQUARE walnut wooden minimap frame, thin warm gold inner and outer trim and small restrained gold corner brackets, exact front view with parallel horizontal and vertical edges, not perspective. Frame about 8 percent width. Large square center opening genuinely TRANSPARENT alpha, outside frame transparent also. Nothing inside the hole, no map no compass no letters no backing disc. Entire square frame visible with margin.
+```
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "rg -n 'liuruan|天台' /Users/naichengchen/.codex/memories/MEMORY.md; cat /Users/naichengchen/.codex/skills/.system/imagegen/SKILL.md; rg --files staging/art/concept staging/ref" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+54:# Task Group: 〈天台山・流杯記〉Unity WebGL 國文冒險遊戲立項
+57:applies_to: cwd=/Volumes/hk6429/projects/liuruan-tiantai; reuse_rule=the educational-game planning pattern is reusable, but project files, Unity version, MCP availability, art credits, repository state, and deployment outcome must be inspected anew.
+59:## Task 1: 由 AI 3D 工具研究轉為 Unity 6.3 WebGL 〈天台山・流杯記〉立項；目錄與 Git 開始建立，未見 Unity MCP／成品驗證
+63:- extensions/skysight/resources/2026-11-06T16-20-00-DHLy-10min-memory-summary.md (cwd=/Volumes/hk6429/projects/liuruan-tiantai, rollout_path=extensions/skysight/resources/2026-11-06T16-20-00-DHLy-10min-memory-summary.md, updated_at=2026-11-06T16:20:00+00:00, thread_id=None, project/Git initialization observed; Unity MCP unconfirmed) [skysight memory]
+68:- liuruan-tiantai, 天台山・流杯記, 劉晨, 阮肇, Unity 6.3 WebGL, Unity MCP, AGENTS.md, Git, Cloudflare, Netlify, 手機瀏覽器
+76:- The selected adaptation moved from 《桃花源記》 candidates to the 劉晨、阮肇 story; the working name is 〈天台山・流杯記〉 and project code is `liuruan-tiantai`. The plan scopes art, interaction, text review, questions, and teacher material, with about 200 generation credits and Cloudflare/Netlify as the stated deployment scope. [Task 1] [skysight memory]
+77:- The observed terminal sequence began `/Volumes/hk6429/projects/liuruan-tiantai`, Git, `AGENTS.md`, and four work briefs. Unity Hub was opened, but no Unity MCP server startup, scene/build, or WebGL play result was recorded. [Task 1] [skysight memory]
+---
+name: "imagegen"
+description: "Generate or edit raster images when the task benefits from AI-created bitmap visuals such as photos, illustrations, textures, sprites, mockups, or transparent-background cutouts. Use when Codex should create a brand-new image, transform an existing image, or derive visual variants from references, and the output should be a bitmap asset rather than repo-native code or vector. Do not use when the task is better handled by editing existing SVG/vector/code-native assets, extending an established icon or logo system, or building the visual directly in HTML/CSS/canvas."
+---
+
+# Image Generation Skill
+
+Generates or edits images for the current project (for example website assets, game assets, UI mockups, product mockups, wireframes, logo design, photorealistic images, or infographics).
+
+## Top-level modes and rules
+
+This skill has exactly two top-level modes:
+
+- **Default built-in tool mode (preferred):** built-in `image_gen` tool for image generation, editing, and transparent-image requests. Does not require `OPENAI_API_KEY`.
+- **Fallback CLI mode:** `scripts/image_gen.py` CLI. Use when the user explicitly asks for or confirms the CLI/API/model path. Requires `OPENAI_API_KEY`.
+
+Within CLI fallback, the CLI exposes three subcommands:
+
+- `generate`
+- `edit`
+- `generate-batch`
+
+Rules:
+- Use the built-in `image_gen` tool by default for normal image generation and editing requests.
+- Do not switch to CLI fallback for ordinary quality, size, or file-path control.
+- For transparent images, ask built-in `image_gen` for a transparent background and preserve the generated alpha.
+- Never silently switch from built-in `image_gen` or CLI `gpt-image-2` to CLI `gpt-image-1.5`; ask the user first unless they explicitly requested `gpt-image-1.5`.
+- The word `batch` by itself does not mean CLI fallback. If the user asks for many assets or says to batch-generate assets without explicitly asking for CLI/API/model controls, stay on the built-in path and issue one built-in call per requested asset or variant.
+- If the built-in tool fails or is unavailable, tell the user the CLI fallback exists and that it requires `OPENAI_API_KEY`. Proceed only if the user explicitly asks for that fallback.
+- If the user explicitly asks for CLI mode, use the bundled `scripts/image_gen.py` workflow. Do not create one-off SDK runners.
+- Never modify `scripts/image_gen.py`. If something is missing, ask the user before doing anything else.
+
+Built-in save-path policy:
+- In built-in tool mode, Codex saves generated images under `$CODEX_HOME/*` by default.
+- Do not describe or rely on OS temp as the default built-in destination.
+- Do not describe or rely on a destination-path argument (if any) on the built-in `image_gen` tool. If a specific location is needed, generate first and then move or copy the selected output from `$CODEX_HOME/generated_images/...`.
+- Save-path precedence in built-in mode:
+  1. If the user names a destination, move or copy the selected output there.
+  2. If the image is meant for the current project, move or copy the final selected image into the workspace before finishing.
+  3. If the image is only for preview or brainstorming, render it inline; the underlying file can remain at the default `$CODEX_HOME/*` path.
+- Never leave a project-referenced asset only at the default `$CODEX_HOME/*` path.
+- Do not overwrite an existing asset unless the user explicitly asked for replacement; otherwise create a sibling versioned filename such as `hero-v2.png` or `item-icon-edited.png`.
+
+Shared prompt guidance for both modes lives in `references/prompting.md` and `references/sample-prompts.md`.
+
+Fallback-only docs/resources for CLI mode:
+- `references/cli.md`
+- `references/image-api.md`
+- `references/codex-network.md`
+- `scripts/image_gen.py`
+
+## When to use
+- Generate a new image (concept art, product shot, cover, website hero)
+- Generate a new image using one or more reference images for style, composition, or mood
+- Edit an existing image (inpainting, lighting or weather transformations, background replacement, object removal, compositing, transparent background)
+- Produce many assets or variants for one task
+
+## When not to use
+- Extending or matching an existing SVG/vector icon set, logo system, or illustration library inside the repo
+- Creating simple shapes, diagrams, wireframes, or icons that are better produced directly in SVG, HTML/CSS, or canvas
+- Making a small project-local asset edit when the source file already exists in an editable native format
+- Any task where the user clearly wants deterministic code-native output instead of a generated bitmap
+
+## Decision tree
+
+Think about two separate questions:
+
+1. **Intent:** is this a new image or an edit of an existing image?
+2. **Execution strategy:** is this one asset or many assets/variants?
+
+Intent:
+- If the user wants to modify an existing image while preserving parts of it, treat the request as **edit**.
+- If the user provides images only as references for style, composition, mood, or subject guidance, treat the request as **generate**.
+- If the user provides no images, treat the request as **generate**.
+
+Built-in edit semantics:
+- Built-in edit mode is for images already visible in the conversation context, such as attached images or images generated earlier in the thread.
+- If the user wants to edit a local image file with the built-in tool, first load it with built-in `view_image` tool so the image is visible in the conversation context, then proceed with the built-in edit flow.
+- Do not promise arbitrary filesystem-path editing through the built-in tool.
+- If a local file still needs direct file-path control, masks, or other explicit CLI-only parameters, use the explicit CLI fallback only when the user asks for it.
+- For edits, preserve invariants aggressively and save non-destructively by default.
+
+Execution strategy:
+- In the built-in default path, produce many assets or variants by issuing one `image_gen` call per requested asset or variant.
+- In the CLI fallback path, use the CLI `generate-batch` subcommand only when the user explicitly chose CLI mode and needs many prompts/assets.
+- For many distinct assets, do not use `n` as a substitute for separate prompts. `n` is for variants of one prompt; distinct assets need distinct built-in calls or distinct CLI `generate-batch` jobs.
+
+Assume the user wants a new image unless they clearly ask to change an existing one.
+
+## Workflow
+1. Decide the top-level mode: built-in by default, including transparent-output requests; fallback CLI only if explicitly requested or confirmed.
+2. Decide the intent: `generate` or `edit`.
+3. Decide whether the output is preview-only or meant to be consumed by the current project.
+4. Decide the execution strategy: single asset vs repeated built-in calls vs CLI `generate-batch`.
+5. Collect inputs up front: prompt(s), exact text (verbatim), constraints/avoid list, and any input images.
+6. For every input image, label its role explicitly:
+   - reference image
+   - edit target
+   - supporting insert/style/compositing input
+7. If the edit target is only on the local filesystem and you are staying on the built-in path, inspect it with `view_image` first so the image is available in conversation context.
+8. If the user asked for a photo, illustration, sprite, product image, banner, or other explicitly raster-style asset, use `image_gen` rather than substituting SVG/HTML/CSS placeholders. If the request is for an icon, logo, or UI graphic that should match existing repo-native SVG/vector/code assets, prefer editing those directly instead.
+9. Augment the prompt based on specificity:
+   - If the user's prompt is already specific and detailed, normalize it into a clear spec without adding creative requirements.
+   - If the user's prompt is generic, add tasteful augmentation only when it materially improves output quality.
+10. Use the built-in `image_gen` tool by default.
+11. For transparent-output requests, ask built-in `image_gen` for a transparent background and preserve the generated alpha channel.
+12. Inspect outputs and validate: subject, style, composition, text accuracy, and invariants/avoid items.
+13. Iterate with a single targeted change, then re-check.
+14. For preview-only work, render the image inline; the underlying file may remain at the default `$CODEX_HOME/generated_images/...` path.
+15. For project-bound work, move or copy the selected artifact into the workspace and update any consuming code or references. Never leave a project-referenced asset only at the default `$CODEX_HOME/generated_images/...` path.
+16. For batches or multi-asset requests, persist every requested deliverable final in the workspace unless the user explicitly asked to keep outputs preview-only. Discarded variants do not need to be kept unless requested.
+17. If the user explicitly chooses or confirms the CLI fallback, then use the fallback-only docs for model, quality, size, `input_fidelity`, masks, output format, output paths, and network setup.
+18. Always report the final saved path(s) for any workspace-bound asset(s), plus the final prompt or prompt set and whether the built-in tool or fallback CLI mode was used.
+
+## Transparent image requests
+
+Ask built-in `image_gen` for a genuinely transparent background and preserve its alpha.
+
+## Prompt augmentation
+
+Reformat user prompts into a structured, production-oriented spec. Make the user's goal clearer and more actionable, but do not blindly add detail.
+
+Treat this as prompt-shaping guidance, not a closed schema. Use only the lines that help, and add a short extra labeled line when it materially improves clarity.
+
+### Specificity policy
+
+Use the user's prompt specificity to decide how much augmentation is appropriate:
+
+- If the prompt is already specific and detailed, preserve that specificity and only normalize/structure it.
+- If the prompt is generic, you may add tasteful augmentation when it will materially improve the result.
+
+Allowed augmentations:
+- composition or framing hints
+- polish level or intended-use hints
+- practical layout guidance
+- reasonable scene concreteness that supports the stated request
+
+Not allowed augmentations:
+- extra characters or objects that are not implied by the request
+- brand names, slogans, palettes, or narrative beats that are not implied
+- arbitrary side-specific placement unless the surrounding layout supports it
+
+## Use-case taxonomy (exact slugs)
+
+Classify each request into one of these buckets and keep the slug consistent across prompts and references.
+
+Generate:
+- photorealistic-natural — candid/editorial lifestyle scenes with real texture and natural lighting.
+- product-mockup — product/packaging shots, catalog imagery, merch concepts.
+- ui-mockup — app/web interface mockups and wireframes; specify the desired fidelity.
+- infographic-diagram — diagrams/infographics with structured layout and text.
+- scientific-educational — classroom explainers, scientific diagrams, and learning visuals with required labels and accuracy constraints.
+- ads-marketing — campaign concepts and ad creatives with audience, brand position, scene, and exact tagline/copy.
+- productivity-visual — slide, chart, workflow, and data-heavy business visuals.
+- logo-brand — logo/mark exploration, vector-friendly.
+- illustration-story — comics, children’s book art, narrative scenes.
+- stylized-concept — style-driven concept art, 3D/stylized renders.
+- historical-scene — period-accurate/world-knowledge scenes.
+
+Edit:
+- text-localization — translate/replace in-image text, preserve layout.
+- identity-preserve — try-on, person-in-scene; lock face/body/pose.
+- precise-object-edit — remove/replace a specific element (including interior swaps).
+- lighting-weather — time-of-day/season/atmosphere changes only.
+- background-extraction — transparent background / clean cutout. Ask built-in `image_gen` for actual transparency.
+- style-transfer — apply reference style while changing subject/scene.
+- compositing — multi-image insert/merge with matched lighting/perspective.
+- sketch-to-render — drawing/line art to photoreal render.
+
+## Shared prompt schema
+
+Use the following labeled spec as shared prompt scaffolding for both top-level modes:
+
+```text
+Use case: <taxonomy slug>
+Asset type: <where the asset will be used>
+Primary request: <user's main prompt>
+Input images: <Image 1: role; Image 2: role> (optional)
+Scene/backdrop: <environment>
+Subject: <main subject>
+Style/medium: <photo/illustration/3D/etc>
+Composition/framing: <wide/close/top-down; placement>
+Lighting/mood: <lighting + mood>
+Color palette: <palette notes>
+Materials/textures: <surface details>
+Text (verbatim): "<exact text>"
+Constraints: <must keep/must avoid>
+Avoid: <negative constraints>
+```
+
+Notes:
+- `Asset type` and `Input images` are prompt scaffolding, not dedicated CLI flags.
+- `Scene/backdrop` refers to the visual setting. It is not the same as the fallback CLI `background` parameter, which controls output transparency behavior.
+- Fallback-only execution notes such as `Quality:`, `Input fidelity:`, masks, output format, and output paths belong in the CLI path only. Do not treat them as built-in `image_gen` tool arguments.
+
+Augmentation rules:
+- Keep it short.
+- Add only the details needed to improve the prompt materially.
+- For edits, explicitly list invariants (`change only X; keep Y unchanged`).
+- If any critical detail is missing and blocks success, ask a question; otherwise proceed.
+
+## Examples
+
+### Generation example (hero image)
+```text
+Use case: product-mockup
+Asset type: landing page hero
+Primary request: a minimal hero image of a ceramic coffee mug
+Style/medium: clean product photography
+Composition/framing: wide composition with usable negative space for page copy if needed
+Lighting/mood: soft studio lighting
+Constraints: no logos, no text, no watermark
+```
+
+### Edit example (invariants)
+```text
+Use case: precise-object-edit
+Asset type: product photo background replacement
+Primary request: replace only the background with a warm sunset gradient
+Constraints: change only the background; keep the product and its edges unchanged; no text; no watermark
+```
+
+## Prompting best practices
+- Structure prompt as scene/backdrop -> subject -> details -> constraints.
+- Include intended use (ad, UI mock, infographic) to set the mode and polish level.
+- Use camera/composition language for photorealism.
+- Only use SVG/vector stand-ins when the user explicitly asked for vector output or a non-image placeholder.
+- Quote exact text and specify typography + placement.
+- For tricky words, spell them letter-by-letter and require verbatim rendering.
+- For multi-image inputs, reference images by index and describe how they should be used.
+- For edits, repeat invariants every iteration to reduce drift.
+- Iterate with single-change follow-ups.
+- If the prompt is generic, add only the extra detail that will materially help.
+- If the prompt is already detailed, normalize it instead of expanding it.
+- For CLI fallback only, see `references/cli.md` and `references/image-api.md` for model, `quality`, `input_fidelity`, masks, output format, and output-path guidance.
+- For transparent images, ask built-in `image_gen` for actual transparency and preserve its alpha.
+
+More principles shared by both modes: `references/prompting.md`.
+Copy/paste specs shared by both modes: `references/sample-prompts.md`.
+
+## Guidance by asset type
+Asset-type templates (website assets, game assets, wireframes, logo) are consolidated in `references/sample-prompts.md`.
+
+## gpt-image-2 guidance for CLI fallback
+
+The fallback CLI defaults to `gpt-image-2`.
+
+- Use `gpt-image-2` for new CLI/API workflows unless the user confirms a different model.
+- CLI `gpt-image-2` does not support `background=transparent`; ask before using `gpt-image-1.5` unless the user explicitly requested that model.
+- `gpt-image-2` always uses high fidelity for image inputs; do not set `input_fidelity` with this model.
+- `gpt-image-2` supports `quality` values `low`, `medium`, `high`, and `auto`.
+- Use `quality low` for fast drafts, thumbnails, and quick iterations. Use `medium`, `high`, or `auto` for final assets, dense text, diagrams, identity-sensitive edits, or high-resolution outputs.
+- Square images are typically fastest to generate. Use `1024x1024` for fast square drafts.
+- If the user asks for 4K-style output, use `3840x2160` for landscape or `2160x3840` for portrait.
+- `gpt-image-2` size may be `auto` or `WIDTHxHEIGHT` if all constraints hold: max edge `<= 3840px`, both edges multiples of `16px`, long-to-short ratio `<= 3:1`, total pixels between `655,360` and `8,294,400`.
+
+Popular `gpt-image-2` sizes:
+- `1024x1024` square
+- `1536x1024` landscape
+- `1024x1536` portrait
+- `2048x2048` 2K square
+- `2048x1152` 2K landscape
+- `3840x2160` 4K landscape
+- `2160x3840` 4K portrait
+- `auto`
+
+## Fallback CLI mode only
+
+### Temp and output conventions
+These conventions apply only to the CLI fallback. They do not describe built-in `image_gen` output behavior.
+- Use `tmp/imagegen/` for intermediate files (for example JSONL batches); delete them when done.
+- Write final artifacts under `output/imagegen/`.
+- Use `--out` or `--out-dir` to control output paths; keep filenames stable and descriptive.
+
+### Dependencies
+Prefer `uv` for dependency management in this repo.
+
+Required Python package:
+```bash
+uv pip install openai
+```
+
+Optional for image inspection and downscaling:
+```bash
+uv pip install pillow
+```
+
+Portability note:
+- If you are using the installed skill outside this repo, install dependencies into that environment with its package manager.
+- In uv-managed environments, `uv pip install ...` remains the preferred path.
+
+### Environment
+- `OPENAI_API_KEY` must be set for live API calls.
+- Do not ask the user for `OPENAI_API_KEY` when using the built-in `image_gen` tool.
+- Never ask the user to paste the full key in chat. Ask them to set it locally and confirm when ready.
+
+If the key is missing, give the user these steps:
+1. Create an API key in the OpenAI platform UI: https://platform.openai.com/api-keys
+2. Set `OPENAI_API_KEY` as an environment variable in their system.
+3. Offer to guide them through setting the environment variable for their OS/shell if needed.
+
+If installation is not possible in this environment, tell the user which dependency is missing and how to install it into their active environment.
+
+### Script-mode notes
+- CLI commands + examples: `references/cli.md`
+- API parameter quick reference: `references/image-api.md`
+- Network approvals / sandbox settings for CLI mode: `references/codex-network.md`
+
+## Reference map
+- `references/prompting.md`: shared prompting principles for both modes.
+- `references/sample-prompts.md`: shared copy/paste prompt recipes for both modes.
+- `references/cli.md`: fallback-only CLI usage via `scripts/image_gen.py`.
+- `references/image-api.md`: fallback-only API/CLI parameter reference.
+- `references/codex-network.md`: fallback-only network/sandbox troubleshooting for CLI mode.
+- `scripts/image_gen.py`: fallback-only CLI implementation. Use only when the user explicitly chooses or confirms CLI mode.
+staging/ref/ref_45.jpg
+staging/ref/ref_20.jpg
+staging/ref/ref_2.jpg
+staging/ref/ref_32.jpg
+staging/ref/ref_26.jpg
+staging/ref/ref_8.jpg
+staging/ref/ref_14.jpg
+staging/ref/ref_38.jpg
+staging/art/concept/02_gorge.png
+staging/art/concept/06b_ruanzhao_turn.png
+staging/art/concept/05b_liuchen_turn.png
+staging/art/concept/06_ruanzhao.png
+staging/art/concept/05_liuchen.png
+staging/art/concept/03_village.png
+staging/art/concept/01_forest.png
+staging/art/concept/prompts.md
+staging/art/concept/04_return.png
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+我會使用 `imagegen` 技能與內建生圖工具。仙村屋頂會依第五節做成帶金邊的銅綠圓筒瓦；歸鄉民居則用灰冷、破舊的造型呈現反差。
+
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd
+sed -n '57,79p' /Users/naichengchen/.codex/memories/MEMORY.md
+cat staging/art/R1/prompts.md
+ls -ld staging/art/R2
+python3 -c 'import PIL; print(PIL.__version__)'" in /Volumes/hk6429/projects/liuruan-tiantai
+ exited 1 in 72ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+applies_to: cwd=/Volumes/hk6429/projects/liuruan-tiantai; reuse_rule=the educational-game planning pattern is reusable, but project files, Unity version, MCP availability, art credits, repository state, and deployment outcome must be inspected anew.
+
+## Task 1: 由 AI 3D 工具研究轉為 Unity 6.3 WebGL 〈天台山・流杯記〉立項；目錄與 Git 開始建立，未見 Unity MCP／成品驗證
+
+### rollout_summary_files
+
+- extensions/skysight/resources/2026-11-06T16-20-00-DHLy-10min-memory-summary.md (cwd=/Volumes/hk6429/projects/liuruan-tiantai, rollout_path=extensions/skysight/resources/2026-11-06T16-20-00-DHLy-10min-memory-summary.md, updated_at=2026-11-06T16:20:00+00:00, thread_id=None, project/Git initialization observed; Unity MCP unconfirmed) [skysight memory]
+- extensions/skysight/resources/2026-11-06T16-10-00-YmsY-10min-memory-summary.md (cwd=cmux game-tool research workspace, rollout_path=extensions/skysight/resources/2026-11-06T16-10-00-YmsY-10min-memory-summary.md, updated_at=2026-11-06T16:10:00+00:00, thread_id=None, Claude/Blender/Unreal/Meshy exploration; no game result) [skysight memory]
+
+### keywords
+
+- liuruan-tiantai, 天台山・流杯記, 劉晨, 阮肇, Unity 6.3 WebGL, Unity MCP, AGENTS.md, Git, Cloudflare, Netlify, 手機瀏覽器
+
+## User preferences
+
+- after evaluating a generic fantasy-game reference, the user chose a 國文題材冒險遊戲, Unity 6.3 WebGL, and then said 「照建議，開工」 -> keep the curriculum story and mobile-browser scope primary rather than drifting back to an Unreal/technical-demo direction. [Task 1] [skysight memory]
+
+## Reusable knowledge
+
+- The selected adaptation moved from 《桃花源記》 candidates to the 劉晨、阮肇 story; the working name is 〈天台山・流杯記〉 and project code is `liuruan-tiantai`. The plan scopes art, interaction, text review, questions, and teacher material, with about 200 generation credits and Cloudflare/Netlify as the stated deployment scope. [Task 1] [skysight memory]
+- The observed terminal sequence began `/Volumes/hk6429/projects/liuruan-tiantai`, Git, `AGENTS.md`, and four work briefs. Unity Hub was opened, but no Unity MCP server startup, scene/build, or WebGL play result was recorded. [Task 1] [skysight memory]
+
+## Failures and how to do differently
+# A 線 R1 提示詞與處理紀錄
+
+工具：內建 image_gen，單張依序生成。參考已檢視 staging/ref 全部八張與 concept 主場景、歸鄉、阮肇造型。
+所有圖像禁止文字、浮水印、影片原角色、劍盾與小象。
+圖集採兩欄三列。影像後製僅依本輪明確指定執行：尺寸、貼圖無縫、Sobel 法線、透明與圖集組裝。
+
+輸入圖像：peach_half / peach_empty 以本輪 ui/peach_full.png 為編修參考；portrait_ruanzhao 以 staging/art/concept/06_ruanzhao.png 為造型參考。其餘依已檢視的定調圖與下列提示詞新生成。
+fern 首次透明稿有淡色光暈，第二次改純洋紅底重生；後列同名提示詞為採用版本。
+全部共 24 次單張序列生圖，採用 23 張生成原稿；原稿留在 raw/。天空原稿 1774×887，最終等比放大到 2048×1024；其餘原稿 1254²，最終依規格縮小。
+地面：重疊區最小差異路徑裁接，再做 4 px 邊界過渡，輸出 2×2 tilecheck。法線：亮度近似高度，Gaussian 1.2 px、循環取樣 Sobel、強度 4、+Y 編碼，再做 8 px 邊界過渡。
+天空：96 px 左右過渡，上下 64 px 極點收斂；草叢：長草使用生成 alpha，其餘以洋紅底色差去背並縮邊 1 px；所有透明圖以 Lanczos 等比縮放並保留透明留白。
+ui_contact.png 與 foliage_contact.png 為含英文檔名的檢查圖，不是遊戲素材；正式遊戲圖像皆無文字。
+
+## sky/sky_day.png
+
+```text
+Use case: stylized-concept. Generate exactly ONE 2048x1024 PNG 2:1 full spherical EQUIRECTANGULAR 360x180 panorama for Unity skybox. Tiantai mountain distant rounded fantastic peaks beneath a sea of soft clouds, clear warm sunny day, golden sunlight, sky blue overhead and saturated warm green distant mountains. Hand-painted stylized chibi game environment matching the established cute rounded Tiantai concepts. Camera level, horizon absolutely horizontal at image midpoint. Full-sphere latitude longitude projection: zenith top and nadir bottom compressed appropriately, no perspective lens or fisheye. Left/right borders join continuously with matching clouds colors and mountain silhouettes. No foreground objects, people, buildings, text, watermark, original video hero, swords, shields or elephants.
+```
+
+## sky/sky_return.png
+
+```text
+Use case: stylized-concept. Exactly ONE 2048x1024 2:1 full spherical equirectangular latitude-longitude 360x180 panorama for a Unity skybox. Tiantai mountain distant rounded dramatic peaks and cloud sea, overcast grey cold early evening at return home, subdued slate blue grey clouds with a faint muted dusk band. Rounded hand-painted stylized chibi game environment, not photography, same terrain language as warm Tiantai concepts. Level horizontal horizon at image midpoint, no tilted horizon, no fisheye. Top zenith and bottom nadir in full-sphere projection, left and right edge clouds colors and mountain silhouettes must join seamlessly. Entirely distant atmosphere, no buildings no foreground trees no characters no text no watermark no swords shields elephants or original video hero.
+```
+
+## ground/grass.png
+
+```text
+Use case: stylized-concept. Exactly ONE square 1024x1024 albedo texture for a warm sunny chibi Tiantai mountain game, stylized HAND PAINTED broad readable brush shapes, saturated warm natural palette, not photographic. Orthographic top down material surface fills every pixel. Seamless tileable all four edges, consistent scale throughout, diffuse flat even lighting with NO directional cast shadows, no perspective, no horizon, no scene objects, no vignette, no text watermark characters swords shields or elephants. Material: dense short warm yellow-green meadow grass, small layered stylized blades forming a continuous ground carpet, subtly varied clumps and dark green recesses, no large flowers or rocks.
+```
+
+## ground/dirt_path.png
+
+```text
+Use case: stylized-concept. Exactly ONE square 1024x1024 albedo texture for a warm sunny chibi Tiantai mountain game, stylized HAND PAINTED broad readable brush shapes, saturated warm natural palette, not photographic. Orthographic top down material surface fills every pixel. Seamless tileable all four edges, consistent scale throughout, diffuse flat even lighting with NO directional cast shadows, no perspective, no horizon, no scene objects, no vignette, no text watermark characters swords shields or elephants. Material: warm ochre brown packed earthen footpath soil, soft stylized brush patches, sparse tiny rounded grains and worn earthy cracks, uniformly soil across entire image, no grass borders or literal winding path.
+```
+
+## ground/moss_rock.png
+
+```text
+Use case: stylized-concept. Exactly ONE square 1024x1024 albedo texture for a warm sunny chibi Tiantai mountain game, stylized HAND PAINTED broad readable brush shapes, saturated warm natural palette, not photographic. Orthographic top down material surface fills every pixel. Seamless tileable all four edges, consistent scale throughout, diffuse flat even lighting with NO directional cast shadows, no perspective, no horizon, no scene objects, no vignette, no text watermark characters swords shields or elephants. Material: weathered rounded warm-grey rock surface with irregular lush green moss islands, gentle softened cracks, hand-painted broad stone facets, no freestanding boulders.
+```
+
+## ground/riverbed_pebble.png
+
+```text
+Use case: stylized-concept. Exactly ONE square 1024x1024 albedo texture for a warm sunny chibi Tiantai mountain game, stylized HAND PAINTED broad readable brush shapes, saturated warm natural palette, not photographic. Orthographic top down material surface fills every pixel. Seamless tileable all four edges, consistent scale throughout, diffuse flat even lighting with NO directional cast shadows, no perspective, no horizon, no scene objects, no vignette, no text watermark characters swords shields or elephants. Material: closely packed small rounded riverbed pebbles, muted warm grey ochre jade and beige stones, gentle painted facets, shallow dark recesses, NO water or caustics.
+```
+
+## ground/village_stone.png
+
+```text
+Use case: stylized-concept. Exactly ONE square 1024x1024 albedo texture for a warm sunny chibi Tiantai mountain game, stylized HAND PAINTED broad readable brush shapes, saturated warm natural palette, not photographic. Orthographic top down material surface fills every pixel. Seamless tileable all four edges, consistent scale throughout, diffuse flat even lighting with NO directional cast shadows, no perspective, no horizon, no scene objects, no vignette, no text watermark characters swords shields or elephants. Material: ancient immortal village paving, large softly worn warm beige grey stone slabs in an irregular fitted tessellation, narrow moss-green joints, hand-painted chunky beveled edges, no decorative symbols.
+```
+
+## foliage/tall_grass.png
+
+```text
+Use case: stylized-concept. Generate exactly ONE isolated foliage billboard card PNG, square 1024x1024. TRUE transparent background alpha, no white or checkerboard image, no floor ground base pot or cast shadow. Front-facing plant cluster, entire silhouette visible with generous 8 percent transparent margins, plant grows from bottom center. Cute stylized hand-painted game art with chunky readable leaves matching warm sunny Tiantai chibi forest, saturated warm yellow-greens with gentle golden highlights, soft shading, not photo. No text watermark characters swords shields elephants. Subject: one tuft of long tapering arching grass blades, lush layered green blades, clean narrow silhouette tips and transparent gaps between blades.
+```
+
+## foliage/fern.png
+
+```text
+Use case: stylized-concept. Generate exactly ONE isolated foliage billboard card PNG, square 1024x1024. TRUE transparent background alpha, no white or checkerboard image, no floor ground base pot or cast shadow. Front-facing plant cluster, entire silhouette visible with generous 8 percent transparent margins, plant grows from bottom center. Cute stylized hand-painted game art with chunky readable leaves matching warm sunny Tiantai chibi forest, saturated warm yellow-greens with gentle golden highlights, soft shading, not photo. No text watermark characters swords shields elephants. Subject: one spreading fern clump, several arching stems with recognizably paired fern leaflets, soft yellow green new growth and deeper green mature fronds.
+```
+
+## foliage/fern.png
+
+```text
+Use case: stylized-concept. Generate exactly ONE isolated foliage billboard card PNG, square 1024x1024. Perfectly uniform flat solid MAGENTA #FF00FF background for chroma keying, completely hard clean plant silhouette, no halo no glow no fog, opaque plant leaves, no pink on subject, no floor ground base pot or cast shadow. Front-facing plant cluster, entire silhouette visible with generous 8 percent transparent margins, plant grows from bottom center. Cute stylized hand-painted game art with chunky readable leaves matching warm sunny Tiantai chibi forest, saturated warm yellow-greens with gentle golden highlights, soft shading, not photo. No text watermark characters swords shields elephants. Subject: one compact fully visible spreading fern clump with arching paired leaflets, transparent gaps to be keyed, every frond entirely within canvas, warm jade green and golden-green new growth, no haze between leaves.
+```
+
+## foliage/wildflowers.png
+
+```text
+Use case: stylized-concept. Generate exactly ONE isolated foliage billboard card PNG, square 1024x1024. Perfectly uniform flat solid MAGENTA #FF00FF background for chroma keying, completely hard clean plant silhouette, no halo no glow no fog, opaque plant leaves, no pink on subject, no floor ground base pot or cast shadow. Front-facing plant cluster, entire silhouette visible with generous 8 percent transparent margins, plant grows from bottom center. Cute stylized hand-painted game art with chunky readable leaves matching warm sunny Tiantai chibi forest, saturated warm yellow-greens with gentle golden highlights, soft shading, not photo. No text watermark characters swords shields elephants. Subject: one small clump of wild daisies, white petals with golden yellow centers on green leafy stems, several flowers at different heights, NO pink or purple petals.
+```
+
+## foliage/shrub.png
+
+```text
+Use case: stylized-concept. Generate exactly ONE isolated foliage billboard card PNG, square 1024x1024. Perfectly uniform flat solid MAGENTA #FF00FF background for chroma keying, completely hard clean plant silhouette, no halo no glow no fog, opaque plant leaves, no pink on subject, no floor ground base pot or cast shadow. Front-facing plant cluster, entire silhouette visible with generous 8 percent transparent margins, plant grows from bottom center. Cute stylized hand-painted game art with chunky readable leaves matching warm sunny Tiantai chibi forest, saturated warm yellow-greens with gentle golden highlights, soft shading, not photo. No text watermark characters swords shields elephants. Subject: one low broad rounded woodland shrub, compact small overlapping oval leaves, branching woody stems visible at base, no flowers or fruit, fully framed.
+```
+
+## foliage/bamboo.png
+
+```text
+Use case: stylized-concept. Generate exactly ONE isolated foliage billboard card PNG, square 1024x1024. Perfectly uniform flat solid MAGENTA #FF00FF background for chroma keying, completely hard clean plant silhouette, no halo no glow no fog, opaque plant leaves, no pink on subject, no floor ground base pot or cast shadow. Front-facing plant cluster, entire silhouette visible with generous 8 percent transparent margins, plant grows from bottom center. Cute stylized hand-painted game art with chunky readable leaves matching warm sunny Tiantai chibi forest, saturated warm yellow-greens with gentle golden highlights, soft shading, not photo. No text watermark characters swords shields elephants. Subject: one compact miniature bamboo thicket of three slender segmented bamboo canes with lanceolate leaf sprays, whole stems and tips visible, no clipping.
+```
+
+## foliage/hanging_vine.png
+
+```text
+Use case: stylized-concept. Generate exactly ONE isolated foliage billboard card PNG, square 1024x1024. Perfectly uniform flat solid MAGENTA #FF00FF background for chroma keying, completely hard clean plant silhouette, no halo no glow no fog, opaque plant leaves, no pink on subject, no floor ground base pot or cast shadow. Front-facing plant cluster, entire silhouette visible with generous 8 percent transparent margins, vines hang down from a short horizontal woody stem near top center. Cute stylized hand-painted game art with chunky readable leaves matching warm sunny Tiantai chibi forest, saturated warm yellow-greens with gentle golden highlights, soft shading, not photo. No text watermark characters swords shields elephants. Subject: one hanging vine curtain of five loosely separated trailing tendrils with small heart shaped warm green leaves, distinct lengths, entire top attachment and bottom tips visible with margins, suspended from above, NOT growing upward from the ground.
+```
+
+## ui/peach_full.png
+
+```text
+Use case: stylized-concept. Exactly ONE square game HUD icon, designed to be clear at 256x256. Cute chunky hand-painted sculpted chibi game style, warm golden edge accents and soft controlled shading matching warm wood and gold HUD of Tiantai game. Single centered subject fully visible with 10 percent margin. True transparent alpha background, no floor shadow, no halo or glow, no checkerboard. No text letters numbers watermark, no sword shield elephant or original video character. Subject: one whole full ripe pink-and-golden peach as a hunger meter symbol, rounded heartlike peach silhouette with a central cleft, tiny brown stem and one bright green leaf, delicate thin warm golden contour, bright filled peach flesh color, no frame.
+```
+
+## ui/peach_half.png
+
+```text
+Use case: stylized-concept. Exactly ONE square game HUD icon, designed to be clear at 256x256. Cute chunky hand-painted sculpted chibi game style, warm golden edge accents and soft controlled shading matching warm wood and gold HUD of Tiantai game. Single centered subject fully visible with 10 percent margin. True transparent alpha background, no floor shadow, no halo or glow, no checkerboard. No text letters numbers watermark, no sword shield elephant or original video character. Subject: Edit the supplied full peach HUD symbol into HALF hunger state. Preserve EXACT same entire peach silhouette, position, stem, leaf, scale and fine warm gold contour. LEFT HALF peach fruit remains ripe pink and golden filled; RIGHT HALF fruit becomes dark muted desaturated brown empty inset. Vertical division at middle, intact whole fruit shape, not a cut peach or bite. No fruit pit, no new props. Match reference precisely.
+```
+
+## ui/peach_empty.png
+
+```text
+Use case: stylized-concept. Exactly ONE square game HUD icon, designed to be clear at 256x256. Cute chunky hand-painted sculpted chibi game style, warm golden edge accents and soft controlled shading matching warm wood and gold HUD of Tiantai game. Single centered subject fully visible with 10 percent margin. True transparent alpha background, no floor shadow, no halo or glow, no checkerboard. No text letters numbers watermark, no sword shield elephant or original video character. Subject: Edit the supplied full peach HUD symbol into EMPTY hunger state. Preserve EXACT same entire peach silhouette, position, stem, leaf, scale and thin warm golden contour. Entire fruit interior now dark muted desaturated brown inset, only gold edge visible as empty peach shaped meter. Whole intact outline, no bite or fruit pit, no new props. Match reference precisely.
+```
+
+## ui/bark.png
+
+```text
+Use case: stylized-concept. Exactly ONE square game HUD icon, designed to be clear at 256x256. Cute chunky hand-painted sculpted chibi game style, warm golden edge accents and soft controlled shading matching warm wood and gold HUD of Tiantai game. Single centered subject fully visible with 10 percent margin. True transparent alpha background, no floor shadow, no halo or glow, no checkerboard. No text letters numbers watermark, no sword shield elephant or original video character. Subject: a small curled strip of PAPER MULBERRY TREE BARK, fibrous pale tan inner bark with rough brown outer bark edge, two short curled fibrous strips stacked, resource inventory icon, NOT grain husk or cereal, no frame.
+```
+
+## ui/skill_bark.png
+
+```text
+Use case: stylized-concept. Exactly ONE square game HUD icon, designed to be clear at 256x256. Cute chunky hand-painted sculpted chibi game style, warm golden edge accents and soft controlled shading matching warm wood and gold HUD of Tiantai game. Single centered subject fully visible with 10 percent margin. True transparent alpha background, no floor shadow, no halo or glow, no checkerboard. No text letters numbers watermark, no sword shield elephant or original video character. Subject: one circular dark walnut wooden skill medallion with thin warm gold rim, center pictogram of a short upright paper mulberry branch with its tan fibrous bark peeling back in one broad curl, simple readable harvesting bark action, no axe no weapon no letters. Icon and wooden disc opaque, outside disc transparent.
+```
+
+## ui/skill_water.png
+
+```text
+Use case: stylized-concept. Exactly ONE square game HUD icon, designed to be clear at 256x256. Cute chunky hand-painted sculpted chibi game style, warm golden edge accents and soft controlled shading matching warm wood and gold HUD of Tiantai game. Single centered subject fully visible with 10 percent margin. True transparent alpha background, no floor shadow, no halo or glow, no checkerboard. No text letters numbers watermark, no sword shield elephant or original video character. Subject: one circular dark walnut wooden skill medallion with thin warm gold rim matching the bark skill, center large clean turquoise blue water droplet above a small cupped tan hand, readable collect water action. Icon and wooden disc opaque, outside disc transparent, no text or glow.
+```
+
+## ui/skill_call.png
+
+```text
+Use case: stylized-concept. Exactly ONE square game HUD icon, designed to be clear at 256x256. Cute chunky hand-painted sculpted chibi game style, warm golden edge accents and soft controlled shading matching warm wood and gold HUD of Tiantai game. Single centered subject fully visible with 10 percent margin. True transparent alpha background, no floor shadow, no halo or glow, no checkerboard. No text letters numbers watermark, no sword shield elephant or original video character. Subject: one circular dark walnut wooden skill medallion with thin warm gold rim matching other skills, center simple warm cream side profile human head calling with a cupped hand near mouth and three gold sound wave arcs pointing right. Clear call companion action pictogram, no speech words no megaphone, no actual full character. Opaque medallion, transparent outside.
+```
+
+## ui/portrait_ruanzhao.png
+
+```text
+Use case: stylized-concept. Exactly ONE square game HUD icon, designed to be clear at 256x256. Cute chunky hand-painted sculpted chibi game style, warm golden edge accents and soft controlled shading matching warm wood and gold HUD of Tiantai game. Single centered subject fully visible with 10 percent margin. True transparent alpha background, no floor shadow, no halo or glow, no checkerboard. No text letters numbers watermark, no sword shield elephant or original video character. Subject: Input image is IDENTITY reference of Ruan Zhao, use EXACT same friendly young Chinese chibi face, huge brown eyes, dark brown parted hair and small topknot, broad woven straw conical hat, navy blue Han cross collar tunic and cream collar. Create close-up head and shoulders circular HUD portrait, head much larger than torso, face centered fully readable at 256px. No staff or basket needed in this close crop. Entire circular portrait with muted warm sage backdrop INSIDE circle, outside circle truly transparent, no wooden frame (separate asset). Do not redesign as another character, no red cap.
+```
+
+## ui/portrait_frame.png
+
+```text
+Use case: stylized-concept. Exactly ONE square game HUD icon, designed to be clear at 256x256. Cute chunky hand-painted sculpted chibi game style, warm golden edge accents and soft controlled shading matching warm wood and gold HUD of Tiantai game. Single centered subject fully visible with 10 percent margin. True transparent alpha background, no floor shadow, no halo or glow, no checkerboard. No text letters numbers watermark, no sword shield elephant or original video character. Subject: one EMPTY perfectly circular dark walnut WOODEN RING portrait frame with thin beveled warm GOLD inner and outer rims, restrained tiny gold cornerless accents, about 12 percent ring thickness. Center hole must be genuinely TRANSPARENT alpha, outside ring also transparent. Nothing inside hole, no portrait, no wood disc, no backdrop. Full frame with margin. Straight front view, symmetrical, not tilted or perspective.
+```
+
+## ui/minimap_frame.png
+
+```text
+Use case: stylized-concept. Exactly ONE square game HUD icon, designed to be clear at 256x256. Cute chunky hand-painted sculpted chibi game style, warm golden edge accents and soft controlled shading matching warm wood and gold HUD of Tiantai game. Single centered subject fully visible with 10 percent margin. True transparent alpha background, no floor shadow, no halo or glow, no checkerboard. No text letters numbers watermark, no sword shield elephant or original video character. Subject: one EMPTY SQUARE walnut wooden minimap frame, thin warm gold inner and outer trim and small restrained gold corner brackets, exact front view with parallel horizontal and vertical edges, not perspective. Frame about 8 percent width. Large square center opening genuinely TRANSPARENT alpha, outside frame transparent also. Nothing inside the hole, no map no compass no letters no backing disc. Entire square frame visible with margin.
+```
+drwxr-xr-x@ 2 naichengchen  staff  64 Nov  7 11:47 staging/art/R2
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import PIL; print(PIL.__version__)
+    ^^^^^^^^^^
+ModuleNotFoundError: No module named 'PIL'
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc 'pwd
+ls -a staging/art/R2
+command -v uv
+ls /private/tmp | head -20
+ls -d .venv staging/art/R1/.venv /private/tmp/*venv* 2>/dev/null' in /Volumes/hk6429/projects/liuruan-tiantai
+ exited 1 in 4ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+.
+..
+/Users/naichengchen/.local/bin/uv
+001_場景修正.md
+1327de7382c5c862e70c4d11339cb110-{87A94AB0-E370-4cde-98D3-ACC110C5967D}
+Liuruan-R0.dll
+Liuruan-editor.dll
+Liuruan-runtime.dll
+LogiPluginService
+LogiPluginServiceControlBus_naichengchen
+OWhkWRtIB9c8IdcFNJ5B4B35xvJSMIS2vC5yoUzeN7I
+S10_old.png
+Unity-LicenseClient-naichengchen-notifications.sock
+Unity-LicenseClient-naichengchen.sock
+Unity-Upm-86677.sock
+Unity-hubIPCService.sock
+__KMP_REGISTERED_LIB_13029
+__KMP_REGISTERED_LIB_20374
+__KMP_REGISTERED_LIB_21695
+__KMP_REGISTERED_LIB_22839
+__KMP_REGISTERED_LIB_25432
+__KMP_REGISTERED_LIB_38219
+__KMP_REGISTERED_LIB_49411
+zsh:5: no matches found: /private/tmp/*venv*
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc 'pwd
+uv --help' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+An extremely fast Python package manager.
+
+Usage: uv [OPTIONS] <COMMAND>
+
+Commands:
+  auth       Manage authentication
+  run        Run a command or script
+  init       Create a new project
+  add        Add dependencies to the project
+  remove     Remove dependencies from the project
+  version    Read or update the project's version
+  sync       Update the project's environment
+  lock       Update the project's lockfile
+  export     Export the project's lockfile to an alternate format
+  tree       Display the project's dependency tree
+  format     Format Python code in the project
+  check      Run checks on the project
+  audit      Audit the project's dependencies
+  tool       Run and install commands provided by Python packages
+  python     Manage Python versions and installations
+  pip        Manage Python packages with a pip-compatible interface
+  venv       Create a virtual environment
+  build      Build Python packages into source distributions and wheels
+  publish    Upload distributions to an index
+  workspace  Inspect uv workspaces
+  cache      Manage uv's cache
+  self       Manage the uv executable
+  help       Display documentation for a command
+
+Cache options:
+  -n, --no-cache               Avoid reading from or writing to the cache, instead using a temporary
+                               directory for the duration of the operation [env: UV_NO_CACHE=]
+      --cache-dir <CACHE_DIR>  Path to the cache directory [env: UV_CACHE_DIR=]
+
+Python options:
+      --managed-python       Require use of uv-managed Python versions [env: UV_MANAGED_PYTHON=]
+      --no-managed-python    Disable use of uv-managed Python versions [env: UV_NO_MANAGED_PYTHON=]
+      --no-python-downloads  Disable automatic downloads of Python. [env:
+                             "UV_PYTHON_DOWNLOADS=never"]
+
+Global options:
+  -q, --quiet...
+          Use quiet output
+  -v, --verbose...
+          Use verbose output
+      --color <COLOR_CHOICE>
+          Control the use of color in output [possible values: auto, always, never]
+      --system-certs
+          Whether to load TLS certificates from the platform's native certificate store [env:
+          UV_SYSTEM_CERTS=]
+      --offline
+          Disable network access [env: UV_OFFLINE=]
+      --allow-insecure-host <ALLOW_INSECURE_HOST>
+          Allow insecure connections to a host [env: UV_INSECURE_HOST=]
+      --no-progress
+          Hide all progress outputs [env: UV_NO_PROGRESS=]
+      --directory <DIRECTORY>
+          Change to the given directory prior to running the command [env: UV_WORKING_DIR=]
+      --project <PROJECT>
+          Discover a project in the given directory [env: UV_PROJECT=]
+      --config-file <CONFIG_FILE>
+          The path to a `uv.toml` file to use for configuration [env: UV_CONFIG_FILE=]
+      --no-config
+          Avoid discovering configuration files (`pyproject.toml`, `uv.toml`) [env: UV_NO_CONFIG=]
+  -h, --help
+          Display the concise help for this command
+  -V, --version
+          Display the uv version
+
+Use `uv help` for more details.
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc 'pwd
+uv run --help' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+Run a command or script
+
+Usage: uv run [OPTIONS] [COMMAND]
+
+Options:
+      --extra <EXTRA>
+          Include optional dependencies from the specified extra name
+      --all-extras
+          Include all optional dependencies
+      --no-extra <NO_EXTRA>
+          Exclude the specified optional dependencies, if `--all-extras` is supplied
+      --no-dev
+          Disable the development dependency group [env: UV_NO_DEV=]
+      --only-dev
+          Only include the development dependency group
+      --group <GROUP>
+          Include dependencies from the specified dependency group
+      --no-group <NO_GROUP>
+          Disable the specified dependency group [env: `UV_NO_GROUP`=]
+      --no-default-groups
+          Ignore the default dependency groups [env: UV_NO_DEFAULT_GROUPS=]
+      --only-group <ONLY_GROUP>
+          Only include dependencies from the specified dependency group
+      --all-groups
+          Include dependencies from all dependency groups
+  -m, --module
+          Run a Python module
+      --no-editable
+          Install any editable dependencies, including the project and any workspace members, as
+          non-editable [env: UV_NO_EDITABLE=]
+      --no-editable-package <NO_EDITABLE_PACKAGE>
+          Install the specified editable packages as non-editable
+      --exact
+          Perform an exact sync, removing extraneous packages
+      --env-file <ENV_FILE>
+          Load environment variables from a `.env` file [env: UV_ENV_FILE=]
+      --no-env-file
+          Avoid reading environment variables from a `.env` file [env: UV_NO_ENV_FILE=]
+  -w, --with <WITH>
+          Run with the given packages installed
+      --with-editable <WITH_EDITABLE>
+          Run with the given packages installed in editable mode
+      --with-requirements <WITH_REQUIREMENTS>
+          Run with the packages listed in the given files
+      --isolated
+          Run the command in an isolated virtual environment [env: UV_ISOLATED=]
+      --active
+          Prefer the active virtual environment over the project's virtual environment
+      --no-sync
+          Avoid syncing the virtual environment [env: UV_NO_SYNC=]
+      --locked
+          Assert that the `uv.lock` will remain unchanged [env: UV_LOCKED=]
+      --frozen
+          Run without updating the `uv.lock` file [env: UV_FROZEN=]
+  -s, --script
+          Run the given path as a Python script
+      --gui-script
+          Run the given path as a Python GUI script
+      --all-packages
+          Run the command with all workspace members installed
+      --package <PACKAGE>
+          Run the command in a specific package in the workspace
+      --no-project
+          Avoid discovering the project or workspace [env: UV_NO_PROJECT=]
+      --python-platform <PYTHON_PLATFORM>
+          The platform for which requirements should be installed [possible values: windows, linux,
+          macos, x86_64-pc-windows-msvc, aarch64-pc-windows-msvc, i686-pc-windows-msvc,
+          x86_64-unknown-linux-gnu, aarch64-apple-darwin, x86_64-apple-darwin,
+          aarch64-unknown-linux-gnu, aarch64-unknown-linux-musl, x86_64-unknown-linux-musl,
+          riscv64-unknown-linux, x86_64-manylinux2014, x86_64-manylinux_2_17, x86_64-manylinux_2_28,
+          x86_64-manylinux_2_31, x86_64-manylinux_2_32, x86_64-manylinux_2_33,
+          x86_64-manylinux_2_34, x86_64-manylinux_2_35, x86_64-manylinux_2_36,
+          x86_64-manylinux_2_37, x86_64-manylinux_2_38, x86_64-manylinux_2_39,
+          x86_64-manylinux_2_40, aarch64-manylinux2014, aarch64-manylinux_2_17,
+          aarch64-manylinux_2_28, aarch64-manylinux_2_31, aarch64-manylinux_2_32,
+          aarch64-manylinux_2_33, aarch64-manylinux_2_34, aarch64-manylinux_2_35,
+          aarch64-manylinux_2_36, aarch64-manylinux_2_37, aarch64-manylinux_2_38,
+          aarch64-manylinux_2_39, aarch64-manylinux_2_40, aarch64-linux-android,
+          x86_64-linux-android, wasm32-pyodide2024, wasm32-pyodide2025, arm64-apple-ios,
+          arm64-apple-ios-simulator, x86_64-apple-ios-simulator]
+
+Index options:
+      --index <INDEX>
+          The indexes to use when resolving dependencies, in addition to the default index [env:
+          UV_INDEX]
+      --default-index <DEFAULT_INDEX>
+          The default package index (by default: <https://pypi.org/simple>) [env: UV_DEFAULT_INDEX]
+  -i, --index-url <INDEX_URL>
+          (Deprecated: use `--default-index` instead) The URL of the Python package index (by
+          default: <https://pypi.org/simple>) [env: UV_INDEX_URL]
+      --extra-index-url <EXTRA_INDEX_URL>
+          (Deprecated: use `--index` instead) Extra URLs of package indexes to use, in addition to
+          `--index-url` [env: UV_EXTRA_INDEX_URL]
+  -f, --find-links <FIND_LINKS>
+          Locations to search for candidate distributions, in addition to those found in the
+          registry indexes [env: UV_FIND_LINKS]
+      --no-index
+          Ignore the registry index (e.g., PyPI), instead relying on direct URL dependencies and
+          those provided via `--find-links`
+      --index-strategy <INDEX_STRATEGY>
+          The strategy to use when resolving against multiple index URLs [env: UV_INDEX_STRATEGY=]
+          [possible values: first-index, unsafe-first-match, unsafe-best-match]
+      --keyring-provider <KEYRING_PROVIDER>
+          Attempt to use `keyring` for authentication for index URLs [env: UV_KEYRING_PROVIDER=]
+          [possible values: disabled, subprocess]
+
+Resolver options:
+  -U, --upgrade
+          Allow package upgrades, ignoring pinned versions in any existing output file. Implies
+          `--refresh`
+  -P, --upgrade-package <UPGRADE_PACKAGE>
+          Allow upgrades for a specific package, ignoring pinned versions in any existing output
+          file. Implies `--refresh-package`
+      --upgrade-group <UPGRADE_GROUP>
+          Allow upgrades for all packages in a dependency group, ignoring pinned versions in any
+          existing output file
+      --resolution <RESOLUTION>
+          The strategy to use when selecting between the different compatible versions for a given
+          package requirement [env: UV_RESOLUTION=] [possible values: highest, lowest,
+          lowest-direct]
+      --prerelease <PRERELEASE>
+          The strategy to use when considering pre-release versions [env: UV_PRERELEASE=] [possible
+          values: disallow, allow, if-necessary, explicit, if-necessary-or-explicit]
+      --prerelease-package <PRERELEASE_PACKAGE>
+          The strategy to use when considering pre-release versions for a specific package
+      --fork-strategy <FORK_STRATEGY>
+          The strategy to use when selecting multiple versions of a given package across Python
+          versions and platforms [env: UV_FORK_STRATEGY=] [possible values: fewest, requires-python]
+      --exclude-newer <EXCLUDE_NEWER>
+          Limit candidate packages to those that were uploaded prior to the given date [env:
+          UV_EXCLUDE_NEWER=]
+      --exclude-newer-package <EXCLUDE_NEWER_PACKAGE>
+          Limit candidate packages for specific packages to those that were uploaded prior to the
+          given date
+      --no-sources
+          Ignore the `tool.uv.sources` table when resolving dependencies. Used to lock against the
+          standards-compliant, publishable package metadata, as opposed to using any workspace, Git,
+          URL, or local path sources [env: UV_NO_SOURCES=]
+      --no-sources-package <NO_SOURCES_PACKAGE>
+          Don't use sources from the `tool.uv.sources` table for the specified packages [env:
+          `UV_NO_SOURCES_PACKAGE`=]
+
+Installer options:
+      --reinstall
+          Reinstall all packages, regardless of whether they're already installed. Implies
+          `--refresh`
+      --reinstall-package <REINSTALL_PACKAGE>
+          Reinstall a specific package, regardless of whether it's already installed. Implies
+          `--refresh-package`
+      --link-mode <LINK_MODE>
+          The method to use when installing packages from the global cache [env: UV_LINK_MODE=]
+          [possible values: clone, copy, hardlink, symlink]
+      --compile-bytecode
+          Compile Python files to bytecode after installation [env: UV_COMPILE_BYTECODE=]
+
+Build options:
+  -C, --config-setting <CONFIG_SETTING>
+          Settings to pass to the PEP 517 build backend, specified as `KEY=VALUE` pairs
+      --config-settings-package <CONFIG_SETTINGS_PACKAGE>
+          Settings to pass to the PEP 517 build backend for a specific package, specified as
+          `PACKAGE:KEY=VALUE` pairs
+      --no-build-isolation
+          Disable isolation when building source distributions [env: UV_NO_BUILD_ISOLATION=]
+      --no-build-isolation-package <NO_BUILD_ISOLATION_PACKAGE>
+          Disable isolation when building source distributions for a specific package
+      --no-build
+          Don't build source distributions [env: UV_NO_BUILD=]
+      --no-build-package <NO_BUILD_PACKAGE>
+          Don't build source distributions for a specific package [env: `UV_NO_BUILD_PACKAGE`=]
+      --no-binary
+          Don't install pre-built wheels [env: UV_NO_BINARY=]
+      --no-binary-package <NO_BINARY_PACKAGE>
+          Don't install pre-built wheels for a specific package [env: `UV_NO_BINARY_PACKAGE`=]
+      --require-build-hashes
+          Require hashes for all build dependencies
+      --no-require-build-hashes
+          Do not require hashes for every build dependency
+
+Cache options:
+  -n, --no-cache
+          Avoid reading from or writing to the cache, instead using a temporary directory for the
+          duration of the operation [env: UV_NO_CACHE=]
+      --cache-dir <CACHE_DIR>
+          Path to the cache directory [env: UV_CACHE_DIR=]
+      --refresh
+          Refresh all cached data
+      --refresh-package <REFRESH_PACKAGE>
+          Refresh cached data for a specific package
+
+Python options:
+  -p, --python <PYTHON>      The Python interpreter to use for the run environment. [env:
+                             UV_PYTHON=]
+      --managed-python       Require use of uv-managed Python versions [env: UV_MANAGED_PYTHON=]
+      --no-managed-python    Disable use of uv-managed Python versions [env: UV_NO_MANAGED_PYTHON=]
+      --no-python-downloads  Disable automatic downloads of Python. [env:
+                             "UV_PYTHON_DOWNLOADS=never"]
+
+Global options:
+  -q, --quiet...
+          Use quiet output
+  -v, --verbose...
+          Use verbose output
+      --color <COLOR_CHOICE>
+          Control the use of color in output [possible values: auto, always, never]
+      --system-certs
+          Whether to load TLS certificates from the platform's native certificate store [env:
+          UV_SYSTEM_CERTS=]
+      --offline
+          Disable network access [env: UV_OFFLINE=]
+      --allow-insecure-host <ALLOW_INSECURE_HOST>
+          Allow insecure connections to a host [env: UV_INSECURE_HOST=]
+      --no-progress
+          Hide all progress outputs [env: UV_NO_PROGRESS=]
+      --directory <DIRECTORY>
+          Change to the given directory prior to running the command [env: UV_WORKING_DIR=]
+      --project <PROJECT>
+          Discover a project in the given directory [env: UV_PROJECT=]
+      --config-file <CONFIG_FILE>
+          The path to a `uv.toml` file to use for configuration [env: UV_CONFIG_FILE=]
+      --no-config
+          Avoid discovering configuration files (`pyproject.toml`, `uv.toml`) [env: UV_NO_CONFIG=]
+  -h, --help
+          Display the concise help for this command
+
+Use `uv help run` for more details.
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd
+UV_CACHE_DIR=staging/art/R2/.uv-cache uv run --no-project --with pillow python - <<'PY'
+from PIL import Image,ImageOps,ImageDraw
+from pathlib import Path
+paths=sorted(Path('staging/art/concept').glob('*.png'))+sorted(Path('staging/ref').glob('*.jpg'))
+out=Image.new('RGB',(1200,((len(paths)+3)//4)*220),'#D9D9D9'); d=ImageDraw.Draw(out)
+for i,p in enumerate(paths):
+ im=ImageOps.contain(Image.open(p).convert('RGB'),(290,190)); x=i%4*300;y=i//4*220;out.paste(im,(x+(300-im.width)//2,y));d.text((x+6,y+194),p.name,fill='black')
+out.save('staging/art/R2/references.jpg')
+PY" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 3385ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+Downloading pillow (4.6MiB)
+ Downloaded pillow
+Installed 1 package in 3ms
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc 'pwd
+mkdir -p staging/art/R2/raw' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+筒瓦屋、亭子與桃樹已生成初稿，造型採用圓潤黏土感與暖色。亭子目前只清楚看見三只鈴，我會補做能辨識第四只鈴的版本，再一起檢查背景與留白。
+
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+楮樹已呈現剝開的樹皮與內側纖維；三件漂流物已並排，歸鄉屋也保留了茅草夾瓦與歪門。接著製作藤蔓岩壁和告示板，再統一檢測。
+
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+apply patch
+patch: completed
+/Volumes/hk6429/projects/liuruan-tiantai/staging/art/R2/check.py
+diff --git a/staging/art/R2/check.py b/staging/art/R2/check.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..510afbf783f2a6d48cacb5fa4d40006c6103336e
+--- /dev/null
++++ b/staging/art/R2/check.py
+@@ -0,0 +1,54 @@
++"""Run with: uv run --no-project --with pillow python staging/art/R2/check.py."""
++from pathlib import Path
++from PIL import Image, ImageChops, ImageStat
++
++ROOT = Path(__file__).resolve().parent
++NAMES = ('house_tongwa pavilion_luozhang peach_tree chu_tree drift_items '
++         'home_house vine_cliff village_board').split()
++
++
++def measure(im):
++    im = im.convert('RGB')
++    w, h = im.size
++    boxes = [(0, 0, 32, 32), (w-32, 0, w, 32),
++             (0, h-32, 32, h), (w-32, h-32, w, h)]
++    means = [ImageStat.Stat(im.crop(b)).mean for b in boxes]
++    spread = max(max(c[k] for c in means)-min(c[k] for c in means) for k in range(3))
++    bg = tuple(round(sum(c[k] for c in means)/4) for k in range(3))
++    diff = ImageChops.difference(im, Image.new('RGB', im.size, bg))
++    r, g, b = diff.split()
++    # shortcut: contrast segmentation includes dark contact shadows; near-grey subjects need visual review.
++    mask = ImageChops.lighter(ImageChops.lighter(r, g), b).point(lambda p: 255 if p > 18 else 0)
++    box = mask.getbbox()
++    margins = (box[0]/w, box[1]/h, (w-box[2])/w, (h-box[3])/h) if box else (0, 0, 0, 0)
++    near_grey = max(abs(c-217) for c in bg) <= 12 and max(bg)-min(bg) < 8
++    passed = im.size == (1024, 1024) and spread < 8 and min(margins) >= .06 and near_grey and box is not None
++    return passed, spread, bg, margins
++
++
++def main():
++    sample = Image.new('RGB', (1024, 1024), '#D9D9D9')
++    sample.paste('#608020', (128, 128, 896, 896))
++    assert measure(sample)[0]
++    sample.paste('#608020', (0, 128, 50, 896))
++    assert not measure(sample)[0]
++    failed = 0
++    for name in NAMES:
++        path = ROOT / (name+'.png')
++        if not path.exists():
++            print(f'FAIL {path.name}: missing')
++            failed += 1
++            continue
++        with Image.open(path) as im:
++            ok, spread, bg, margins = measure(im)
++            ok = ok and im.format == 'PNG' and ('A' not in im.getbands() or im.getchannel('A').getextrema() == (255, 255))
++            print(f'{"PASS" if ok else "FAIL"} {path.name} {im.width}x{im.height} '
++                  f'corner_delta={spread:.2f} bg={bg} '
++                  f'margins_LTRB={tuple(round(v*100, 2) for v in margins)}%')
++            failed += not ok
++    print(f'TOTAL {8-failed}/8 PASS')
++    return bool(failed)
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd
+python3 - <<'PY'
+import json
+from pathlib import Path
+p=Path('staging/art/R2/manifest.json')
+p.write_text(\"[\\n  {\\n    \\\"name\\\": \\\"house_tongwa\\\",\\n    \\\"prompt\\\": \\\"Use case: stylized-concept. Generate ONE square 1024x1024 PNG game asset concept for Dzine image-to-3D. Cute chibi stylized handcrafted clay miniature, clean softly rounded shapes, saturated warm colors, matching Tiantai Chinese fantasy village with jade roofs and red timber. Orthographic-like three-quarter elevated view from front, camera 30 degrees downward. Center complete subject including all extremities inside central 76% of canvas, at least 12% blank margin on ALL four sides including shadow. Perfectly flat uniform solid light grey #D9D9D9 background edge to edge, no gradient, no horizon, no vignette, no scenery or ground patch, only a very small soft contact shadow beneath subject. No lettering, symbols, labels, watermark, people or unrelated props. ONE small squat Han-dynasty immortal-village house, broad curved roof of clearly visible rounded cylindrical barrel tiles in reflective jade copper-green with fine gold tile edging, vermilion red columns, warm cream plaster walls, simple wooden doorway. Cute chunky proportions, single storey, no surrounding plants or furniture.\\\",\\n    \\\"source\\\": \\\"/Users/naichengchen/.codex/generated_images/01a1b41d-f599-71e3-833f-47922bc3d6ea/exec-b2273636-77f3-4d7a-8d73-6d1b7e8c9384.png\\\"\\n  },\\n  {\\n    \\\"name\\\": \\\"pavilion_luozhang\\\",\\n    \\\"prompt\\\": \\\"Use case: stylized-concept. Generate ONE square 1024x1024 PNG game asset concept for Dzine image-to-3D. Cute chibi stylized handcrafted clay miniature, clean softly rounded shapes, saturated warm colors, matching Tiantai Chinese fantasy village with jade roofs and red timber. Orthographic-like three-quarter elevated view from front, camera 30 degrees downward. Center complete subject including all extremities inside central 76% of canvas, at least 12% blank margin on ALL four sides including shadow. Perfectly flat uniform solid light grey #D9D9D9 background edge to edge, no gradient, no horizon, no vignette, no scenery or ground patch, only a very small soft contact shadow beneath subject. No lettering, symbols, labels, watermark, people or unrelated props. ONE small square open Han Chinese pavilion on a minimal integral platform, four red timber posts, jade green simple tiled canopy, deep crimson translucent gauze curtains hanging on ALL FOUR SIDES, parted enough to see empty interior. One small bronze bell hanging at each of four curtain corners, exactly four bells visible through translucent gauze where necessary. Curtains ankle length, clean readable thin red fabric, no furniture or people.\\\",\\n    \\\"source\\\": \\\"/Users/naichengchen/.codex/generated_images/01a1b41d-f599-71e3-833f-47922bc3d6ea/exec-0b2b9a9e-43a5-474a-8f61-bdf6e01c54df.png\\\"\\n  },\\n  {\\n    \\\"name\\\": \\\"peach_tree\\\",\\n    \\\"prompt\\\": \\\"Use case: stylized-concept. Generate ONE square 1024x1024 PNG game asset concept for Dzine image-to-3D. Cute chibi stylized handcrafted clay miniature, clean softly rounded shapes, saturated warm colors, matching Tiantai Chinese fantasy village with jade roofs and red timber. Orthographic-like three-quarter elevated view from front, camera 30 degrees downward. Center complete subject including all extremities inside central 76% of canvas, at least 12% blank margin on ALL four sides including shadow. Perfectly flat uniform solid light grey #D9D9D9 background edge to edge, no gradient, no horizon, no vignette, no scenery or ground patch, only a very small soft contact shadow beneath subject. No lettering, symbols, labels, watermark, people or unrelated props. ONE peach tree, very short thick rounded brown trunk and compact wide crown of warm green leaves, abundant LARGE pink ripe peaches visibly hanging throughout the canopy, chunky handmade clay style. Exposed root ends integral to trunk, no soil disk or pot, no detached fruit or background.\\\",\\n    \\\"source\\\": \\\"/Users/naichengchen/.codex/generated_images/01a1b41d-f599-71e3-833f-47922bc3d6ea/exec-f20bc474-d3b1-4287-a7ef-53142c200afe.png\\\"\\n  },\\n  {\\n    \\\"name\\\": \\\"chu_tree\\\",\\n    \\\"prompt\\\": \\\"Use case: stylized-concept. Generate ONE square 1024x1024 PNG game asset concept for Dzine image-to-3D. Cute chibi stylized handcrafted clay miniature, clean softly rounded shapes, saturated warm colors, matching Tiantai Chinese fantasy village with jade roofs and red timber. Orthographic-like three-quarter elevated view from front, camera 30 degrees downward. Center complete subject including all extremities inside central 76% of canvas, at least 12% blank margin on ALL four sides including shadow. Perfectly flat uniform solid light grey #D9D9D9 background edge to edge, no gradient, no horizon, no vignette, no scenery or ground patch, only a very small soft contact shadow beneath subject. No lettering, symbols, labels, watermark, people or unrelated props. ONE paper mulberry tree Broussonetia papyrifera, short thick grey-brown mottled bark trunk and compact warm green crown with visibly serrated broad heart-shaped and three-lobed mulberry leaves. A clearly readable broad strip of bark peeled back from the FRONT of lower trunk, pale cream fibrous inner bark exposed, curled brown bark flap still attached. No tools, pots or soil disk.\\\",\\n    \\\"source\\\": \\\"/Users/naichengchen/.codex/generated_images/01a1b41d-f599-71e3-833f-47922bc3d6ea/exec-0cfffb23-e95d-4bce-9609-4d1ea101f657.png\\\"\\n  },\\n  {\\n    \\\"name\\\": \\\"drift_items\\\",\\n    \\\"prompt\\\": \\\"Use case: stylized-concept. Generate ONE square 1024x1024 PNG game asset concept for Dzine image-to-3D. Cute chibi stylized handcrafted clay miniature, clean softly rounded shapes, saturated warm colors, matching Tiantai Chinese fantasy village with jade roofs and red timber. Orthographic-like three-quarter elevated view from front, camera 30 degrees downward. Center complete subject including all extremities inside central 76% of canvas, at least 12% blank margin on ALL four sides including shadow. Perfectly flat uniform solid light grey #D9D9D9 background edge to edge, no gradient, no horizon, no vignette, no scenery or ground patch, only a very small soft contact shadow beneath subject. No lettering, symbols, labels, watermark, people or unrelated props. EXCEPTION to single object: exactly THREE separate pickup objects in ONE horizontal row with LARGE equal empty gaps for later cutting, all aligned around vertical center, whole group centered. LEFT one large fresh GREEN TURNIP LEAF with broad crinkled leaf blade and thick pale green stalk, no turnip root. MIDDLE one Han-dynasty wooden lacquer EAR CUP, low shallow oval bowl with two broad winglike handles, red lacquer interior and dark brown black lacquer outside, visible wood rim. RIGHT one SMALL loose clump of recognizable white cooked rice grains sprinkled with BLACK sesame seeds, no bowl or plate. Each object isolated from other objects, no water, no ripple, no extra leaves or rice grains outside its clump. Each about 19% canvas width, gaps about 9% canvas width.\\\",\\n    \\\"source\\\": \\\"/Users/naichengchen/.codex/generated_images/01a1b41d-f599-71e3-833f-47922bc3d6ea/exec-924e9d96-16ce-4233-b148-ce7fd9eca104.png\\\"\\n  },\\n  {\\n    \\\"name\\\": \\\"home_house\\\",\\n    \\\"prompt\\\": \\\"Use case: stylized-concept. Generate ONE square 1024x1024 PNG game asset concept for Dzine image-to-3D. Cute chibi stylized handcrafted clay miniature, clean softly rounded shapes, saturated warm colors, matching Tiantai Chinese fantasy village with jade roofs and red timber. Orthographic-like three-quarter elevated view from front, camera 30 degrees downward. Center complete subject including all extremities inside central 76% of canvas, at least 12% blank margin on ALL four sides including shadow. Perfectly flat uniform solid light grey #D9D9D9 background edge to edge, no gradient, no horizon, no vignette, no scenery or ground patch, only a very small soft contact shadow beneath subject. No lettering, symbols, labels, watermark, people or unrelated props. ONE old dilapidated small Han-dynasty ordinary village house, same cute squat proportions as the immortal village house but COLD desaturated grey blue palette. Rough grey plaster and weathered exposed wood, visibly patched roof MIXING ragged straw thatch with broken grey cylindrical tiles, one crooked slanted wooden door hanging off alignment. Modest single storey, tired ancient house, no background, no rubble scatter, no plants, no scenery.\\\",\\n    \\\"source\\\": \\\"/Users/naichengchen/.codex/generated_images/01a1b41d-f599-71e3-833f-47922bc3d6ea/exec-a174c084-a4a4-4bda-99b7-8b07d90825fd.png\\\"\\n  },\\n  {\\n    \\\"name\\\": \\\"vine_cliff\\\",\\n    \\\"prompt\\\": \\\"Use case: stylized-concept. Generate ONE square 1024x1024 PNG game asset concept for Dzine image-to-3D. Cute chibi stylized handcrafted clay miniature, clean softly rounded shapes, saturated warm colors, matching Tiantai Chinese fantasy village with jade roofs and red timber. Orthographic-like three-quarter elevated view from front, camera 30 degrees downward. Center complete subject including all extremities inside central 76% of canvas, at least 12% blank margin on ALL four sides including shadow. Perfectly flat uniform solid light grey #D9D9D9 background edge to edge, no gradient, no horizon, no vignette, no scenery or ground patch, only a very small soft contact shadow beneath subject. No lettering, symbols, labels, watermark, people or unrelated props. ONE freestanding vertical rock cliff SEGMENT as a self-contained game module, not a landscape. Tall chunky grey warm stone with rounded facets, front covered by thick climbable twisting woody vines, prominent graspable vine loops and warm green leaves. Small clearly visible flat ledge/platform integral to TOP for standing after climbing. Complete bottom and top of rock visible, no surrounding terrain, no trees, no soil base, no people.\\\",\\n    \\\"source\\\": \\\"/Users/naichengchen/.codex/generated_images/01a1b41d-f599-71e3-833f-47922bc3d6ea/exec-217a1b8d-0de0-4dd2-95df-ce3c1f352f3b.png\\\"\\n  },\\n  {\\n    \\\"name\\\": \\\"village_board\\\",\\n    \\\"prompt\\\": \\\"Use case: stylized-concept. Generate ONE square 1024x1024 PNG game asset concept for Dzine image-to-3D. Cute chibi stylized handcrafted clay miniature, clean softly rounded shapes, saturated warm colors, matching Tiantai Chinese fantasy village with jade roofs and red timber. Orthographic-like three-quarter elevated view from front, camera 30 degrees downward. Center complete subject including all extremities inside central 76% of canvas, at least 12% blank margin on ALL four sides including shadow. Perfectly flat uniform solid light grey #D9D9D9 background edge to edge, no gradient, no horizon, no vignette, no scenery or ground patch, only a very small soft contact shadow beneath subject. No lettering, symbols, labels, watermark, people or unrelated props. ONE wooden village quest noticeboard, exactly TWO thick upright timber posts supporting ONE horizontal wooden header plaque, exactly THREE BLANK hanging bamboo tablet cards side by side beneath header. Each card is a distinct small rectangular group of pale bamboo slips tied together, no writing or decorative marks. Cute chunky warm honey-brown carved wood, clean rounded edges, short integral timber feet. No roof, no surrounding props.\\\",\\n    \\\"source\\\": \\\"/Users/naichengchen/.codex/generated_images/01a1b41d-f599-71e3-833f-47922bc3d6ea/exec-43fcc5f3-4031-4a5f-819b-b56a08d67891.png\\\"\\n  }\\n]\",encoding='utf-8')
+PY
+UV_CACHE_DIR=staging/art/R2/.uv-cache uv run --no-project --with pillow python - <<'PY'
+import json,shutil
+from pathlib import Path
+from PIL import Image
+root=Path('staging/art/R2')
+for item in json.loads((root/'manifest.json').read_text()):
+ shutil.copyfile(item['source'],root/'raw'/(item['name']+'_v1.png'))
+ Image.open(item['source']).resize((1024,1024),Image.Resampling.LANCZOS).save(root/(item['name']+'.png'))
+PY
+UV_CACHE_DIR=staging/art/R2/.uv-cache uv run --no-project --with pillow python staging/art/R2/check.py" in /Volumes/hk6429/projects/liuruan-tiantai
+ exited 1 in 1445ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+PASS house_tongwa.png 1024x1024 corner_delta=1.06 bg=(211, 210, 210) margins_LTRB=(8.79, 16.21, 9.57, 16.99)%
+PASS pavilion_luozhang.png 1024x1024 corner_delta=0.64 bg=(212, 211, 211) margins_LTRB=(14.45, 8.59, 14.45, 10.64)%
+PASS peach_tree.png 1024x1024 corner_delta=0.69 bg=(212, 211, 211) margins_LTRB=(7.03, 11.04, 7.71, 11.43)%
+PASS chu_tree.png 1024x1024 corner_delta=0.84 bg=(211, 210, 210) margins_LTRB=(12.3, 9.47, 16.21, 11.33)%
+FAIL drift_items.png 1024x1024 corner_delta=0.80 bg=(212, 212, 212) margins_LTRB=(5.66, 35.25, 6.25, 37.5)%
+PASS home_house.png 1024x1024 corner_delta=0.65 bg=(211, 210, 210) margins_LTRB=(12.3, 16.89, 12.01, 14.65)%
+FAIL vine_cliff.png 1024x1024 corner_delta=0.81 bg=(211, 211, 211) margins_LTRB=(26.76, 5.27, 30.86, 5.37)%
+PASS village_board.png 1024x1024 corner_delta=0.76 bg=(210, 209, 209) margins_LTRB=(11.04, 17.29, 12.01, 16.7)%
+TOTAL 6/8 PASS
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+第一輪實測為 6／8 通過：漂流物左側留白 5.66%，岩壁上下約 5.3%，都未達 6%。我會重生這兩張，並移除岩壁多出的屋頂裝飾；亭子與告示板也會補正四鈴辨識和 3/4 視角。
+
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+漂流物與岩壁已重生，岩壁現在只保留天然石台與粗藤。亭子的四只鈴已清楚，但生成角度偏正面；我會再調整成 3/4 俯視角，並完成告示板的側面厚度。
+
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd
+python3 - <<'PY'
+import json
+from pathlib import Path
+Path('staging/art/R2/revisions.json').write_text(\"[\\n  {\\n    \\\"name\\\": \\\"drift_items\\\",\\n    \\\"prompt\\\": \\\"Use case: stylized-concept. Generate ONE square 1024x1024 PNG game asset concept for Dzine image-to-3D. Cute chibi stylized handcrafted clay miniature, clean softly rounded shapes, saturated warm colors, matching Tiantai Chinese fantasy village with jade roofs and red timber. Orthographic-like three-quarter elevated view from front, camera 30 degrees downward. Center complete subject including all extremities inside central 76% of canvas, at least 12% blank margin on ALL four sides including shadow. Perfectly flat uniform solid light grey #D9D9D9 background edge to edge, no gradient, no horizon, no vignette, no scenery or ground patch, only a very small soft contact shadow beneath subject. No lettering, symbols, labels, watermark, people or unrelated props. EXCEPTION to single object: exactly THREE separate pickup objects in ONE horizontal row with LARGE equal empty gaps for later cutting, all aligned around vertical center, whole group centered. LEFT one large fresh GREEN TURNIP LEAF with broad crinkled leaf blade and thick pale green stalk, no turnip root. MIDDLE one Han-dynasty wooden lacquer EAR CUP, low shallow oval bowl with two broad winglike handles, red lacquer interior and dark brown black lacquer outside, visible wood rim. RIGHT one SMALL loose clump of recognizable white cooked rice grains sprinkled with BLACK sesame seeds, no bowl or plate. Each object isolated from other objects, no water, no ripple, no extra leaves or rice grains outside its clump. Each about 19% canvas width, gaps about 9% canvas width. CRITICAL FRAMING: shrink the ENTIRE three-item group to fit ONLY between x=180 and x=844 in the 1024px canvas. Absolutely no subject outside this central 65% width. Keep LARGE equal 80px or more blank gaps between items, make ear cup smaller to match leaf width. Background flat grey, not gradient.\\\",\\n    \\\"source\\\": \\\"/Users/naichengchen/.codex/generated_images/01a1b41d-f599-71e3-833f-47922bc3d6ea/exec-0e96c665-0a81-477a-9036-29c3ec318ccc.png\\\",\\n    \\\"version\\\": 2\\n  },\\n  {\\n    \\\"name\\\": \\\"vine_cliff\\\",\\n    \\\"prompt\\\": \\\"Use case: stylized-concept. Generate ONE square 1024x1024 PNG game asset concept for Dzine image-to-3D. Cute chibi stylized handcrafted clay miniature, clean softly rounded shapes, saturated warm colors, matching the rounded Tiantai mountain art style. Orthographic-like three-quarter elevated view from front, camera 30 degrees downward. Center complete subject including all extremities inside central 76% of canvas, at least 12% blank margin on ALL four sides including shadow. Perfectly flat uniform solid light grey #D9D9D9 background edge to edge, no gradient, no horizon, no vignette, no scenery or ground patch, only a very small soft contact shadow beneath subject. No lettering, symbols, labels, watermark, people or unrelated props. ONE freestanding vertical rock cliff SEGMENT as a self-contained game module, not a landscape. Tall chunky grey warm stone with rounded facets, front covered by thick climbable twisting woody vines, prominent graspable vine loops and warm green leaves. Small clearly visible flat ledge/platform integral to TOP for standing after climbing. Complete bottom and top of rock visible, no surrounding terrain, no trees, no soil base, no people. CRITICAL: this is ONLY NATURAL ROCK AND VINES, absolutely NO buildings, roof, gate, pillars, fences, red wood, railings or architecture. Top ledge is bare natural stone. Entire rock occupies middle 65% height with at least 17% empty grey above and below. Make rock wider and shorter, 1.4 height-to-width ratio.\\\",\\n    \\\"source\\\": \\\"/Users/naichengchen/.codex/generated_images/01a1b41d-f599-71e3-833f-47922bc3d6ea/exec-cbd26dfd-4e64-494e-b5d3-8a820e35a684.png\\\",\\n    \\\"version\\\": 2\\n  },\\n  {\\n    \\\"name\\\": \\\"pavilion_luozhang\\\",\\n    \\\"prompt\\\": \\\"Use case: stylized-concept. Generate ONE square 1024x1024 PNG game asset concept for Dzine image-to-3D. Cute chibi stylized handcrafted clay miniature, clean softly rounded shapes, saturated warm colors, matching Tiantai Chinese fantasy village with jade roofs and red timber. Orthographic-like three-quarter elevated view from front, camera 30 degrees downward. Center complete subject including all extremities inside central 76% of canvas, at least 12% blank margin on ALL four sides including shadow. Perfectly flat uniform solid light grey #D9D9D9 background edge to edge, no gradient, no horizon, no vignette, no scenery or ground patch, only a very small soft contact shadow beneath subject. No lettering, symbols, labels, watermark, people or unrelated props. ONE small square open Han Chinese pavilion on a minimal integral platform, four red timber posts, jade green simple tiled canopy, deep crimson translucent gauze curtains hanging on ALL FOUR SIDES, parted enough to see empty interior. One small bronze bell hanging at each of four curtain corners, exactly four bells visible through translucent gauze where necessary. Curtains ankle length, clean readable thin red fabric, no furniture or people. CRITICAL all FOUR small bells must be separately visible in this single view: front-left, front-right, rear-left and rear-right. Suspend rear bells slightly lower on longer cords so both can be seen THROUGH the open middle below the canopy, no bell hidden by posts or curtains. Four bells total, one per corner. Curtains deep DARK crimson burgundy, not orange red. Higher three-quarter elevated view to see all four corners, generously framed.\\\",\\n    \\\"source\\\": \\\"/Users/naichengchen/.codex/generated_images/01a1b41d-f599-71e3-833f-47922bc3d6ea/exec-0a11bc1f-86b1-425b-8543-f5cf3c341cec.png\\\",\\n    \\\"version\\\": 2\\n  },\\n  {\\n    \\\"name\\\": \\\"village_board\\\",\\n    \\\"prompt\\\": \\\"Use case: stylized-concept. Generate ONE square 1024x1024 PNG game asset concept for Dzine image-to-3D. Cute chibi stylized handcrafted clay miniature, clean softly rounded shapes, saturated warm colors, matching Tiantai Chinese fantasy village with jade roofs and red timber. Orthographic-like three-quarter elevated view from front, camera 30 degrees downward. Center complete subject including all extremities inside central 76% of canvas, at least 12% blank margin on ALL four sides including shadow. Perfectly flat uniform solid light grey #D9D9D9 background edge to edge, no gradient, no horizon, no vignette, no scenery or ground patch, only a very small soft contact shadow beneath subject. No lettering, symbols, labels, watermark, people or unrelated props. ONE wooden village quest noticeboard, exactly TWO thick upright timber posts supporting ONE horizontal wooden header plaque, exactly THREE BLANK hanging bamboo tablet cards side by side beneath header. Each card is a distinct small rectangular group of pale bamboo slips tied together, no writing or decorative marks. Cute chunky warm honey-brown carved wood, clean rounded edges, short integral timber feet. No roof, no surrounding props. CRITICAL CAMERA: rotate the board 30 degrees around its vertical axis, viewed from FRONT-RIGHT AND ABOVE, showing the RIGHT SIDE faces of both posts, feet and thick header. Strong obvious three-quarter perspective with top beam receding diagonally, NOT a flat frontal symmetric elevation. The three blank cards are all readable and non-overlapping. Blank header, no carved symbols.\\\",\\n    \\\"source\\\": \\\"/Users/naichengchen/.codex/generated_images/01a1b41d-f599-71e3-833f-47922bc3d6ea/exec-8053653e-2948-4919-b0ee-53d62e5ac627.png\\\",\\n    \\\"version\\\": 2\\n  },\\n  {\\n    \\\"name\\\": \\\"pavilion_luozhang\\\",\\n    \\\"prompt\\\": \\\"Use case: stylized-concept. Generate ONE square 1024x1024 PNG game asset concept for Dzine image-to-3D. Cute chibi stylized handcrafted clay miniature, clean softly rounded shapes, saturated warm colors, matching Tiantai Chinese fantasy village with jade roofs and red timber. Orthographic-like three-quarter elevated view from front, camera 30 degrees downward. Center complete subject including all extremities inside central 76% of canvas, at least 12% blank margin on ALL four sides including shadow. Perfectly flat uniform solid light grey #D9D9D9 background edge to edge, no gradient, no horizon, no vignette, no scenery or ground patch, only a very small soft contact shadow beneath subject. No lettering, symbols, labels, watermark, people or unrelated props. ONE small square open Han Chinese pavilion on a minimal integral platform, four red timber posts, jade green simple tiled canopy, deep crimson translucent gauze curtains hanging on ALL FOUR SIDES, parted enough to see empty interior. One small bronze bell hanging at each of four curtain corners, exactly four bells visible through translucent gauze where necessary. Curtains ankle length, clean readable thin red fabric, no furniture or people. CRITICAL all FOUR small bells must be separately visible in this single view: front-left, front-right, rear-left and rear-right. Suspend rear bells slightly lower on longer cords so both can be seen THROUGH the open middle below the canopy, no bell hidden by posts or curtains. Four bells total, one per corner. Curtains deep DARK crimson burgundy, not orange red. Higher three-quarter elevated view to see all four corners, generously framed. OVERRIDE CAMERA: absolutely NOT frontal or symmetrical elevation. Camera on front-right diagonal at azimuth 40 degrees and elevation 30 degrees. See TWO adjacent pavilion faces equally with the nearest CORNER POST offset slightly left of center, roof ridge diagonal. Four bells separately visible: one at near corner, one left corner, one right corner, fourth hanging lower inside the rear corner visible in open gap left of near post. Keep the four red gauze walls and empty interior. At least 12% margin.\\\",\\n    \\\"source\\\": \\\"/Users/naichengchen/.codex/generated_images/01a1b41d-f599-71e3-833f-47922bc3d6ea/exec-b74c5552-3c9f-4d43-8294-b9764b715b96.png\\\",\\n    \\\"version\\\": 3\\n  }\\n]\",encoding='utf-8')
+PY
+UV_CACHE_DIR=staging/art/R2/.uv-cache uv run --no-project --with pillow python - <<'PY'
+from pathlib import Path
+from PIL import Image,ImageDraw
+import json,shutil,subprocess,sys
+root=Path('staging/art/R2')
+for it in json.loads((root/'revisions.json').read_text()):
+ shutil.copyfile(it['source'],root/'raw'/f\"{it['name']}_v{it['version']}.png\")
+ Image.open(it['source']).resize((1024,1024),Image.Resampling.LANCZOS).save(root/(it['name']+'.png'))
+r=subprocess.run([sys.executable,str(root/'check.py')],capture_output=True,text=True)
+(root/'check-output.txt').write_text(r.stdout)
+print(r.stdout)
+canvas=Image.new('RGB',(1280,696),'#D9D9D9');d=ImageDraw.Draw(canvas)
+items=json.loads((root/'manifest.json').read_text())
+for i,it in enumerate(items):
+ x=i%4*320;y=i//4*348
+ im=Image.open(root/(it['name']+'.png')).resize((320,320),Image.Resampling.LANCZOS)
+ canvas.paste(im,(x,y)); d.text((x+8,y+325),it['name']+'.png',fill='#333333')
+canvas.save(root/'contact.png')
+raise SystemExit(r.returncode)
+PY" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 1417ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+PASS house_tongwa.png 1024x1024 corner_delta=1.06 bg=(211, 210, 210) margins_LTRB=(8.79, 16.21, 9.57, 16.99)%
+PASS pavilion_luozhang.png 1024x1024 corner_delta=0.93 bg=(210, 210, 209) margins_LTRB=(11.82, 8.4, 13.67, 9.38)%
+PASS peach_tree.png 1024x1024 corner_delta=0.69 bg=(212, 211, 211) margins_LTRB=(7.03, 11.04, 7.71, 11.43)%
+PASS chu_tree.png 1024x1024 corner_delta=0.84 bg=(211, 210, 210) margins_LTRB=(12.3, 9.47, 16.21, 11.33)%
+PASS drift_items.png 1024x1024 corner_delta=0.70 bg=(211, 211, 210) margins_LTRB=(14.65, 38.77, 16.5, 38.77)%
+PASS home_house.png 1024x1024 corner_delta=0.65 bg=(211, 210, 210) margins_LTRB=(12.3, 16.89, 12.01, 14.65)%
+PASS vine_cliff.png 1024x1024 corner_delta=0.60 bg=(211, 210, 210) margins_LTRB=(17.19, 16.8, 19.43, 12.99)%
+PASS village_board.png 1024x1024 corner_delta=0.45 bg=(212, 211, 211) margins_LTRB=(11.04, 8.89, 11.52, 8.59)%
+TOTAL 8/8 PASS
+
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+8 張已全部通過實測：四角色差最高 1.06（門檻 < 8），最小留白 7.03%（門檻 ≥ 6%）。總覽圖也已檢視；接著將每次提示詞、重生原因與完整檢測輸出寫入 `A-R2.md`。
+
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+apply patch
+patch: completed
+/Volumes/hk6429/projects/liuruan-tiantai/staging/art/R2/check.py
+diff --git a/staging/art/R2/check.py b/staging/art/R2/check.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..431b070014d810389b2d45b66746bcdf0e37615f
+--- /dev/null
++++ b/staging/art/R2/check.py
+@@ -0,0 +1,58 @@
++"""Run with: uv run --no-project --with pillow python staging/art/R2/check.py."""
++from pathlib import Path
++from PIL import Image, ImageChops, ImageStat
++
++ROOT = Path(__file__).resolve().parent
++NAMES = ('house_tongwa pavilion_luozhang peach_tree chu_tree drift_items '
++         'home_house vine_cliff village_board').split()
++
++
++def measure(im):
++    im = im.convert('RGB')
++    w, h = im.size
++    boxes = [(0, 0, 32, 32), (w-32, 0, w, 32),
++             (0, h-32, 32, h), (w-32, h-32, w, h)]
++    means = [ImageStat.Stat(im.crop(b)).mean for b in boxes]
++    spread = max(max(c[k] for c in means)-min(c[k] for c in means) for k in range(3))
++    bg = tuple(round(sum(c[k] for c in means)/4) for k in range(3))
++    diff = ImageChops.difference(im, Image.new('RGB', im.size, bg))
++    r, g, b = diff.split()
++    # shortcut: contrast segmentation includes dark contact shadows; near-grey subjects need visual review.
++    mask = ImageChops.lighter(ImageChops.lighter(r, g), b).point(lambda p: 255 if p > 18 else 0)
++    box = mask.getbbox()
++    margins = (box[0]/w, box[1]/h, (w-box[2])/w, (h-box[3])/h) if box else (0, 0, 0, 0)
++    near_grey = max(abs(c-217) for c in bg) <= 12 and max(bg)-min(bg) < 8
++    passed = im.size == (1024, 1024) and spread < 8 and min(margins) >= .06 and near_grey and box is not None
++    return passed, spread, bg, margins
++
++
++def main():
++    sample = Image.new('RGB', (1024, 1024), '#D9D9D9')
++    sample.paste('#608020', (128, 128, 896, 896))
++    assert measure(sample)[0]
++    sample.paste('#608020', (0, 128, 50, 896))
++    assert not measure(sample)[0]
++    assert not measure(Image.new('RGB', (1024, 1024), '#D9D9D9'))[0]
++    assert not measure(Image.new('RGB', (512, 512), '#D9D9D9'))[0]
++    sample.paste('#808080', (0, 0, 32, 32))
++    assert measure(sample)[1] >= 8
++    failed = 0
++    for name in NAMES:
++        path = ROOT / (name+'.png')
++        if not path.exists():
++            print(f'FAIL {path.name}: missing')
++            failed += 1
++            continue
++        with Image.open(path) as im:
++            ok, spread, bg, margins = measure(im)
++            ok = ok and im.format == 'PNG' and ('A' not in im.getbands() or im.getchannel('A').getextrema() == (255, 255))
++            print(f'{"PASS" if ok else "FAIL"} {path.name} {im.width}x{im.height} '
++                  f'corner_delta={spread:.2f} bg={bg} '
++                  f'margins_LTRB={tuple(round(v*100, 2) for v in margins)}%')
++            failed += not ok
++    print(f'TOTAL {8-failed}/8 PASS')
++    return bool(failed)
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd
+UV_CACHE_DIR=staging/art/R2/.uv-cache uv run --no-project --with pillow python staging/art/R2/check.py
+python3 - <<'PY'
+from pathlib import Path
+import json,hashlib
+r=Path('staging/art/R2')
+base=json.loads((r/'manifest.json').read_text());rev=json.loads((r/'revisions.json').read_text())
+selected={x['name']:{**x,'version':1} for x in base}
+for x in rev:selected[x['name']]=x
+lines=['---','date: 2026-11-07','type: 交件報告','tags: [天台山流杯記, A線, R2, 概念圖, Dzine]','---','','# A 線 R2：建物與道具概念圖','','## 交件摘要','','8 張正式 PNG、check.py 與 contact.png 已落盤；實測 8/8 PASS。所有專案寫入限 staging/art/R2/。未開 Unity、未推送 GitHub 或部署。','','工具：Codex 內建 image_gen（ChatGPT 內建生圖路徑）；共 13 次單張生成，沒有使用 API、API Key 或其他生圖服務。生成工具預設原稿另存於工具管理的 generated_images；本輪已複製至 raw/ 留存。正式圖僅以 Pillow 等比縮至 1024×1024；沒有裁切、補邊、背景重繪或手動修飾。','','已讀：AGENTS.md、docs/plan.md（含第五節）、staging/art/R1/prompts.md；已透過 references.jpg 檢視 concept/ 全部 8 張與 ref/ 全部 8 張。RTK.md 在專案根目錄不存在。以本輪指定的 R2/A-R2.md 為唯一交件報告位置，未寫 logs/ 或 Obsidian（本輪限定只能寫 R2）。','','## 正式檔案與視覺核對','','| 檔案 | 採用版本 | 人工核對 | SHA-256 |','|---|---|---|---|']
+notes=['銅綠金邊圓筒瓦、朱紅柱、完整小屋','四只銅鈴皆可辨識、深紅薄紗、3/4 俯視','粗短樹幹、大顆粉紅桃子','灰褐斑駁樹皮、剝開處與纖維清楚','蕪菁葉／漆耳杯／黑芝麻飯糝；三件並排且互不重疊','灰冷民居、破瓦混茅草、歪木門','天然石台、垂直岩段與可攀粗藤；無建物','兩柱一匾、三張空白竹簡卡、3/4 俯視']
+for it,note in zip(base,notes):
+ p=r/(it['name']+'.png');s=selected[it['name']]
+ lines.append(f\"| {p.name} | v{s['version']} | {note} | "'`{hashlib.sha256(p.read_bytes()).hexdigest()}` |")
+lines+=['"'','contact.png：四欄兩列 1280×696，帶檔名供核對，不是 Dzine 單件輸入；8 張正式素材內無文字。references.jpg 是開工前參考圖總覽。raw/ 保留 13 張生成原稿；manifest.json 與 revisions.json 記錄提示詞、原稿位置與版本；check-output.txt 是下列實測輸出。','','## 驗收方法','','check.py 使用 Pillow，執行方式：','','"'```sh'"','UV_CACHE_DIR=staging/art/R2/.uv-cache uv run --no-project --with pillow python staging/art/R2/check.py','"'```'"','','逐張驗證存在、PNG 格式、1024×1024、無透明背景。四角各取 32×32 區塊的 RGB 平均，corner_delta 是四角每個色版的最大差，須 < 8；平均背景每色版須距 #D9D9D9 不超過 12，且背景色版差 < 8。此批背景約 #D3D2D2，屬指定的淺灰範圍。以背景色最大色版差 > 18 分割主體，計算包圍盒四邊留白，皆須 ≥ 6%；深色接地陰影也納入保守計算。程式內有合格留白、碰邊、空白、錯尺寸與四角色差的 assert 自我檢查。','','限制：色差分割不能取代人工視覺驗收；與背景近色的部位及細薄半透明羅帳可能被漏算，已搭配原圖和 contact.png 核對，未裁切主體。四角統計只驗證指定採樣區，不代表每一個背景像素都完全相同。','','### 最終實測輸出','','"'```text'"',(r/'check-output.txt').read_text().strip(),'"'```'"','','## 重生紀錄','','- 第一輪 6/8 PASS。drift_items v1 左留白 5.66%；vine_cliff v1 上／下留白 5.27%／5.37%，另多出非需求屋頂，均重生為 v2。','- pavilion v1 只清楚看見三鈴，v2 補到四鈴但偏正面；v3 改為 3/4 俯視且四鈴可辨識。','- village_board v1 偏正面，v2 改為 3/4 俯視，保留三張空白卡。','','## 每張實際提示詞','','以下每段為完整送入內建生圖工具的文字，含未採用版本；raw 檔名標明版本。']
+for it in base:
+ versions=[{**it,'version':1}]+[v for v in rev if v['name']==it['name']]
+ for v in versions:
+  status='採用' if v['version']==selected[it['name']]['version'] else '未採用'
+  lines += ['',f\"### {it['name']}.png — v{v['version']}（{status}）\",'', '"'```text'"',v['prompt'],'"'```'"']
+lines+=['','## 未執行與交接','','未進行 Dzine 轉 3D、拆分漂流物、拓樸／背面／碰撞體驗收或 Unity 匯入。本輪交件是轉模用概念圖；薄紗、銅鈴、樹葉與細米粒能否正確生成仍需主線實際轉模確認。漂流物需先依三件間的空白間隔切成獨立輸入圖，再送單物件轉模。下一步由主線操作 Dzine。']
+(r/'A-R2.md').write_text('\\n'.join(lines)+'\\n',encoding='utf-8')
+assert len(list((r/'raw').glob('*.png')))==13
+assert all((r/(x['name']+'.png')).exists() for x in base)
+print('Report saved; 8 final PNGs, 13 raw PNGs; contact.png verified.')
+PY" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 304ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+PASS house_tongwa.png 1024x1024 corner_delta=1.06 bg=(211, 210, 210) margins_LTRB=(8.79, 16.21, 9.57, 16.99)%
+PASS pavilion_luozhang.png 1024x1024 corner_delta=0.93 bg=(210, 210, 209) margins_LTRB=(11.82, 8.4, 13.67, 9.38)%
+PASS peach_tree.png 1024x1024 corner_delta=0.69 bg=(212, 211, 211) margins_LTRB=(7.03, 11.04, 7.71, 11.43)%
+PASS chu_tree.png 1024x1024 corner_delta=0.84 bg=(211, 210, 210) margins_LTRB=(12.3, 9.47, 16.21, 11.33)%
+PASS drift_items.png 1024x1024 corner_delta=0.70 bg=(211, 211, 210) margins_LTRB=(14.65, 38.77, 16.5, 38.77)%
+PASS home_house.png 1024x1024 corner_delta=0.65 bg=(211, 210, 210) margins_LTRB=(12.3, 16.89, 12.01, 14.65)%
+PASS vine_cliff.png 1024x1024 corner_delta=0.60 bg=(211, 210, 210) margins_LTRB=(17.19, 16.8, 19.43, 12.99)%
+PASS village_board.png 1024x1024 corner_delta=0.45 bg=(212, 211, 211) margins_LTRB=(11.04, 8.89, 11.52, 8.59)%
+TOTAL 8/8 PASS
+Report saved; 8 final PNGs, 13 raw PNGs; contact.png verified.
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "pwd
+/bin/rm -r staging/art/R2/.uv-cache
+ls -lh staging/art/R2/*.png staging/art/R2/check.py staging/art/R2/A-R2.md
+python3 - <<'PY'
+from pathlib import Path
+p=Path('staging/art/R2/A-R2.md')
+s=p.read_text()
+assert s.count('"'```text'"')==14
+assert 'TOTAL 8/8 PASS' in s
+print('報告完整：13 段提示詞、完整驗收輸出。')
+PY" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+-rw-r--r--@ 1 naichengchen  staff    24K Nov  7 11:55 staging/art/R2/A-R2.md
+-rw-r--r--@ 1 naichengchen  staff   2.5K Nov  7 11:55 staging/art/R2/check.py
+-rw-r--r--@ 1 naichengchen  staff   1.1M Nov  7 11:51 staging/art/R2/chu_tree.png
+-rw-r--r--@ 1 naichengchen  staff   971K Nov  7 11:54 staging/art/R2/contact.png
+-rw-r--r--@ 1 naichengchen  staff   670K Nov  7 11:54 staging/art/R2/drift_items.png
+-rw-r--r--@ 1 naichengchen  staff   1.1M Nov  7 11:51 staging/art/R2/home_house.png
+-rw-r--r--@ 1 naichengchen  staff   1.1M Nov  7 11:51 staging/art/R2/house_tongwa.png
+-rw-r--r--@ 1 naichengchen  staff   1.0M Nov  7 11:54 staging/art/R2/pavilion_luozhang.png
+-rw-r--r--@ 1 naichengchen  staff   1.1M Nov  7 11:51 staging/art/R2/peach_tree.png
+-rw-r--r--@ 1 naichengchen  staff   1.0M Nov  7 11:54 staging/art/R2/village_board.png
+-rw-r--r--@ 1 naichengchen  staff   1.0M Nov  7 11:54 staging/art/R2/vine_cliff.png
+報告完整：13 段提示詞、完整驗收輸出。
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+已完成 8 張概念圖，全數通過 `check.py`：
+
+- 尺寸皆為 1024×1024 PNG。
+- 四角色差最高 1.06（< 8）。
+- 四邊最小留白 7.03%（≥ 6%）。
+
+[總覽圖](/Volumes/hk6429/projects/liuruan-tiantai/staging/art/R2/contact.png) · [交件報告與全部提示詞](/Volumes/hk6429/projects/liuruan-tiantai/staging/art/R2/A-R2.md)
+
+未進行 Dzine 轉模；薄紗、銅鈴與米粒的轉模效果仍待確認。
+
+
+hook: Stop
+hook: Stop
+hook: Stop Completed
+hook: Stop Completed
+tokens used
+96,527
+已完成 8 張概念圖，全數通過 `check.py`：
+
+- 尺寸皆為 1024×1024 PNG。
+- 四角色差最高 1.06（< 8）。
+- 四邊最小留白 7.03%（≥ 6%）。
+
+[總覽圖](/Volumes/hk6429/projects/liuruan-tiantai/staging/art/R2/contact.png) · [交件報告與全部提示詞](/Volumes/hk6429/projects/liuruan-tiantai/staging/art/R2/A-R2.md)
+
+未進行 Dzine 轉模；薄紗、銅鈴與米粒的轉模效果仍待確認。
+
+

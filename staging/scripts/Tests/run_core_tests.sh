@@ -6,6 +6,8 @@ if ! command -v dotnet >/dev/null 2>&1; then
     echo "ERROR: 此 runner 需要 .NET SDK；本次交件使用本機 dotnet，未宣稱支援其他編譯器。" >&2
     exit 1
 fi
+export LIURUAN_PROJECT_ROOT=$(CDPATH= cd -- "$scripts_dir/../.." && pwd)
+# R2 的結局測試直接讀取 C 線 JSON／原文，避免複製過期 fixture。
 work_dir=$(mktemp -d "${TMPDIR:-/tmp}/liuruan-core.XXXXXX")
 trap '/bin/rm -r "$work_dir"' EXIT HUP INT TERM
 export DOTNET_CLI_HOME="$work_dir/cli"

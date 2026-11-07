@@ -22,7 +22,8 @@ internal static class Runner
         int passed = 0, failed = 0;
         foreach (Type type in new[] { typeof(Liuruan.Tests.HungerCoreTests), typeof(Liuruan.Tests.CompanionCoreTests),
             typeof(Liuruan.Tests.MinimapFogCoreTests), typeof(Liuruan.Tests.ClimbCoreTests),
-            typeof(Liuruan.Tests.DriftCoreTests) })
+            typeof(Liuruan.Tests.DriftCoreTests), typeof(Liuruan.Tests.SeasonCoreTests),
+            typeof(Liuruan.Tests.EpilogueCoreTests), typeof(Liuruan.Tests.CharacterBobCoreTests) })
         foreach (MethodInfo method in type.GetMethods().OrderBy(m => m.Name))
         {
             var cases = method.GetCustomAttributes<NUnit.Framework.TestCaseAttribute>().ToArray();

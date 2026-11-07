@@ -20,7 +20,7 @@ namespace Liuruan
 
         public static string Run(string tag)
         {
-            string dir = Path.GetFullPath(Path.Combine(Application.dataPath, tag == "r1" ? "../Captures/r1" : "../Captures/r30"));
+            string dir = Path.GetFullPath(Path.Combine(Application.dataPath, tag == "r1" || tag == "r2" ? "../Captures/" + tag : "../Captures/r30"));
             Directory.CreateDirectory(dir);
             foreach (var ps in Object.FindObjectsByType<ParticleSystem>(FindObjectsSortMode.None)) ps.Simulate(10f, true, true);
             var go = new GameObject("_R30CaptureCam") { hideFlags = HideFlags.HideAndDontSave };
@@ -31,8 +31,29 @@ namespace Liuruan
             var tex = new Texture2D(1280, 720, TextureFormat.RGB24, false);
             try
             {
-                foreach (var s in Shots)
+                var shots = new System.Collections.Generic.List<(string name, Vector3 pos, Vector3 look)>(Shots);
+                if (tag == "r2")
                 {
+                    var player = GameObject.Find("Player").transform;
+                    var companion = GameObject.Find("Companion").transform;
+                    Vector3 center = (player.position + companion.position) * 0.5f;
+                    shots.Add(("chars", center + new Vector3(0, 1.8f, 4), center + Vector3.up * 0.9f));
+                }
+                if (tag == "r2") AnimationMode.StartAnimationMode();
+                foreach (var s in shots)
+                {
+                    if (tag == "r2" && s.name == "chars")
+                    {
+                        AnimationMode.BeginSampling();
+                        foreach (var actor in new[] { "Player", "Companion" })
+                        {
+                            var animator = GameObject.Find(actor).GetComponentInChildren<Animator>();
+                            var walk = System.Array.Find(animator.runtimeAnimatorController.animationClips, c => c.name.ToLowerInvariant().Contains("walk"));
+                            if (!walk) throw new System.InvalidOperationException(actor + " 缺少 walk clip。");
+                            AnimationMode.SampleAnimationClip(animator.gameObject, walk, walk.length * .3f);
+                        }
+                        AnimationMode.EndSampling();
+                    }
                     go.transform.position = s.pos;
                     go.transform.LookAt(s.look);
                     cam.targetTexture = rt;
@@ -44,6 +65,7 @@ namespace Liuruan
             }
             finally
             {
+                if (tag == "r2" && AnimationMode.InAnimationMode()) AnimationMode.StopAnimationMode();
                 RenderTexture.active = null;
                 cam.targetTexture = null;
                 Object.DestroyImmediate(go);

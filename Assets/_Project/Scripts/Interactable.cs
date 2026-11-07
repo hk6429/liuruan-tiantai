@@ -34,6 +34,9 @@ namespace Liuruan
             float bestDist = float.MaxValue;
             foreach (var it in All)
             {
+                var climb = it.GetComponent<ClimbZone>();
+                var drift = it.GetComponent<DriftPickup>();
+                if ((climb && !climb.CanInteract) || (drift && !drift.CanInteract)) continue;
                 Vector3 off = it.transform.position - pos;
                 off.y = 0; // 只算水平距離
                 float d = off.magnitude;

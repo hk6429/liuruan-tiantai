@@ -1,0 +1,9 @@
+PASS house_tongwa.png 1024x1024 corner_delta=1.06 bg=(211, 210, 210) margins_LTRB=(8.79, 16.21, 9.57, 16.99)%
+PASS pavilion_luozhang.png 1024x1024 corner_delta=0.93 bg=(210, 210, 209) margins_LTRB=(11.82, 8.4, 13.67, 9.38)%
+PASS peach_tree.png 1024x1024 corner_delta=0.69 bg=(212, 211, 211) margins_LTRB=(7.03, 11.04, 7.71, 11.43)%
+PASS chu_tree.png 1024x1024 corner_delta=0.84 bg=(211, 210, 210) margins_LTRB=(12.3, 9.47, 16.21, 11.33)%
+PASS drift_items.png 1024x1024 corner_delta=0.70 bg=(211, 211, 210) margins_LTRB=(14.65, 38.77, 16.5, 38.77)%
+PASS home_house.png 1024x1024 corner_delta=0.65 bg=(211, 210, 210) margins_LTRB=(12.3, 16.89, 12.01, 14.65)%
+PASS vine_cliff.png 1024x1024 corner_delta=0.60 bg=(211, 210, 210) margins_LTRB=(17.19, 16.8, 19.43, 12.99)%
+PASS village_board.png 1024x1024 corner_delta=0.45 bg=(212, 211, 211) margins_LTRB=(11.04, 8.89, 11.52, 8.59)%
+TOTAL 8/8 PASS

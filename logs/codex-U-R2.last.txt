@@ -1,0 +1,8 @@
+R2a 整合檔案與驗證入口已交付：[logs/U-R2.md](/Volumes/hk6429/projects/liuruan-tiantai/logs/U-R2.md)。
+
+- Roslyn 四組件編譯：0 error／0 warning。
+- 離線 Core 測試：69 passed／0 failed。
+- CC 先 Refresh 並等待編譯完成，再將 `r2-r2a-001` 寫入 `Assets/_Project/Editor/R1Command.txt`。
+
+尚未執行 Unity 走查、截圖與 WebGL 建置；data 大小、模型抽取及實際畫面仍待驗證。Obsidian 超出本輪寫入範圍，未另存。
+
