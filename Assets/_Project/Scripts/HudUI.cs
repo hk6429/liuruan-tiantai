@@ -9,10 +9,11 @@ namespace Liuruan
         public TMP_FontAsset font;
         public Sprite peachFull, peachHalf, peachEmpty, barkIcon, skillBark, skillWater, skillCall, portraitImage, portraitFrame;
         GameFlow flow;
-        GameObject root, ending;
+        GameObject root, ending, skipPanel;
+        Button helpButton;
         Image[] peaches = new Image[5];
         Image cooldown;
-        TMP_Text bark, objective, prompt;
+        TMP_Text bark, objective, prompt, controls;
         Button returnButton;
         Sprite circle;
         TMP_Text endingText, birds;
@@ -40,7 +41,7 @@ namespace Liuruan
             }
             Icon("BarkIcon", new Vector2(0, 1), new Vector2(33, -78), new Vector2(30, 30), barkIcon, Color.white);
             bark = Label("Bark", new Vector2(0, 1), new Vector2(140, -78), new Vector2(180, 36), 25);
-            objective = Label("Objective", new Vector2(0.5f, 1), new Vector2(0, -30), new Vector2(470, 42), 21);
+            objective = Label("Objective", new Vector2(0.5f, 1), new Vector2(0, -46), new Vector2(750, 88), 26);
             string[] names = { "剝皮", "取水", "呼喚" };
             string[] keys = { "F", "R", "G" };
             for (int i = 0; i < 3; i++)
@@ -58,11 +59,31 @@ namespace Liuruan
             portrait.transform.SetAsLastSibling();
             var map = Icon("MinimapFrame", new Vector2(1, 0), new Vector2(-104, 104), new Vector2(184, 184), null, Color.clear);
             if (flow.minimap) flow.minimap.HudFrame = (RectTransform)map.transform;
+            controls = Label("Controls", new Vector2(.5f, 0), new Vector2(0, 35), new Vector2(720, 34), 18);
+            controls.text = TouchInput.Enabled ? "方向盤移動　滑動畫面轉視角　互動鈕操作　? 開啟說明" : "WASD／方向鍵移動　滑鼠右鍵轉視角　E 互動　H／? 開啟說明";
             prompt = Label("InteractPrompt", new Vector2(0.5f, 0), new Vector2(0, 84), new Vector2(450, 42), 26);
             returnButton = ActionButton("ReturnHome", "求歸", new Vector2(0.5f, 0), new Vector2(0, 145), new Vector2(160, 52));
             returnButton.onClick.AddListener(flow.ReturnHome);
-            birds = Label("Birds", new Vector2(.5f, 1), new Vector2(0, -80), new Vector2(250, 36), 21);
-            birds.text = "百鳥啼鳴";
+            helpButton = ActionButton("Help", "?", new Vector2(0, 1), new Vector2(32, -128), new Vector2(48, 44));
+            helpButton.onClick.AddListener(() => ScrollUI.I.ShowHelp());
+            var recover = ActionButton("Recover", "回本幕起點", new Vector2(0, 1), new Vector2(155, -128), new Vector2(180, 44));
+            recover.onClick.AddListener(flow.RecoverToStart);
+            var skip = ActionButton("Skip", "跳過本幕", new Vector2(0, 1), new Vector2(155, -178), new Vector2(180, 44));
+            skip.onClick.AddListener(() => { skipPanel.SetActive(true); ScrollUI.I.ExternalUI = true; });
+            skipPanel = new GameObject("SkipConfirm", typeof(RectTransform), typeof(Image));
+            skipPanel.transform.SetParent(root.transform, false);
+            var sr = (RectTransform)skipPanel.transform; sr.anchorMin = new Vector2(.25f, .35f); sr.anchorMax = new Vector2(.75f, .65f); sr.offsetMin = sr.offsetMax = Vector2.zero;
+            skipPanel.GetComponent<Image>().color = new Color(.1f, .15f, .12f, .98f);
+            ChildLabel(skipPanel.transform, "確定跳過本幕？未完成的收集與作答不計分。", 23).rectTransform.offsetMin = new Vector2(15, 80);
+            foreach (bool confirm in new[] { false, true })
+            {
+                var button = ActionButton(confirm ? "ConfirmSkip" : "CancelSkip", confirm ? "確定跳過" : "繼續本幕", new Vector2(.5f, 0), new Vector2(confirm ? 125 : -125, 40), new Vector2(210, 50));
+                button.transform.SetParent(skipPanel.transform, false);
+                button.onClick.AddListener(() => { skipPanel.SetActive(false); ScrollUI.I.ExternalUI = false; if (confirm) flow.SkipAct(); });
+            }
+            skipPanel.SetActive(false);
+            birds = Label("Birds", new Vector2(.5f, 1), new Vector2(0, -230), new Vector2(250, 36), 21);
+            birds.text = "百鳥鳴呼";
             ending = new GameObject("JourneyEnding", typeof(RectTransform), typeof(Image));
             ending.transform.SetParent(root.transform, false);
             var er = (RectTransform)ending.transform; er.anchorMin = new Vector2(0.05f, 0.05f); er.anchorMax = new Vector2(0.95f, 0.95f); er.offsetMin = er.offsetMax = Vector2.zero;
@@ -71,8 +92,9 @@ namespace Liuruan
             var textRect = (RectTransform)endingText.transform;
             textRect.offsetMin = new Vector2(35, 100); textRect.offsetMax = new Vector2(-35, -30);
             endingText.alignment = TextAlignmentOptions.TopLeft;
-            EndingButton("EndingPrev", "上一頁", new Vector2(-130, 40), () => TurnEnding(-1));
-            EndingButton("EndingNext", "下一頁", new Vector2(130, 40), () => TurnEnding(1));
+            EndingButton("EndingPrev", "上一頁", new Vector2(-260, 40), () => TurnEnding(-1));
+            EndingButton("EndingNext", "下一頁", new Vector2(0, 40), () => TurnEnding(1));
+            EndingButton("Restart", "重新開始", new Vector2(260, 40), GameFlow.RestartJourney);
             for (int i = 0; i < 3; i++)
             {
                 int answer = i;
@@ -101,17 +123,25 @@ namespace Liuruan
         void LateUpdate()
         {
             if (!root) return;
-            bool busy = flow.Reading || (ScrollUI.I && ScrollUI.I.IsBusy);
+            bool busy = flow.Reading || flow.journey.Busy || (ScrollUI.I && ScrollUI.I.IsBusy);
             for (int i = 0; i < root.transform.childCount; i++)
             {
                 var child = root.transform.GetChild(i).gameObject;
-                if (child != ending) child.SetActive(!busy && !flow.State.ended);
+                if (child != ending && child != skipPanel) child.SetActive((child == helpButton.gameObject || !busy) && !flow.State.ended);
             }
+            helpButton.interactable = !skipPanel.activeSelf && !(ScrollUI.I && ScrollUI.I.ExternalUI);
             bark.text = "穀皮 ×" + flow.BarkCount;
             objective.text = flow.Objective;
             cooldown.fillAmount = flow.Companion.CooldownRatio;
+            controls.text = TouchInput.Enabled ? "方向盤移動　滑動畫面轉視角　互動鈕操作　? 開啟說明" : "WASD／方向鍵移動　滑鼠右鍵轉視角　E 互動　H／? 開啟說明";
+            bool tall = Screen.height > Screen.width;
+            root.GetComponent<CanvasScaler>().referenceResolution = tall ? new Vector2(720,1280) : new Vector2(1280,720);
+            var o = (RectTransform)objective.transform.parent; o.anchoredPosition = new Vector2(0,tall ? -140 : -46); o.sizeDelta = new Vector2(tall ? 680 : 750, tall ? 110 : 88);
+            objective.enableAutoSizing = true; objective.fontSizeMin = 24; objective.fontSizeMax = 26;
+            objective.transform.parent.gameObject.SetActive(!flow.State.ended);
             var near = Interactable.Nearest(flow.Player.transform.position);
             prompt.text = near ? (TouchInput.Enabled ? "互動　" : "[E] ") + near.prompt : "";
+            prompt.transform.parent.gameObject.SetActive(!busy && !string.IsNullOrEmpty(prompt.text));
             returnButton.gameObject.SetActive(flow.CanReturn && !busy);
             birds.gameObject.SetActive(!flow.State.ended && Time.unscaledTime < birdsUntil);
             if (TouchInput.Enabled)
@@ -126,7 +156,7 @@ namespace Liuruan
             if (!ending) return;
             endingModel = flow.EndingModel();
             if (endingModel == null) return;
-            endingPage = 0; DrawEnding(); ending.SetActive(true);
+            endingPage = -(flow.journey.GuidePages?.Length ?? 0); DrawEnding(); ending.SetActive(true);
             if (ScrollUI.I) ScrollUI.I.ExternalUI = true;
         }
         Button EndingButton(string name, string text, Vector2 position, UnityEngine.Events.UnityAction action)
@@ -135,12 +165,13 @@ namespace Liuruan
             button.transform.SetParent(ending.transform, false); button.onClick.AddListener(action); return button;
         }
         void TurnEnding(int delta)
-        { endingPage = Mathf.Clamp(endingPage + delta, 0, endingModel.Paragraphs.Count + endingModel.Comparison.Count + 1); DrawEnding(); }
+        { endingPage = Mathf.Clamp(endingPage + delta, -(flow.journey.GuidePages?.Length ?? 0), endingModel.Paragraphs.Count + endingModel.Comparison.Count + 1); DrawEnding(); }
         void DrawEnding()
         {
             int paragraphs = endingModel.Paragraphs.Count;
             foreach (var button in endingOptions) button.gameObject.SetActive(endingPage == paragraphs);
-            if (endingPage < paragraphs) endingText.text = "全文　" + (endingPage + 1) + "／" + paragraphs + "\n\n" + endingModel.Paragraphs[endingPage];
+            if (endingPage < 0) endingText.text = "結局導讀\n\n" + flow.journey.GuidePages[endingPage + flow.journey.GuidePages.Length];
+            else if (endingPage < paragraphs) endingText.text = "全文　" + (endingPage + 1) + "／" + paragraphs + "\n\n" + endingModel.Paragraphs[endingPage];
             else if (endingPage == paragraphs)
             {
                 endingText.text = endingModel.Question.Prompt;

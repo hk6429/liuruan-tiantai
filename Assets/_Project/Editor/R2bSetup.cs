@@ -12,6 +12,11 @@ public static class R2bSetup
     const string Art = "Assets/_Project/Art/";
     static void Copy(string source, string dest)
     {
+        if (R2Setup.UseInstalledArt)
+        {
+            if (!File.Exists(dest)) throw new FileNotFoundException(dest);
+            return;
+        }
         if (!File.Exists(source)) throw new FileNotFoundException(source);
         Directory.CreateDirectory(Path.GetDirectoryName(dest));
         if (!File.Exists(dest) || !File.ReadAllBytes(source).SequenceEqual(File.ReadAllBytes(dest))) File.Copy(source, dest, true);
@@ -154,7 +159,7 @@ public static class R2bSetup
         var report = new System.Text.StringBuilder("# R2b 道具安裝\n\n");
         foreach (string key in new[] { "house_tongwa", "pavilion_luozhang", "peach_tree", "chu_tree", "drift_items", "home_house", "vine_cliff", "village_board" })
         {
-            string source = "staging/models/props/" + key;
+            string source = R2Setup.UseInstalledArt ? Art + "Props/" + key + "/" + key : "staging/models/props/" + key;
             if (!File.Exists(source + ".fbx") || !File.Exists(source + "_albedo.png")) { report.AppendLine("- SKIP " + key + "：缺少 FBX 或 albedo PNG。"); continue; }
             string folder = Art + "Props/" + key, path = folder + "/" + key + ".fbx";
             Copy(source + ".fbx", path);
@@ -169,7 +174,7 @@ public static class R2bSetup
             }
             if (key == "chu_tree") for (int i = 1; i <= 5; i++) targets.Add(GameObject.Find("ActPoints/Act1_Bark_" + i).transform);
             if (key == "drift_items") for (int i = 1; i <= 3; i++) targets.Add(GameObject.Find("ActPoints/Act3_Drift_" + i).transform);
-            if (key == "village_board") targets.Add(GameObject.Find("ActPoints/Act4_Board").transform);
+            if (key == "village_board" && GameObject.Find("ActPoints/Act4_Board")) targets.Add(GameObject.Find("ActPoints/Act4_Board").transform);
             if (key == "vine_cliff") targets.Add(GameObject.Find("ActPoints/Act2_ClimbBase").transform);
             if (key == "peach_tree")
             {
@@ -189,7 +194,7 @@ public static class R2bSetup
                 foreach (var collider in visual.GetComponentsInChildren<Collider>()) UnityEngine.Object.DestroyImmediate(collider);
             }
             if (key == "house_tongwa") for (int i = 4; i < 6; i++) foreach (var r in village.transform.Find("House_" + i).GetComponentsInChildren<Renderer>(true)) r.enabled = false;
-            if (key == "village_board") foreach (var r in GameObject.Find("VillageBoard").GetComponentsInChildren<Renderer>()) r.enabled = false;
+            if (key == "village_board" && GameObject.Find("VillageBoard")) foreach (var r in GameObject.Find("VillageBoard").GetComponentsInChildren<Renderer>()) r.enabled = false;
             if (key == "peach_tree") foreach (var r in GameObject.Find("PeachTree").GetComponentsInChildren<Renderer>()) r.enabled = false;
             report.AppendLine("- PASS " + key + "：" + targets.Count + " 個外觀，height=" + height + "m。");
         }

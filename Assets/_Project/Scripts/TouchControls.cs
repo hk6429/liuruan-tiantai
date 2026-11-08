@@ -8,7 +8,12 @@ namespace Liuruan
     {
         /// 手機平台、瀏覽器判斷為觸控平板（hotfix1：iPadOS 回報 Macintosh 但 maxTouchPoints > 1；Android 平板），
         /// 或桌機上實際摸過螢幕（保留原本「第一次觸控就切換」）
-        public static bool Enabled => Application.isMobilePlatform || sawTouch || Tablet;
+        #if UNITY_EDITOR
+        public static bool ForceTouch;
+#else
+        const bool ForceTouch = false;
+#endif
+        public static bool Enabled => ForceTouch || Application.isMobilePlatform || sawTouch || Tablet;
         static bool sawTouch;
         static int tablet = -1;
         static bool Tablet { get { if (tablet < 0) tablet = TabletJs() ? 1 : 0; return tablet == 1; } }

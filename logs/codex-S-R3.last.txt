@@ -1,0 +1,9 @@
+S 線 R3 已交件，僅寫入 `staging/scripts/`。
+
+- 六個 Core、六個薄包裝及整合文件完成。
+- 離線實跑 **130 passed、0 failed**，包含 C 線實際 JSON。
+- [交件報告與完整測試輸出](/Volumes/hk6429/projects/liuruan-tiantai/staging/scripts/logs/S-R3.md)
+- [掛載與事件接線說明](/Volumes/hk6429/projects/liuruan-tiantai/staging/scripts/INTEGRATION.md)
+
+未開 Unity；編譯、場景接線及桌機／手機驗收仍由 U 線完成。Obsidian 不在本輪可寫範圍，未另存。
+

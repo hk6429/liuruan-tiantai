@@ -84,6 +84,8 @@ namespace Liuruan
         /// 線索演出進行中（鎖住玩家操作）
         public bool Cinematic;
         public bool ExternalUI;
+        /// R3 對話框開著時 3D 場景照常渲染（看得到 NPC），不進省電暫停。
+        public bool KeepScene;
         public bool JourneyHud;
         public TMP_FontAsset Font => font;
         bool AnyPanel => scrollPanel.activeSelf || bookPanel.activeSelf || endingPanel.activeSelf || fullPanel.activeSelf || helpPanel.activeSelf;
@@ -168,6 +170,12 @@ namespace Liuruan
 
         void Update()
         {
+            if (!typing && scrollPanel.activeSelf && Input.GetMouseButtonUp(0))
+            {
+                int link = TMP_TextUtilities.FindIntersectingLink(originalText, Input.mousePosition, null);
+                var journey = FindFirstObjectByType<R3Journey>();
+                if (link >= 0 && journey) journey.ReadingLink(originalText.textInfo.linkInfo[link].GetLinkID());
+            }
             // 原文打字中：點擊／空白鍵／Enter／E／觸控／觸控互動鍵 → 第一次按直接顯示全文（不會連帶進下一步）
             if (typing && Time.frameCount > typingFrame && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(0) || TouchInput.ConsumeDown())) typing = false;
 
@@ -178,6 +186,7 @@ namespace Liuruan
                 ToggleBook(!bookPanel.activeSelf);
             if (keys && bookPanel.activeSelf && Input.GetKeyDown(KeyCode.Escape)) ToggleBook(false);
 
+            if (Input.GetKeyDown(KeyCode.H) && !ExternalUI && !Cinematic) ShowHelp();
             var cm = ClueManager.I;
             TouchInput.Poll();
             if (TouchInput.Enabled != touchLayout || Screen.width != lastW || Screen.height != lastH)
@@ -216,7 +225,7 @@ namespace Liuruan
             // R18：演出中（兩種版面）與觸控版任何面板／外部 UI 開著時也收起 HUD（原本會從半透明底透出來）
             bool hudOn = !JourneyHud && !yapai && !Cinematic && !(touchLayout && IsBusy);
             if (hudGo.activeSelf != hudOn) hudGo.SetActive(hudOn);
-            bool rowOn = !JourneyHud && !(touchLayout && PanelOpen) && !yapai;
+            bool rowOn = !ExternalUI && !(touchLayout && PanelOpen) && !yapai;
             foreach (var g in topRow) if (g.activeSelf != rowOn) g.SetActive(rowOn);
             bool showScore = rowOn && cm && cm.IsCollected(ClueManager.EndingId);
             if (scoreBtnGo && scoreBtnGo.activeSelf != showScore) scoreBtnGo.SetActive(showScore);
@@ -283,6 +292,8 @@ namespace Liuruan
             ApplyLayout(); // 還原上一卷收起選項時改過的錨點
             titleText.text = stageMode ? stageTitle : TitleOf(clue);
             readOrig = stageHideOrig ? Txt.StageOrigHidden : clue.original ?? "";
+            var journey = FindFirstObjectByType<R3Journey>();
+            if (!stageHideOrig && journey) readOrig = journey.ReadingMarkup(clue);
             readPlain = null;
             RenderReading(true);
             questionText.text = "";
@@ -314,6 +325,7 @@ namespace Liuruan
             // 先讀原文：白話收在按鈕後面
             yield return new WaitForSeconds(0.4f);
             plainBtn.gameObject.SetActive(!stageHideOrig && !string.IsNullOrEmpty(clue.plain));
+            if (journey) plainBtn.GetComponentInChildren<TMP_Text>().text = "全段白話";
 
             // 重讀：不再出題、不重記成績，只留「關閉」（Round14）
             if (review)
@@ -373,6 +385,16 @@ namespace Liuruan
         void ShowPlain()
         {
             if (current == null || string.IsNullOrEmpty(current.plain)) return;
+            var journey = FindFirstObjectByType<R3Journey>();
+            if (journey)
+            {
+                readPlain = readPlain == null ? current.plain : null;
+                journey.reading.SetMode(readPlain == null ? ReadingMode.Original : ReadingMode.OriginalAndPlain);
+                plainBtn.GetComponentInChildren<TMP_Text>().text = readPlain == null ? "全段白話" : "收起白話";
+                RenderReading(false);
+                if (readPlain != null) { JumpToPlain(); QuizStats.MarkPlain(current.id); }
+                return;
+            }
             plainBtn.gameObject.SetActive(false);
             readPlain = current.plain;
             RenderReading(false);
@@ -381,6 +403,11 @@ namespace Liuruan
         }
 
         /// 閱讀區＝原文＋（白話），同一個分頁文字框
+        public void RefreshR3Reading()
+        {
+            var journey = FindFirstObjectByType<R3Journey>();
+            if (journey && current != null) { QuizStats.MarkPlain(current.id); readOrig = journey.ReadingMarkup(current); RenderReading(false); }
+        }
         void RenderReading(bool firstPage)
         {
             originalText.text = readPlain == null ? readOrig
@@ -614,11 +641,11 @@ namespace Liuruan
 
         // ---------- 操作說明 ----------
 
-        void ShowHelp()
+        public void ShowHelp()
         {
             bookPanel.SetActive(false);
             int garden = ClueManager.I ? ClueManager.I.ScrollCount : 0;
-            helpText.text = Txt.HelpTitle + (TouchInput.Enabled ? Txt.HelpTouch : Txt.HelpDesk) + Txt.HelpTask(garden) + Txt.Credits;
+            helpText.text = Txt.HelpTitle + (TouchInput.Enabled ? Txt.HelpTouch : Txt.HelpDesk) + "\nF 剝皮／R 取水／G 呼喚\n手機：左下搖桿移動、滑動畫面轉視角，點互動與技能鈕。\n" + Txt.HelpTask(garden) + Txt.Credits;
             helpPanel.SetActive(true);
         }
 
@@ -634,8 +661,7 @@ namespace Liuruan
         void ResetAll()
         {
             SpeechBridge.Stop();
-            QuizStats.Clear();
-            ClueManager.I.ResetProgress();
+            GameFlow.RestartJourney();
         }
 
         /// 結局流程（ClueManager 在集齊後觸發結局卷軸時呼叫）：
@@ -1140,6 +1166,9 @@ namespace Liuruan
             var helpOk = Btn(helpPanel.transform, "StartBtn", new Vector2(0.35f, 0.05f), new Vector2(0.65f, 0.16f), Txt.Start);
             T(helpOk, 0.3f, 0.02f, 0.7f, 0.22f);
             helpOk.onClick.AddListener(CloseHelp);
+            var replay = Btn(helpPanel.transform, "ReplayStory", new Vector2(.05f,.05f), new Vector2(.32f,.16f), "重看故事");
+            T(replay, .03f,.02f,.29f,.22f);
+            replay.onClick.AddListener(() => { CloseHelp(); FindFirstObjectByType<R3Journey>()?.ReplayStory(); });
 
             // 字幕
             sayBox = Panel(root, "SayBox", new Vector2(0.15f, 0.03f), new Vector2(0.85f, 0.13f), new Color(0.1f, 0.07f, 0.04f, 0.8f));

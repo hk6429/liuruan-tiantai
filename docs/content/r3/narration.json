@@ -1,0 +1,69 @@
+{
+  "acts": [
+    {
+      "act": 1,
+      "lines": [
+        {
+          "text": "迷不得返，經十餘日，糧食乏盡，饑餒殆死。",
+          "type": "original"
+        },
+        {
+          "text": "迷路又缺糧，得趕快找食物。",
+          "type": "plain"
+        }
+      ]
+    },
+    {
+      "act": 2,
+      "lines": [
+        {
+          "text": "遙望山上有一桃樹，大有子實",
+          "type": "original"
+        },
+        {
+          "text": "攀著葛藤上山，找桃子充飢。",
+          "type": "plain"
+        }
+      ]
+    },
+    {
+      "act": 3,
+      "lines": [
+        {
+          "text": "復下山持杯取水，欲盥漱",
+          "type": "original"
+        },
+        {
+          "text": "下山取水，留意溪中的線索。",
+          "type": "plain"
+        }
+      ]
+    },
+    {
+      "act": 4,
+      "lines": [
+        {
+          "text": "溪邊有二女子，姿質妙絕",
+          "type": "original"
+        },
+        {
+          "text": "到溪邊與兩名女子交談。",
+          "type": "plain"
+        }
+      ]
+    },
+    {
+      "act": 5,
+      "lines": [
+        {
+          "text": "既出，親舊零落，邑屋全異，無復相識。",
+          "type": "original"
+        },
+        {
+          "text": "故鄉變了，先找人詢問。",
+          "type": "plain"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+已完成 21 張正式 PNG，檢查 **21/21 通過**，全部存於 `staging/art/R3/`。
+
+- [交件報告與完整提示詞](/Volumes/hk6429/projects/liuruan-tiantai/staging/art/R3/A-R3.md)
+- [接觸表](/Volumes/hk6429/projects/liuruan-tiantai/staging/art/R3/contact.png)
+- [check.py](/Volumes/hk6429/projects/liuruan-tiantai/staging/art/R3/check.py)
+
+未執行 Dzine 轉模或 Unity 匯入；袖口、髮簪與細葉的轉模效果仍待確認。
+

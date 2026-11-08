@@ -1,0 +1,9 @@
+R3b 整合已落盤：[交件報告](logs/U-R3b.md)。
+
+- 離線編譯：四組件通過。
+- Core 測試：132 passed、0 failed。
+- CC 觸發指令：`r3-r3b-001`。
+
+尚未開 Unity；新流程、15 張截圖與 WebGL build 待 CC 實跑。缺模型時採指定備援。
+Obsidian 不在本輪可寫範圍，未另存。
+

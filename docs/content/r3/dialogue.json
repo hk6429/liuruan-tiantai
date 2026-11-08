@@ -1,0 +1,401 @@
+{
+  "acts": [
+    {
+      "act": 1,
+      "scenes": [
+        {
+          "id": "start_1",
+          "trigger": "act_start:1",
+          "lines": [
+            {
+              "speaker": "劉晨",
+              "text": "糧食快吃完了，先剝完樹皮。",
+              "type": "plain"
+            },
+            {
+              "speaker": "阮肇",
+              "text": "再找能充飢的食物。",
+              "type": "plain"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "act": 2,
+      "scenes": [
+        {
+          "id": "start_2",
+          "trigger": "act_start:2",
+          "lines": [
+            {
+              "speaker": "劉晨",
+              "text": "山上有桃子！",
+              "type": "plain"
+            },
+            {
+              "speaker": "阮肇",
+              "text": "攀著葛藤上去吧。",
+              "type": "plain"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "act": 3,
+      "scenes": [
+        {
+          "id": "start_3",
+          "trigger": "act_start:3",
+          "lines": [
+            {
+              "speaker": "劉晨",
+              "text": "下山取水，洗手漱口吧。",
+              "type": "plain"
+            },
+            {
+              "speaker": "阮肇",
+              "text": "也看看溪中有什麼。",
+              "type": "plain"
+            }
+          ]
+        },
+        {
+          "id": "find_leaf",
+          "trigger": "interact:Act3_Leaf",
+          "lines": [
+            {
+              "speaker": "旁白",
+              "text": "見蕪菁葉從山腹流出，甚鮮新。",
+              "type": "original"
+            },
+            {
+              "speaker": "劉晨",
+              "text": "這些菜葉還很新鮮。",
+              "type": "plain"
+            }
+          ]
+        },
+        {
+          "id": "find_cup",
+          "trigger": "interact:Act3_Cup",
+          "lines": [
+            {
+              "speaker": "旁白",
+              "text": "復一杯流出，有胡麻糝。",
+              "type": "original"
+            },
+            {
+              "speaker": "阮肇",
+              "text": "杯子裡還有芝麻飯粒。",
+              "type": "plain"
+            }
+          ]
+        },
+        {
+          "id": "find_rice",
+          "trigger": "interact:Act3_Rice",
+          "lines": [
+            {
+              "speaker": "旁白",
+              "text": "有胡麻糝",
+              "type": "original"
+            },
+            {
+              "speaker": "劉晨",
+              "text": "有人用過這只杯子吧。",
+              "type": "plain"
+            }
+          ]
+        },
+        {
+          "id": "infer_people",
+          "trigger": "after:drift_all",
+          "lines": [
+            {
+              "speaker": "劉晨",
+              "text": "此處去人徑不遠。",
+              "type": "original"
+            },
+            {
+              "speaker": "旁白",
+              "text": "此知去人徑不遠",
+              "type": "original",
+              "source": "sources/variants.md",
+              "label": "異文：W、L"
+            },
+            {
+              "speaker": "阮肇",
+              "text": "杯子和飯粒，顯示附近有人。",
+              "type": "plain"
+            },
+            {
+              "speaker": "旁白",
+              "text": "度山出一大溪。",
+              "type": "original"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "act": 4,
+      "scenes": [
+        {
+          "id": "start_4",
+          "trigger": "act_start:4",
+          "lines": [
+            {
+              "speaker": "劉晨",
+              "text": "溪邊有兩位女子。",
+              "type": "plain"
+            },
+            {
+              "speaker": "阮肇",
+              "text": "上前問問吧。",
+              "type": "plain"
+            }
+          ]
+        },
+        {
+          "id": "meet_women",
+          "trigger": "interact:Act4_Women",
+          "lines": [
+            {
+              "speaker": "女子",
+              "text": "劉、阮二郎捉向所失流杯來。",
+              "type": "original"
+            },
+            {
+              "speaker": "旁白",
+              "text": "晨、肇既不識之，二女便呼其姓，如似有舊",
+              "type": "original"
+            },
+            {
+              "speaker": "劉晨",
+              "text": "她們怎麼認得我們？",
+              "type": "plain"
+            },
+            {
+              "speaker": "女子",
+              "text": "來何晚耶？",
+              "type": "original"
+            },
+            {
+              "speaker": "旁白",
+              "text": "因要還家。",
+              "type": "original"
+            },
+            {
+              "speaker": "阮肇",
+              "text": "她們邀我們回家，跟上吧。",
+              "type": "plain"
+            }
+          ]
+        },
+        {
+          "id": "follow_home",
+          "trigger": "interact:Act4_Home",
+          "lines": [
+            {
+              "speaker": "旁白",
+              "text": "家筒瓦屋",
+              "type": "original"
+            },
+            {
+              "speaker": "阮肇",
+              "text": "到筒瓦屋門前看看。",
+              "type": "plain"
+            }
+          ]
+        },
+        {
+          "id": "house_meal",
+          "trigger": "interact:Act4_House",
+          "lines": [
+            {
+              "speaker": "旁白",
+              "text": "便敕云",
+              "type": "original"
+            },
+            {
+              "speaker": "女子",
+              "text": "劉、阮二郎，經涉山阻，向雖得瓊實，猶尚虛弊，可速作食。",
+              "type": "original"
+            },
+            {
+              "speaker": "旁白",
+              "text": "有胡麻飯、山羊脯，甚美。",
+              "type": "original"
+            },
+            {
+              "speaker": "劉晨",
+              "text": "吃過桃子，我們仍很疲倦。",
+              "type": "plain"
+            }
+          ]
+        },
+        {
+          "id": "guests_arrive",
+          "trigger": "after:meal",
+          "lines": [
+            {
+              "speaker": "旁白",
+              "text": "食畢行酒，有群女來，各持三五桃子",
+              "type": "original"
+            },
+            {
+              "speaker": "群女",
+              "text": "賀汝婿來。",
+              "type": "original"
+            },
+            {
+              "speaker": "旁白",
+              "text": "酒酣作樂，劉、阮忻怖交並。",
+              "type": "original"
+            },
+            {
+              "speaker": "劉晨",
+              "text": "盛情款待，真讓人高興。",
+              "type": "plain"
+            },
+            {
+              "speaker": "阮肇",
+              "text": "可這一切也讓人不安。",
+              "type": "plain"
+            }
+          ]
+        },
+        {
+          "id": "half_year",
+          "trigger": "after:guests",
+          "lines": [
+            {
+              "speaker": "旁白",
+              "text": "遂停半年",
+              "type": "original"
+            }
+          ]
+        },
+        {
+          "id": "hear_birds",
+          "trigger": "after:half_year",
+          "lines": [
+            {
+              "speaker": "旁白",
+              "text": "氣候草木是春時，百鳥鳴呼，更懷土，求歸甚苦。",
+              "type": "original"
+            },
+            {
+              "speaker": "劉晨",
+              "text": "聽著鳥聲，我更想家了。",
+              "type": "plain"
+            },
+            {
+              "speaker": "阮肇",
+              "text": "向她們請求回家吧。",
+              "type": "plain"
+            }
+          ]
+        },
+        {
+          "id": "ask_return",
+          "trigger": "interact:Act4_Return",
+          "lines": [
+            {
+              "speaker": "劉晨",
+              "text": "我們很想家，請讓我們回去。",
+              "type": "plain"
+            },
+            {
+              "speaker": "女子",
+              "text": "當如何？",
+              "type": "original"
+            },
+            {
+              "speaker": "旁白",
+              "text": "遂呼前來女子有三四十人集會奏樂，共送劉、阮，指示還路。",
+              "type": "original"
+            },
+            {
+              "speaker": "阮肇",
+              "text": "沿她們指的路回家吧。",
+              "type": "plain"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "act": 5,
+      "scenes": [
+        {
+          "id": "start_5",
+          "trigger": "act_start:5",
+          "lines": [
+            {
+              "speaker": "劉晨",
+              "text": "回到故鄉，怎麼全變了？",
+              "type": "plain"
+            },
+            {
+              "speaker": "阮肇",
+              "text": "找人問問發生了什麼。",
+              "type": "plain"
+            }
+          ]
+        },
+        {
+          "id": "village_changed",
+          "trigger": "interact:Act5_Village",
+          "lines": [
+            {
+              "speaker": "旁白",
+              "text": "親舊零落，邑屋全異，無復相識。",
+              "type": "original"
+            },
+            {
+              "speaker": "劉晨",
+              "text": "怎麼找不到熟悉的人？",
+              "type": "plain"
+            }
+          ]
+        },
+        {
+          "id": "ask_villagers",
+          "trigger": "interact:Act5_Villager",
+          "lines": [
+            {
+              "speaker": "劉晨",
+              "text": "請問，有人聽過劉晨、阮肇嗎？",
+              "type": "plain"
+            }
+          ]
+        },
+        {
+          "id": "meet_grandson",
+          "trigger": "interact:Act5_Grandson",
+          "lines": [
+            {
+              "speaker": "旁白",
+              "text": "問得七世孫，傳聞上世入山，迷不得歸。",
+              "type": "original"
+            },
+            {
+              "speaker": "七世孫",
+              "text": "聽說祖先入山迷路，沒能回來。",
+              "type": "plain",
+              "orig": "傳聞上世入山，迷不得歸"
+            },
+            {
+              "speaker": "阮肇",
+              "text": "我們只停留半年啊！",
+              "type": "plain"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

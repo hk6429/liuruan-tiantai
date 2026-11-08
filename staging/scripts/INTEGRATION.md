@@ -168,3 +168,93 @@ U 線需在適當的 Act4 半年節點呼叫 PlayHalfYear，OnBirdsSing 才允�
 `Tests/run_core_tests.sh` 本輪直接讀專案的 clues.json、compare.json、原文及 acts.md，不另複製 fixture；console 由 .NET 內建 System.Text.Json 解析欄位，Unity EditMode 分支使用 JsonUtility，原始資料唯讀。從任意 cwd 執行 runner 都會使用腳本推導的專案根目錄。實際結果 **91 passed, 0 failed**（原 69＋R2 22），完整輸出見 `logs/core-tests-R2.txt`。
 
 尚待 U 線：Unity 編譯與 EditMode；四季 Renderer shader 實際混色、6 秒與鳥鳴順序／暫停／重入／提前歸鄉；兩村根物件及 sky_return 指派、讀檔換景；結局排版與三選一互動／首答率／時間來源；玩家與阮肇不同速度、靜止呼吸、模型 pivot、停用還原及手機效能。S 線未開 Unity／未做 WebGL 或實機驗收。
+
+## R3：提示、對話、任務、救援、畫面外箭頭與逐句閱讀
+
+S 線僅提供 staging 原始碼與離線測試，**沒有匯入／修改 Assets，沒有開 Unity**。沿用 Runtime asmdef；新 Core 無 Unity 依賴，不新增套件。複製 Runtime 時連同 `R3DataCore.cs`（共用資料檢查）、`R3Json.cs`（JsonUtility 載入）與六組檔案一起複製。
+
+### 資料檔與初始化
+
+由 U 線將 C 線這五份 UTF-8 JSON 複製到下列位置，再拖入各元件 TextAsset 欄位：
+
+| C 線來源 | Unity 目標 | 元件欄位 |
+|---|---|---|
+| docs/content/r3/hints.json | Assets/_Project/Data/r3/hints.json | StallHintSystem.hintsJson |
+| docs/content/r3/dialogue.json | Assets/_Project/Data/r3/dialogue.json | DialogueDirector.dialogueJson |
+| docs/content/r3/objectives.json | Assets/_Project/Data/r3/objectives.json | ObjectiveTracker.objectivesJson |
+| docs/content/r3/sentences.json | Assets/_Project/Data/r3/sentences.json | ReadingDirector.sentencesJson |
+| docs/content/r3/glossary_cards.json | Assets/_Project/Data/r3/glossary_cards.json | ReadingDirector.glossaryJson |
+
+`Assets/_Project/Data/` 不是 Resources，不能用 Resources.Load 的字串路徑代替拖入 TextAsset；WebGL 不直接 File.ReadAllText。Core 接收可序列化 DTO，由包裝 JsonUtility 解碼；console 對同格式使用 System.Text.Json IncludeFields。欄位名稱與大小寫照 JSON。Core 建構時拒絕必要欄位缺漏、重複 id、非法幕次／計數；ReadingCore 對「缺詞卡」保留閱讀並列出 MissingTerms。
+
+四個資料元件在 Awake 呼叫 `Load()`，成功回 true；失敗 Core=null、Debug.LogError 並 `OnError(string)`，不建立替代假資料。需要接啟動錯誤事件時，在訂閱後明確呼叫 Load；平常在 OnEnable 訂閱、OnDisable 解訂。Load 會建立新 Core／清除本局記錄，只在新局或閒置時重載，勿於閱讀或對話途中使用。
+
+GameFlow 有 `[DefaultExecutionOrder(-100)]`，**不要在它的 Awake 存取這些元件的 Core**；在 Start（所有 Awake 已完成後）設定本幕步驟、還原計數、觸發開幕對話。包裝不尋找 GameFlow／HudUI／ClueManager／TouchInput，不自行讀 PlayerPrefs。Core 的 DTO 請視為唯讀；內容更新應重建 Core，不可執行中修改欄位。
+
+### StallHintSystem／StallHintCore
+
+在不隨幕停用的流程物件掛 `Liuruan.StallHintSystem`。Start 時呼叫 `SetStep(act, id)`，`SetDevice(TouchInput.Enabled)`；之後裝置改變時再 SetDevice。Core 也可直接設 `Device = HintDevice.Desktop/Touch`。
+
+- Update 自動餵 Time.deltaTime。核心 `Tick(deltaTime, readingOrDialogue=false)`；`SetPaused(bool)` 由流程每幀彙整卷軸、對話、教學等狀態。例如 `flow.Reading || (ScrollUI.I && ScrollUI.I.IsBusy) || dialogue.IsActive`。timeScale=0 時亦不增加時間；暫停保留已累積秒數。
+- `SetStep(act,id)` 成功 true；新步驟重置計時，同一步驟重呼叫不歸零，未知步驟 false 且保留狀態。每個真實進度事件呼叫 `Progress()`，包含同一步驟的下一次剝皮／拾取；重置 ElapsedSeconds 與 Level。讀面板本身不算進度。
+- 預設 30／60／90 秒依序發 `OnHint(StallHint)`，每級每輪僅一次；大 dt 一次跨級仍依序發送，事件內 Progress 或換步驟會停止舊輪剩餘提示。可在 Core 建構時覆寫三個嚴格遞增正門檻。
+- Level1 顯示 Text；Level2 的 Text 為操作提示，`BrightenTarget=true`；Level3 的 `GuideCompanion/TurnCamera=true`，BrightenTarget 仍為 true。U 線將訊號接到目標光柱、同伴導航及鏡頭。S 包裝**不改光源、不移動同伴、不轉鏡頭**。
+- 切換裝置不重發已發過的提示；若畫面正顯示提示，UI 可讀 `Core.TextFor(Core.Level)`（Level>0）即時刷新。後續事件自動使用新裝置文字。未 SetStep 前不計時。
+
+### DialogueDirector／DialogueCore
+
+掛 `Liuruan.DialogueDirector`，指定 dialogue.json。Core API 是 `Start(sceneId, replay=false)`、`Next()`、`IsActive`、`CurrentLine`、`SceneId`；包裝以 `Play(sceneId)` 對應 Start，避免與 Unity 的 Start 生命週期同名。包裝 `Replay(sceneId)` 明確允許重播；`TryTrigger(string)` 依資料順序尋找該 trigger 尚未播過的第一個場景。無佇列。
+
+- 預設每個場景每個 Core 生命週期只啟動一次，啟動即標記；播放中拒絕啟動其他場景或重播，未知／null id 回 false 且不破壞現有場景。
+- 啟動與每次換句發 `OnLineChanged(DialogueLine)`；第一句立刻可讀。最後一句後 Next 清掉 CurrentLine／IsActive，再發 `OnSceneEnd(sceneId)` 一次；閒置 Next 回 false，接受推進則 true。結束事件內可安全啟動下一個場景。
+- UI 顯示 speaker、text，保留 type=`original/plain`。白話最多 20 個文字元素；不得把白話標成原文。另保留 C 線選填 `source/label/orig`：**異文的 label 必須可見**，不能只播 text；七世孫白話的 orig 可作原文對照。
+- `OnSceneEnd` 用於推進本幕步驟與 Progress；更新暫停前重讀 `dialogue.IsActive`，因事件內可能已接下一段。輸入路由在對話中只送一次 Next，不再把同一次 E／互動鈕送進場景 Interactable。
+- 自動播放記錄只在記憶體；讀檔時由 U 線決定何時 TryTrigger，不能每幀盲送所有幕的觸發。重新建立 Core 是新局。
+
+C 線目前 trigger 使用 `act_start:1..5`、`interact:Act3_Leaf/Cup/Rice`、`after:drift_all`、`interact:Act4_Women/Home/House/Return`、`after:meal/guests/half_year`、`interact:Act5_Village/Villager/Grandson`。這些是資料事件字串，**不代表已有同名場景物件**。現行 `Act3_Drift_1..3` 要映射到 Leaf/Cup/Rice；Act4 不再接舊 Board。完成對話後才推進步驟；半年演出與鳥鳴要接 SeasonSwap 完成事件，避免先切步驟再漏播。具體 scene id 見 C 線交件表。
+
+### ObjectiveTracker／ObjectiveCore
+
+掛 `Liuruan.ObjectiveTracker`。Start 呼叫 `SetStep(act,id,count=0)`，之後 `SetCount(實際已完成數)`；資料第一幕 bark count=5，其餘步驟 count=1。此 n/N 是**該步驟數量**，不是幕次或步驟序號。
+
+`Text` 固定兩行：`動機｜目標：目標文字 n/N` 與 `方向：方向文字`，亦可在 Core 分別讀 GoalLine、DirectionLine。`OnChanged(string text)` 供 HUD 更新，不建 UI。count 超上限夾住、負數拒絕；相同 SetCount 不重發。`NextStep()` 在同幕資料順序前進並歸零，末步 false；切幕用 SetStep，不自動跨幕。SetStep 可直接還原存檔，未知 id false 保留狀態，重設已知步驟可重新指定數量。
+
+C 線實際步驟：1 bark；2 climb/peach；3 leaf/cup/rice/infer/cross_mountain；4 women/follow/house/guests/half_year/birds/return；5 village/ask/grandson。Objective、Hint 的步驟同步由流程負責，不互相尋找。
+
+### RescueSystem／RescueCore
+
+掛 `Liuruan.RescueSystem`，指定 Initial Safe Point（實際可站立的玩家根座標）、Min XZ／Max XZ（世界 X/Z 邊界矩形）、Min Y（預設 -10）。邊界本身及 y 恰等門檻都允許；超界或 y<MinY 要救援。初始安全點必須在範圍內，錯誤時 OnError 並停用 Core。
+
+由移動完成後每幀餵 `Sample(Time.deltaTime, player.position, characterController.isGrounded, inWater)`；水中狀態由 U 線水區提供，不能拿 grounded 當作非水中。連續著地、非水中、範圍內滿 2 秒更新 LastSafePoint，餘秒保留；離地、入水、超界皆歸零該計時。大 dt 只採樣當下位置一次。
+
+Sample 在要救援時回 true 並發 `OnRescue(Vector3 lastSafePoint)`，本元件不移動玩家。U 線在事件中同步呼叫 `GameFlow.MovePlayer(position)` 或等價安全傳送，以暫停 CharacterController 再還原；未實際移回前每次 Sample 都會再要求救援。切幕後 `ResetSafePoint(本幕安全起點)`，避免把玩家送回上一幕；Inspector 矩形應涵蓋本局允許探索範圍；本版不提供執行中變更邊界的 API。初始與更新點仍須 U 線確認可容納玩家膠囊，Core 不做物理掃描，也不處理「仍在矩形內但被牆卡住」。
+
+### OffscreenArrow／OffscreenArrowCore
+
+在流程物件掛 `Liuruan.OffscreenArrow`，View Camera 指向玩家實際相機，Target 指向目前目標；流程同步 `SetTarget(Transform)`，null 清除。LateUpdate 以 Camera 的 **CPU** `projectionMatrix * worldToCameraMatrix` 計算，不用 GPU projection，避免 reversed-Z 與圖形 API 深度差異。相機與目標缺少、元件停用時 OnCleared，HasResult=false，UI 隱藏箭頭。
+
+Core `Project(float[16] vp, WorldPosition target, inset=.05f, aspect=1)`：row-major 矩陣乘 column vector；clip 深度是 [-W,W]，正常透視前方 W>0。輸出 Result 的 X/Y 為 [0,1] viewport 座標，左下原點；IsOnscreen 含四邊與近遠深度；畫面外邊緣距離為 inset。角度 AngleDegrees 以向右為 0°、向上 90°、逆時針，已用 viewport aspect 修正像素角度；若素材預設朝上，RectTransform 的 Z 角用 AngleDegrees-90。
+
+背後 W<=0 時翻轉除 W 後的方向，等同 clip XY/|W|；W=0 不除零，正後方或投影中心沒有方向時固定朝下。這是透視相機的後方判定，正交相機 W 固定 1，不提供正交「後方」分類。Result 在 onscreen 時座標是實際投影，角度 0；UI 只在 !IsOnscreen 時顯示。Canvas 必須將 viewport 位置轉到**該相機 pixelRect**，勿將 0..1 直接當 anchoredPosition；inset 是各軸比例，手機安全區需 U 線另做版面設定。
+
+`OnChanged(OffscreenArrowResult)` 每次 LateUpdate 提供資料，無 UI、無自建 Texture／GameObject，重用 16 元素陣列。若其他腳本在 LateUpdate 移動相機，請把箭頭元件執行順序排在相機後面。
+
+### ReadingDirector／ReadingCore
+
+掛 `Liuruan.ReadingDirector`，指定 sentences 與 glossary_cards。`GetParagraph(p)` 以資料的 1 起算段落編號取得 sentences；`FindTerm(string)` 回詞卡（term/reading/meaning），未知段落／詞條回 null，reading 空字串合法。
+
+`SetMode(ReadingMode.Original/OriginalAndPlain)` 切換，改變才發 `OnModeChanged`；`Display(sentence)` 回原文或原文換行白話。包裝不建立卷軸／注釋 UI，也不自動消耗玩家輸入。UI 用每句 terms 生成可點詞項，再以 FindTerm 顯示注音、意義；MissingTerms 是去重、排序後的缺詞清單，載入時 Debug.LogWarning，不能把缺詞當成卡死理由。
+
+### 現有 GameFlow／HudUI／ClueManager 接線邊界
+
+本輪已只讀三個檔案：GameFlow.Objective 仍為舊單行字串，HudUI.LateUpdate 直接使用它，任務區目前 470×42，U 線需讓它讀 ObjectiveTracker.Text 並容納兩行。ClueManager 有自己的一套卷軸／PlayerPrefs 進度，不可拿舊線索數直接當 18 個新步驟的進度。
+
+GameFlow 在剝皮、拾取、攀到頂、對話完成／幕切換之後同步 Objective 與 StallHint；讀卷軸、對話時集中管理暫停與輸入。現有 GameFlow 第四幕仍有 Board、三段 villageStep 與舊字串，不能僅掛這六個元件就視為已完成 R3 流程；需由 U 線轉接 C 線七步、移除舊 Board 路由。S 線本輪未修改現有流程與結局題路由。
+
+### R3 驗證與待驗收
+
+`Tests/run_core_tests.sh` 編譯所有 *Core.cs 和同一份 EditMode 測試；console runner 註冊六組 R3 測試，固定樣本在 `Tests/Fixtures/R3/`。若 C 線五份 JSON 全到位，另執行 R3ContentCoreTests；缺少則明確印 SKIP 且不算通過。R3ContentCoreTests 在 Unity 中執行需五份 C 線檔案可讀。
+
+目前 **130 passed, 0 failed**：既有 91＋R3 固定樣本 36＋C 線實際資料 3。完整原始輸出 `logs/core-tests-R3.txt`。無 NuGet、無 Unity 啟動。EditMode 測試在此專案沿用 staging fixture 及 docs/content/r3 路徑，匯入另一個專案時需保留相對資料或調整 R3Fixture.Root；不要把 Console/Runner.cs 匯入 Assets。
+
+尚須 U 線完成真正 Unity 編譯／EditMode、場景接線與桌機／手機驗收：閱讀與對話確實暫停提示；30/60/90 秒分別出文字、加亮、帶路和轉鏡頭；任務可辨識且兩行不截字；重播與異文標註；水中與摔落救援；四邊／背後箭頭及安全區；逐句白話與詞卡可點且可退出。離線 Core 全綠不等於這些玩家流程已通過。

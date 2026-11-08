@@ -1,0 +1,248 @@
+[
+  {
+    "name": "npc_woman_a",
+    "prompt": "Use case: stylized-concept. Generate ONE 1024x1024 PNG Dzine image-to-3D character source. Cute chibi handcrafted clay, rounded clean shapes, 1:2.5 head-to-body proportions matching the Tiantai protagonists. ONE adult immortal Chinese woman A, gentle smile, black hair in a neat high Han bun with small pale jade pin, pale cyan and white Han-dynasty curved-hem shenyi robe, simple pale teal sash, flat cloth shoes. Front view, standing straight, arms slightly spread away from torso in A-pose, hands unobscured, full body including hair and feet fully visible. Entire subject centered inside central 78% canvas, generous blank margin on all sides. Perfectly flat uniform solid light grey #D9D9D9 background edge to edge. NO ground shadow, no ambient contact shadow, no ground, base, pedestal, frame, card, border, scenery, lettering or watermark. Soft even neutral lighting, opaque clay materials, no transparent gauze. One single complete character only.",
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-82228e89-76bc-46ad-a9b7-ed95e961507a.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "transparent": false,
+    "revision": {
+      "prompt": "Use case: background-extraction. Edit the supplied image only by removing ALL grey background to genuine transparent alpha. Preserve the EXACT same character/tree, pose, proportions, face, costume, colors, full silhouette and details unchanged. Remove all ground/contact/cast shadows. Do not add anything. One complete isolated subject, no frame base or ground. Generous transparent padding, square canvas. This will be composited onto pure #D9D9D9 for Dzine.",
+      "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-b53fa2bb-584a-46c3-9b42-5e25e113ff1c.png"
+    },
+    "alphaExport": true
+  },
+  {
+    "name": "npc_woman_b",
+    "size": [
+      1024,
+      1024
+    ],
+    "prompt": "Use case: stylized-concept. Generate ONE square 1024x1024 PNG game asset source for Dzine image-to-3D. Cute chibi stylized handcrafted clay miniature, rounded clean shapes, warm colors matching Tiantai protagonists. Center ONE complete subject inside central 76% of canvas with generous empty margins on ALL sides, every extremity visible. Perfectly flat uniform solid light grey EXACT #D9D9D9 background edge to edge, absolutely NO gradient, texture, vignette, horizon or ground shadow. No frame, border, card, base, pedestal, soil disk, grass patch, ground, lettering, labels, watermark, scenery or unrelated props. Soft neutral even lighting. ONE adult immortal Chinese woman B, front view, standing straight full body, arms spread slightly from torso A-pose with visible hands. Han-dynasty shenyi robe pale pink with deep crimson crossover collar, sash and underskirt edge; black hair in paired coiled bun with tiny red pin, friendly natural smile. Same design family as pale cyan woman A but distinguishable hair and colors. 1:2.5 head body, cloth shoes. No accessories in hands.",
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-81337c90-3bc0-419d-b172-5507d4a0b1e2.png",
+    "transparent": false,
+    "revision": {
+      "prompt": "Use case: background-extraction. Edit the supplied image only by removing ALL grey background to genuine transparent alpha. Preserve the EXACT same character/tree, pose, proportions, face, costume, colors, full silhouette and details unchanged. Remove all ground/contact/cast shadows. Do not add anything. One complete isolated subject, no frame base or ground. Generous transparent padding, square canvas. This will be composited onto pure #D9D9D9 for Dzine.",
+      "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-e62c124a-d7f6-46e0-a1c5-4bc449d8d454.png"
+    },
+    "alphaExport": true
+  },
+  {
+    "name": "npc_grandson",
+    "size": [
+      1024,
+      1024
+    ],
+    "prompt": "Use case: stylized-concept. Generate ONE square 1024x1024 PNG game asset source for Dzine image-to-3D. Cute chibi stylized handcrafted clay miniature, rounded clean shapes, warm colors matching Tiantai protagonists. Center ONE complete subject inside central 76% of canvas with generous empty margins on ALL sides, every extremity visible. Perfectly flat uniform solid light grey EXACT #D9D9D9 background edge to edge, absolutely NO gradient, texture, vignette, horizon or ground shadow. No frame, border, card, base, pedestal, soil disk, grass patch, ground, lettering, labels, watermark, scenery or unrelated props. Soft neutral even lighting. ONE middle-aged Han-Wei Chinese male villager, seven-generation descendant, sturdy modest friendly face, short dark moustache, dark brown headscarf, coarse warm brown short cross-collar tunic, beige trousers, cloth belt and cloth shoes. Front view standing straight, arms slightly away from body in A-pose, both hands visible, full body, chibi 1:2.5 head body. No tools or props.",
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-be5eab28-8eff-4be7-9fd2-222c88cc312e.png",
+    "transparent": false,
+    "revision": {
+      "prompt": "Use case: background-extraction. Edit the supplied image only by removing ALL grey background to genuine transparent alpha. Preserve the EXACT same character/tree, pose, proportions, face, costume, colors, full silhouette and details unchanged. Remove all ground/contact/cast shadows. Do not add anything. One complete isolated subject, no frame base or ground. Generous transparent padding, square canvas. This will be composited onto pure #D9D9D9 for Dzine.",
+      "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-b8dd0c6e-8c85-4829-a8fb-2c4964635ab6.png"
+    },
+    "alphaExport": true
+  },
+  {
+    "name": "peach_tree_v2",
+    "size": [
+      1024,
+      1024
+    ],
+    "prompt": "Use case: stylized-concept. Generate ONE square 1024x1024 PNG game asset source for Dzine image-to-3D. Cute chibi stylized handcrafted clay miniature, rounded clean shapes, warm colors matching Tiantai protagonists. Center ONE complete subject inside central 76% of canvas with generous empty margins on ALL sides, every extremity visible. Perfectly flat uniform solid light grey EXACT #D9D9D9 background edge to edge, absolutely NO gradient, texture, vignette, horizon or ground shadow. No frame, border, card, base, pedestal, soil disk, grass patch, ground, lettering, labels, watermark, scenery or unrelated props. Soft neutral even lighting. ONE complete cute peach TREE, short thick warm brown trunk, warm green compact rounded canopy filled with many large PINK ripe peaches. All crown, branch tips and exposed root ends fully visible. Roots end directly against grey background, zero ground shadow, NO FRAME, CARD, PLATFORM, DISK, pot or grass. Slight elevated three-quarter view.",
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-1371fd51-5d6c-4f6a-93fc-1eed3b3ed6bd.png",
+    "transparent": false,
+    "revision": {
+      "prompt": "Use case: background-extraction. Edit the supplied image only by removing ALL grey background to genuine transparent alpha. Preserve the EXACT same character/tree, pose, proportions, face, costume, colors, full silhouette and details unchanged. Remove all ground/contact/cast shadows. Do not add anything. One complete isolated subject, no frame base or ground. Generous transparent padding, square canvas. This will be composited onto pure #D9D9D9 for Dzine.",
+      "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-f2e9c284-3aee-43c0-a8cc-06cf2b07c84e.png"
+    },
+    "alphaExport": true
+  },
+  {
+    "name": "chu_tree_v2",
+    "size": [
+      1024,
+      1024
+    ],
+    "prompt": "Use case: stylized-concept. Generate ONE square 1024x1024 PNG game asset source for Dzine image-to-3D. Cute chibi stylized handcrafted clay miniature, rounded clean shapes, warm colors matching Tiantai protagonists. Center ONE complete subject inside central 76% of canvas with generous empty margins on ALL sides, every extremity visible. Genuine transparent alpha background, absolutely no background color, checkerboard, horizon or ground shadow. Final export will be composited onto solid #D9D9D9. No frame, border, card, base, pedestal, soil disk, grass patch, ground, lettering, labels, watermark, scenery or unrelated props. Soft neutral even lighting. ONE complete paper mulberry TREE Broussonetia papyrifera, broad serrated heart-shaped and three-lobed green leaves, compact crown, short thick mottled grey-brown bark. A broad bark strip peeled back on FRONT lower trunk, revealing cream fibrous inner bark, curled bark flap attached. All branches crown roots complete. Roots directly against grey, NO frame card ground platform disk or shadow. Slight elevated three-quarter view.",
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-cfa8ac0f-6c39-4af1-877d-d5ff5551e46f.png",
+    "alphaExport": true
+  },
+  {
+    "name": "drift_leaf",
+    "size": [
+      1024,
+      1024
+    ],
+    "prompt": "Use case: stylized-concept. Generate ONE square 1024x1024 PNG game asset source for Dzine image-to-3D. Cute chibi stylized handcrafted clay miniature, rounded clean shapes, warm colors matching Tiantai protagonists. Center ONE complete subject inside central 76% of canvas with generous empty margins on ALL sides, every extremity visible. Genuine transparent alpha background, absolutely no background color, checkerboard, horizon or ground shadow. Final export will be composited onto solid #D9D9D9. No frame, border, card, base, pedestal, soil disk, grass patch, ground, lettering, labels, watermark, scenery or unrelated props. Soft neutral even lighting. ONE single large fresh green TURNIP LEAF, broad crinkled leaf blade with gently lobed margins and thick pale green stalk, readable raised veins, no turnip root, no water, no additional leaves. Diagonal face-up three-quarter view, whole blade and stalk.",
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-ec55c46b-7a95-468f-9282-beb631a70a56.png",
+    "alphaExport": true
+  },
+  {
+    "name": "drift_rice",
+    "size": [
+      1024,
+      1024
+    ],
+    "prompt": "Use case: stylized-concept. Generate ONE square 1024x1024 PNG game asset source for Dzine image-to-3D. Cute chibi stylized handcrafted clay miniature, rounded clean shapes, warm colors matching Tiantai protagonists. Center ONE complete subject inside central 76% of canvas with generous empty margins on ALL sides, every extremity visible. Genuine transparent alpha background, absolutely no background color, checkerboard, horizon or ground shadow. Final export will be composited onto solid #D9D9D9. No frame, border, card, base, pedestal, soil disk, grass patch, ground, lettering, labels, watermark, scenery or unrelated props. Soft neutral even lighting. ONE small clump of cooked white RICE sprinkled with clearly BLACK SESAME seeds resting on ONE small green leaf underneath. Single connected pickup object. Individual rounded rice grains readable, tiny leaf just large enough to hold rice. Elevated three-quarter view. No bowl plate water additional clumps or scattered grains.",
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-1b5645a1-32f2-43c8-b484-57d04f04d506.png",
+    "alphaExport": true
+  },
+  {
+    "name": "portrait_liuchen",
+    "size": [
+      512,
+      512
+    ],
+    "transparent": true,
+    "prompt": "Use case: stylized-concept. Generate ONE 512x512 PNG dialogue portrait for a Chinese Tiantai chibi game. Genuine transparent alpha background, no backdrop, checkerboard, circle, frame, text, watermark or cast shadow. Cute handcrafted clay with softly rounded shapes, expressive large brown eyes, warm natural skin, simple readable silhouette. Center chest-up bust, entire hair/headwear and both shoulders inside canvas, natural relaxed expression. Liu Chen, young Han Chinese man, short tousled dark hair with small topknot, beige cloth headband, warm BROWN cross-collar coarse tunic with cream inner collar and rope strap from wicker backpack, gentle earnest smile. Match the supplied protagonist reference colors and face.",
+    "refs": [
+      "/Volumes/hk6429/projects/liuruan-tiantai/staging/art/concept/05_liuchen.png"
+    ],
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-cc03ddda-49b7-44aa-b34b-a238a046bcbf.png"
+  },
+  {
+    "name": "portrait_ruanzhao",
+    "size": [
+      512,
+      512
+    ],
+    "transparent": true,
+    "prompt": "Use case: stylized-concept. Generate ONE 512x512 PNG dialogue portrait for a Chinese Tiantai chibi game. Genuine transparent alpha background, no backdrop, checkerboard, circle, frame, text, watermark or cast shadow. Cute handcrafted clay with softly rounded shapes, expressive large brown eyes, warm natural skin, simple readable silhouette. Center chest-up bust, entire hair/headwear and both shoulders inside canvas, natural relaxed expression. Ruan Zhao, young Han Chinese man, black hair under wide woven STRAW HAT with small topknot, DARK NAVY BLUE cross-collar tunic with cream inner collar and rope backpack strap, friendly confident smile. Match supplied protagonist reference.",
+    "refs": [
+      "/Volumes/hk6429/projects/liuruan-tiantai/staging/art/concept/06_ruanzhao.png"
+    ],
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-5a22a704-e231-4405-9eb6-dc19aaa8b98e.png"
+  },
+  {
+    "name": "portrait_woman_a",
+    "size": [
+      512,
+      512
+    ],
+    "transparent": true,
+    "prompt": "Use case: stylized-concept. Generate ONE 512x512 PNG dialogue portrait for a Chinese Tiantai chibi game. Genuine transparent alpha background, no backdrop, checkerboard, circle, frame, text, watermark or cast shadow. Cute handcrafted clay with softly rounded shapes, expressive large brown eyes, warm natural skin, simple readable silhouette. Center chest-up bust, entire hair/headwear and both shoulders inside canvas, natural relaxed expression. Same woman A as supplied NPC reference: pale cyan and white Han curved-hem robe, teal sash, neat high black bun and pale jade hairpin, gentle smile. Preserve face hair colors and costume.",
+    "refs": [
+      "/Volumes/hk6429/projects/liuruan-tiantai/staging/art/R3/raw/npc_woman_a.png"
+    ],
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-f0ae3b86-6db0-40e4-929e-e28f2da4af60.png"
+  },
+  {
+    "name": "portrait_woman_b",
+    "size": [
+      512,
+      512
+    ],
+    "transparent": true,
+    "prompt": "Use case: stylized-concept. Generate ONE 512x512 PNG dialogue portrait for a Chinese Tiantai chibi game. Genuine transparent alpha background, no backdrop, checkerboard, circle, frame, text, watermark or cast shadow. Cute handcrafted clay with softly rounded shapes, expressive large brown eyes, warm natural skin, simple readable silhouette. Center chest-up bust, entire hair/headwear and both shoulders inside canvas, natural relaxed expression. Same woman B as supplied NPC reference: pale pink Han shenyi, deep crimson collar, black coiled bun and red hairpin, friendly smile. Preserve face hairstyle costume.",
+    "refs": [
+      "/Volumes/hk6429/projects/liuruan-tiantai/staging/art/R3/raw/npc_woman_b.png"
+    ],
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-19f44604-d996-433a-910a-5304c41f3961.png"
+  },
+  {
+    "name": "portrait_grandson",
+    "size": [
+      512,
+      512
+    ],
+    "transparent": true,
+    "prompt": "Use case: stylized-concept. Generate ONE 512x512 PNG dialogue portrait for a Chinese Tiantai chibi game. Genuine transparent alpha background, no backdrop, checkerboard, circle, frame, text, watermark or cast shadow. Cute handcrafted clay with softly rounded shapes, expressive large brown eyes, warm natural skin, simple readable silhouette. Center chest-up bust, entire hair/headwear and both shoulders inside canvas, natural relaxed expression. Same middle-aged villager as supplied NPC reference: brown headscarf, coarse brown tunic and beige collar, short moustache, modest friendly face. Preserve face hair costume.",
+    "refs": [
+      "/Volumes/hk6429/projects/liuruan-tiantai/staging/art/R3/raw/npc_grandson.png"
+    ],
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-3f5319cb-95b7-4d73-9e6b-4118e6551351.png"
+  },
+  {
+    "name": "story_1",
+    "size": [
+      1920,
+      1080
+    ],
+    "prompt": "Use case: illustration-story. ONE landscape 1920x1080 PNG opening story card, no text frame labels or watermark. Chinese pale ink wash and delicate watercolor landscape blended with cute handcrafted clay chibi characters, softly rounded, warm muted greens, atmospheric mist and elegant ink mountain contours. Exactly TWO young Han men entering Tiantai mountain forest together carrying wicker BACK BASKETS. Liu Chen wears brown tunic and beige headband; Ruan Zhao dark navy tunic and straw hat, same as supplied references. Rear three-quarter view, full bodies on winding trail in lower center, immense cloudy wooded mountains ahead, peaceful daylight, readable composition. No modern objects or other people.",
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-92a589da-a86f-4be8-9665-5b3cc50a8ddd.png",
+    "revision": {
+      "prompt": "Use case: precise-object-edit. Edit this opening story illustration. Remove ONLY the cut flowers, leafy sprigs and harvested plants sticking out of BOTH travelers' wicker back baskets. Leave both baskets EMPTY with natural dark empty basket interiors. Keep the same two travelers, clothing, faces, poses, full-body composition, mountains, forest, atmospheric mist, trail, pale ink watercolor and clay style, lighting, landscape 16:9 framing unchanged. Do not add anything. No text.",
+      "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-f65a5b75-1064-4b50-b8bf-af6b55f524a5.png"
+    }
+  },
+  {
+    "name": "story_2",
+    "size": [
+      1920,
+      1080
+    ],
+    "prompt": "Use case: illustration-story. ONE landscape 1920x1080 PNG opening story card, no text frame labels or watermark. Chinese pale ink wash and delicate watercolor forest blended with cute handcrafted clay chibi characters, muted dusk blue-green and warm skin tones. Exactly TWO young Han travelers LOST in mountain forest as daylight fades: Liu Chen brown tunic beige headband with wicker back basket, Ruan Zhao dark navy tunic wide straw hat with wicker back basket. Liu Chen holds open a visibly EMPTY cloth dry-food BAG upside down, Ruan Zhao looks uncertainly at diverging overgrown trails. Tired hungry worried but child-friendly expressions, full bodies, no food in bag or nearby, no extra people or modern objects.",
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-ae288234-62ed-4dba-8dbe-909a67a4ffda.png"
+  },
+  {
+    "name": "story_3",
+    "size": [
+      1920,
+      1080
+    ],
+    "prompt": "Use case: illustration-story. ONE landscape 1920x1080 PNG opening story card, no text frame labels or watermark. Chinese pale ink wash and delicate watercolor mountain landscape blended with cute handcrafted clay chibi characters, misty jade greens warm pink peach accents. Exactly TWO young Han travelers viewed from behind in lower foreground: Liu Chen brown tunic beige headband wicker back basket and Ruan Zhao dark navy tunic straw hat wicker back basket. They look and point up toward ONE clearly readable tree laden with LARGE PINK PEACHES on distant high inaccessible CLIFF TOP across deep rocky ravine, vines down cliff. No bridge stairs path to summit or other people. Clear visual story: hungry travelers have spotted fruit high above.",
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-2babef2c-b81c-4527-b02d-e4d57bce0038.png"
+  },
+  {
+    "name": "icon_help",
+    "size": [
+      256,
+      256
+    ],
+    "transparent": true,
+    "prompt": "Use case: stylized-concept. ONE 256x256 PNG game UI icon, actual transparent alpha background. Ancient Chinese simple handcrafted clay-inspired icon matching Tiantai chibi game. Bold clean silhouette with DARK BROWN outline PLUS fine pale cream outer keyline so visible on light AND dark backgrounds. Center entirely inside 80% canvas, generous padding. No button background tile, frame, drop shadow, watermark or letters. ONE small ancient cream parchment scroll bearing a SINGLE large dark brown QUESTION MARK as its symbol; rolled ends, question mark centered, instantly readable.",
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-c1c8c29f-2561-491d-8a5d-3aa6b6c5922a.png"
+  },
+  {
+    "name": "icon_arrow",
+    "size": [
+      256,
+      256
+    ],
+    "transparent": true,
+    "prompt": "Use case: stylized-concept. ONE 256x256 PNG game UI icon, actual transparent alpha background. Ancient Chinese simple handcrafted clay-inspired icon matching Tiantai chibi game. Bold clean silhouette with DARK BROWN outline PLUS fine pale cream outer keyline so visible on light AND dark backgrounds. Center entirely inside 80% canvas, generous padding. No button background tile, frame, drop shadow, watermark or letters. ONE bold thick RIGHT POINTING ARROW, simple solid warm gold fill, dark brown contour, thin cream outer keyline, no scroll or other objects. Perfectly horizontal rightward axis for runtime rotation.",
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-d6bc60ea-da29-49ac-a5a5-7830fef26f6c.png"
+  },
+  {
+    "name": "icon_restart",
+    "size": [
+      256,
+      256
+    ],
+    "transparent": true,
+    "prompt": "Use case: stylized-concept. ONE 256x256 PNG game UI icon, actual transparent alpha background. Ancient Chinese simple handcrafted clay-inspired icon matching Tiantai chibi game. Bold clean silhouette with DARK BROWN outline PLUS fine pale cream outer keyline so visible on light AND dark backgrounds. Center entirely inside 80% canvas, generous padding. No button background tile, frame, drop shadow, watermark or letters. ONE clockwise circular arrow wrapping around empty center, warm antique gold, thick dark brown contour and thin cream outer keyline. Instantly means restart; no lettering.",
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-3a5896df-5693-4c5d-bfcc-0eee9f723a8e.png"
+  },
+  {
+    "name": "icon_skip",
+    "size": [
+      256,
+      256
+    ],
+    "transparent": true,
+    "prompt": "Use case: stylized-concept. ONE 256x256 PNG game UI icon, actual transparent alpha background. Ancient Chinese simple handcrafted clay-inspired icon matching Tiantai chibi game. Bold clean silhouette with DARK BROWN outline PLUS fine pale cream outer keyline so visible on light AND dark backgrounds. Center entirely inside 80% canvas, generous padding. No button background tile, frame, drop shadow, watermark or letters. ONE skip-forward symbol: TWO right-pointing triangles followed by ONE vertical stop bar, warm antique gold, thick dark brown contours and thin cream outer keyline, very simple.",
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-69e0fd4c-f421-40bb-9bd5-d71743a89006.png"
+  },
+  {
+    "name": "icon_home",
+    "size": [
+      256,
+      256
+    ],
+    "transparent": true,
+    "prompt": "Use case: stylized-concept. ONE 256x256 PNG game UI icon, actual transparent alpha background. Ancient Chinese simple handcrafted clay-inspired icon matching Tiantai chibi game. Bold clean silhouette with DARK BROWN outline PLUS fine pale cream outer keyline so visible on light AND dark backgrounds. Center entirely inside 80% canvas, generous padding. No button background tile, frame, drop shadow, watermark or letters. ONE small Han Chinese cottage with simple curved roof and doorway, integrated small return arrow pointing toward doorway, warm gold and cream, dark brown contour and cream outer keyline. Means return to this act's starting point.",
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-6578861f-eafd-4391-8c61-11a879455cd6.png"
+  },
+  {
+    "name": "card_frame",
+    "size": [
+      600,
+      360
+    ],
+    "transparent": true,
+    "prompt": "Use case: stylized-concept. Generate ONE 600x360 landscape PNG NINE-SLICE UI vocabulary card background for an ancient Chinese chibi game. Front view perfectly rectangular flat warm BEIGE PAPER panel with very subtle paper grain and a THIN continuous dark warm brown double border; simple softly rounded identical corners. Genuine transparent alpha outside the rectangle. Large EMPTY uniformly pale beige central writing area. Border strictly parallel to image edges, same width on all four sides, no perspective. Corner decoration minimal and confined to corners; all edge middle sections straight and uniform so nine-slicing stretches cleanly. No text symbols scroll rolls tassels folds pictures shadows or watermark. Entire panel visible with small transparent outer padding. Target Unity Sprite border 60px left right top bottom at 600x360 export.",
+    "source": "/Users/naichengchen/.codex/generated_images/01a1ba24-aa90-7822-833c-017175da5674/exec-80edbd12-c344-4fce-b2d9-8a708a814f48.png"
+  }
+]

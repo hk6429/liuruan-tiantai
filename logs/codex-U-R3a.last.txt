@@ -1,0 +1,8 @@
+R3a 已完成修改，交件報告：[logs/U-R3a.md](/Volumes/hk6429/projects/liuruan-tiantai/logs/U-R3a.md)。
+
+- 四組件離線編譯通過；Core 測試 **91 passed、0 failed**。
+- CC 按 Cmd+R 後，將 `r3-r3a-001` 寫入 `Assets/_Project/Editor/R1Command.txt`。
+
+未開 Unity；真人可達、截圖、WebGL 建置仍待驗證。Obsidian 受寫入範圍限制未存。
+重新開始也會清除本遊戲的字級、朗讀與畫質偏好。
+

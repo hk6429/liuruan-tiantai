@@ -8,7 +8,8 @@ Unity 6000.3.27f1 URP WebGL 國文遊戲，題材《幽明錄》〈劉晨阮肇�
 ## 鐵律
 - 只寫自己這條線被指定的資料夾，不碰別線的檔案。
 - 只有 U 線可以操作 Unity（UnityMCP 或 batchmode），其他線不得開 Unity。
-- 台詞與原文只用 sources/liuruan_tw.txt 逐字，不准自編情節或台詞；自撰限簡短白話旁白。
+- 原文引用一律逐字照 sources/liuruan_tw.txt，不准自編違背原文的情節。
+- R3 起（使用者 2026-11-08 同意）：可加**簡短白話提示對話**（劉晨、阮肇、二女、七世孫），每句 ≤20 字，目的是讓沒讀過故事的國中生懂目標；資料裡要標 type="plain"，原文台詞標 type="original"。白話不得新增原文沒有的情節。
 - 女子留宿段（「各就一帳宿」起至「遂停半年」前）整段略過，只用旁白「遂停半年」帶過。
 - 不做戰鬥。不推 GitHub、不推 Vercel。生成產物不放 iCloud。
 - 刪檔用 /bin/rm；Blender 只能 headless（-b --factory-startup）。

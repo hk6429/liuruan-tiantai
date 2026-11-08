@@ -9,6 +9,7 @@ namespace Liuruan
         [SerializeField, Min(0f)] private float followSpeed = 3f;
         [SerializeField, Min(1f)] private float catchupMultiplier = 1.6f;
         public Animator animator;
+        public Transform GuideTarget;
         private NavMeshAgent agent;
         private readonly CompanionCore core = new CompanionCore();
         private Vector3 previousPosition;
@@ -33,7 +34,8 @@ namespace Liuruan
             }
             CompanionState state = core.Tick(dt, ToCore(player.position),
                 ToCore(transform.position), ToCore(player.forward));
-            Vector3 target = ToUnity(core.Destination);
+            Vector3 target = GuideTarget ? GuideTarget.position : ToUnity(core.Destination);
+            if (GuideTarget) state = CompanionState.Follow;
             if (state == CompanionState.Teleport)
             {
                 // shortcut: 僅搜尋目標附近 2m 的 NavMesh；複雜多層地形由 U 線提供安全落點。

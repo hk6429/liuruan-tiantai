@@ -35,7 +35,8 @@ namespace Liuruan
         {
             if (core == null) return;
             if (core.IsCollected) { gameObject.SetActive(false); return; }
-            core.Tick(Time.deltaTime); ApplyPosition(); SetPrompt(CanInteract);
+            if (DriftCore.HorizontalDistance(ToCore(player.position), core.Position) > 4) core.Tick(Time.deltaTime);
+            ApplyPosition(); SetPrompt(CanInteract);
         }
         public bool TryInteract()
         {

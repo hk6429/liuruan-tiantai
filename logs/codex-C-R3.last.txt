@@ -1,0 +1,9 @@
+已完成九份 JSON、檢查程式與[交件報告](/Volumes/hk6429/projects/liuruan-tiantai/docs/content/r3/C-R3.md)。
+
+- 18 步任務、108 條提示、19 組對話。
+- 七段共 72 分句、40 詞卡、4 題理解題。
+- `check_r3.py --self-test` 通過，12 個錯誤樣本皆成功攔截。
+- 報告已列出版本差異、事件契約與結局重複題處理建議。
+
+未開 Unity、未驗證實際遊玩；事件接線與介面呈現仍待 S／U 線驗收。受寫入範圍限制，未另存 Obsidian。
+

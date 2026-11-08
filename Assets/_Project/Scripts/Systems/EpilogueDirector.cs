@@ -6,6 +6,7 @@ namespace Liuruan
     public sealed class EpilogueDirector : MonoBehaviour
     {
         [SerializeField] private TextAsset cluesJson, compareJson;
+        public TextAsset additionalCluesJson;
         public EpilogueModel Model { get; private set; }
         public event Action<EpilogueModel> OnReady;
         public event Action<string> OnError;
@@ -16,7 +17,13 @@ namespace Liuruan
             try
             {
                 if (!cluesJson || !compareJson) throw new ArgumentException("EpilogueDirector 請指定 clues.json 與 compare.json。");
-                model = EpilogueCore.Build(JsonUtility.FromJson<EpilogueClueDocument>(cluesJson.text),
+                var document = JsonUtility.FromJson<EpilogueClueDocument>(cluesJson.text);
+                if (additionalCluesJson)
+                {
+                    var all = new System.Collections.Generic.List<EpilogueClue>(document.clues);
+                    all.AddRange(JsonUtility.FromJson<EpilogueClueDocument>(additionalCluesJson.text).clues); document.clues = all.ToArray();
+                }
+                model = EpilogueCore.Build(document,
                     JsonUtility.FromJson<EpilogueCompareDocument>(compareJson.text), barkCount, driftCount, readings, totalSeconds);
             }
             catch (ArgumentException e)

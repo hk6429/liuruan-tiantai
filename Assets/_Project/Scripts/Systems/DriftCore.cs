@@ -50,10 +50,12 @@ namespace Liuruan
             HungerCore.RequireFinite(dt, nameof(dt));
             if (dt < 0) throw new ArgumentOutOfRangeException(nameof(dt));
             if (IsCollected) return;
-            elapsed = (elapsed + dt) % cycleSeconds;
+            elapsed = Math.Min(elapsed + dt, cycleSeconds);
             Position = Sample((float)(elapsed / cycleSeconds));
         }
-        public bool CanPickUp(WorldPosition player) => !IsCollected && WorldPosition.Distance(player, Position) <= 2;
+        public bool CanPickUp(WorldPosition player) => !IsCollected && HorizontalDistance(player, Position) <= 3;
+        public static float HorizontalDistance(WorldPosition a, WorldPosition b)
+            => (float)Math.Sqrt((double)(a.X - b.X) * (a.X - b.X) + (double)(a.Z - b.Z) * (a.Z - b.Z));
         public bool TryPickUp(WorldPosition player)
         {
             if (!CanPickUp(player)) return false;

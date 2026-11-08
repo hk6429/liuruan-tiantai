@@ -38,7 +38,8 @@ namespace Liuruan
                 var drift = it.GetComponent<DriftPickup>();
                 if ((climb && !climb.CanInteract) || (drift && !drift.CanInteract)) continue;
                 Vector3 off = it.transform.position - pos;
-                off.y = 0; // 只算水平距離
+                if (!drift && !climb && Mathf.Abs(off.y) > 3) continue;
+                off.y = 0; // 漂流物只算水平距離，崖頂互動不可從地面觸發。
                 float d = off.magnitude;
                 if (d <= it.radius && d < bestDist) { best = it; bestDist = d; }
             }

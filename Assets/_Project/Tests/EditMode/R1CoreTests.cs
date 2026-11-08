@@ -141,14 +141,14 @@ namespace Liuruan.Tests
             Check.Near(2, c.Sample(0.5f).X); Check.Near(2, c.Sample(0.5f).Z);
             Check.Near(0.875, c.Sample(0.25f).X); Check.Near(1.125, c.Sample(0.25f).Z);
         }
-        [Test] public void LoopsAtExactPeriodAndPreservesRemainder()
+        [Test] public void StrandsAtDownstreamEndWithoutTeleport()
         {
             var c = Item(1, new DriftCollectionCore()); c.Tick(5); Check.Near(5, c.Position.X);
-            c.Tick(5); Check.Near(0, c.Position.X);
-            c.Tick(25); Check.Near(5, c.Position.X); c.Tick(0); Check.Near(5, c.Position.X);
+            c.Tick(5); Check.Near(10, c.Position.X);
+            c.Tick(25); Check.Near(10, c.Position.X); c.Tick(0); Check.Near(10, c.Position.X);
             c.Tick(float.MaxValue); Check.Equal(true, !float.IsNaN(c.Position.X));
         }
-        [TestCase(2f, true)] [TestCase(2.001f, false)]
+        [TestCase(3f, true)] [TestCase(3.001f, false)]
         public void PickupRadiusBoundary(float distance, bool expected)
         {
             var collection = new DriftCollectionCore(); var c = Item(1, collection);
@@ -176,11 +176,12 @@ namespace Liuruan.Tests
             Check.Equal(3, collection.Count); Check.Equal("2,1,3", string.Join(",", ids));
             Check.Equal(false, collection.Collect(1)); Check.Equal(1, all);
         }
-        [Test] public void PickupUsesThreeDimensionsAndCopiesWaypoints()
+        [Test] public void PickupUsesHorizontalDistanceAndCopiesWaypoints()
         {
             var points = new[] { P(0), P(10) }; var c = new DriftCore(1, points, new DriftCollectionCore());
             points[0] = P(100); Check.Near(0, c.Sample(0).X);
-            Check.Equal(false, c.CanPickUp(new WorldPosition(0, 2.01f, 0)));
+            Check.Equal(true, c.CanPickUp(new WorldPosition(0, 20, 0)));
+            Check.Equal(false, c.CanPickUp(new WorldPosition(3.001f, 0, 0)));
         }
         [Test] public void RejectsInvalidInputs()
         {

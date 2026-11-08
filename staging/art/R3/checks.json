@@ -1,0 +1,170 @@
+[
+  {
+    "file": "npc_woman_a.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "sha256": "8679eabe2c4e0ad3abaab7ca894eeb64e7e52238e17deb13687ad8013c80dff4"
+  },
+  {
+    "file": "npc_woman_b.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "sha256": "7d35a4ea46e713059f52e531c1a19e589c158ac765b3b0887353fea30584dd91"
+  },
+  {
+    "file": "npc_grandson.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "sha256": "ddfb3be84a2bd86d08b2fdbfb8e858d5e1478aec5225a98a755d3114c90179d1"
+  },
+  {
+    "file": "peach_tree_v2.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "sha256": "aeefba39348b620c864e4c6fcb1df9c5887ce0f4b495155d3fa25ecc8a334e3b"
+  },
+  {
+    "file": "chu_tree_v2.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "sha256": "e3e4e31c7e022a28528ddb5ae616eea454299481580d5e3c95290f91e726bfc5"
+  },
+  {
+    "file": "drift_leaf.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "sha256": "0c2a1dac4060b142d37de5f2f462d4945efca376ec5f0f6241d62ab1a92dcfcf"
+  },
+  {
+    "file": "drift_rice.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "sha256": "9907d0086895e4a28c390864fdeb0c059e7fb98d3c9831558b4bc724ab67ae07"
+  },
+  {
+    "file": "portrait_liuchen.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "512cb9b5de864094ce8d37d849b5e7a2f2826ec5ae1301aaf5084dc588096a01"
+  },
+  {
+    "file": "portrait_ruanzhao.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "58af130fe677658aa2dd91cc00f3d3c0bcb0b90da0d34eba993704f4b4787500"
+  },
+  {
+    "file": "portrait_woman_a.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "87be1c3d7c67d05f91d9570b6c76b01a9f35292fa8897a22f2e517e4bbaf6134"
+  },
+  {
+    "file": "portrait_woman_b.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "f0c2e0ed7a561e5112870ff69b369edf1bf869c0777f2e56b06fe04b7e374120"
+  },
+  {
+    "file": "portrait_grandson.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "eac9fe608dd01d6a77a073f862049d1f5b83db0f0309302976cddfe5fb91248c"
+  },
+  {
+    "file": "story_1.png",
+    "size": [
+      1920,
+      1080
+    ],
+    "sha256": "f6839c6749b25429486c115d196f926bbfcb0aa88e411f22b408a95ed5740e13"
+  },
+  {
+    "file": "story_2.png",
+    "size": [
+      1920,
+      1080
+    ],
+    "sha256": "05bc75940abbb205c9e5fa5c1e51d20340e9575e6c8b7f310a087f0eb0783086"
+  },
+  {
+    "file": "story_3.png",
+    "size": [
+      1920,
+      1080
+    ],
+    "sha256": "bdb1e57405781deb1136c0f03157cfbcaa2671e02cb627a42e3138e1e4d8e796"
+  },
+  {
+    "file": "icon_help.png",
+    "size": [
+      256,
+      256
+    ],
+    "sha256": "73fd35b3cdda771a37fddc89b198e4a69c5051319843118a4595a94eca34b0ed"
+  },
+  {
+    "file": "icon_arrow.png",
+    "size": [
+      256,
+      256
+    ],
+    "sha256": "e46e3cbf47cec7d7050c6d30f025d2371d4197a3e365164fe78b747afede5296"
+  },
+  {
+    "file": "icon_restart.png",
+    "size": [
+      256,
+      256
+    ],
+    "sha256": "d05ac207d42a81425604e23a03dd29f7604ab2ff62c0920f1af7d0b2738a0cd7"
+  },
+  {
+    "file": "icon_skip.png",
+    "size": [
+      256,
+      256
+    ],
+    "sha256": "f46ab7075743248f41c26b6f152774cbf346e9a6c80b66f15089731829c75293"
+  },
+  {
+    "file": "icon_home.png",
+    "size": [
+      256,
+      256
+    ],
+    "sha256": "fd83107bc89d9d4cbfa5e97928fbecffed090c245350c091e5b0112c48b7bd3a"
+  },
+  {
+    "file": "card_frame.png",
+    "size": [
+      600,
+      360
+    ],
+    "sha256": "5aaa8b1fe4ea127fd4c129d0c052031cb7e85868cbe50c59d5aca9515dc26d3d"
+  }
+]

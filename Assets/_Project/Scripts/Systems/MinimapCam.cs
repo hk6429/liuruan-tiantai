@@ -97,7 +97,8 @@ namespace Liuruan
             float scale = hudSize / (viewHalfSize * 2);
             Vector2 p = new Vector2(hudSize / 2 + (subject.position.x - player.position.x) * scale,
                 hudSize / 2 - (subject.position.z - player.position.z) * scale);
-            if (p.x < 0 || p.y < 0 || p.x > hudSize || p.y > hudSize) return;
+            if (subject == target) p = new Vector2(Mathf.Clamp(p.x, 6, hudSize - 6), Mathf.Clamp(p.y, 6, hudSize - 6));
+            else if (p.x < 0 || p.y < 0 || p.x > hudSize || p.y > hudSize) return;
             Matrix4x4 before = GUI.matrix;
             GUI.color = color;
             if (rotate) GUIUtility.RotateAroundPivot(subject.eulerAngles.y, p);

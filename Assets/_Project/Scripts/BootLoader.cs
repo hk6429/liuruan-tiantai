@@ -9,7 +9,7 @@ namespace Liuruan
 {
     /// Boot 場景唯一的元件。WebGL 版 Main 場景不在主包：從 StreamingAssets/scene/ 依 parts.json 依序下載各塊、
     /// 拼回完整 bundle 再 LoadFromMemoryAsync，最後載入 Main（Editor/SceneBundles.cs 產生這些檔）。
-    /// Editor 直接 LoadScene("Main")（Main 仍在 Build Settings）。畫面文字只用英文／數字，避免 TMP 中文缺字。
+    /// Editor 直接 LoadScene("Main")（Main 仍在 Build Settings）。載入畫面採中文系統字型。
     public class BootLoader : MonoBehaviour
     {
         public const string MainScene = "Main", BundleName = "main", Dir = "scene", IndexFile = "parts.json";
@@ -23,17 +23,18 @@ namespace Liuruan
         long doneBytes, totalBytes;
 #pragma warning restore CS0169, CS0649
 
-        string status = "Loading...";
+        string status = "載入中…";
         bool failed;
         UnityWebRequest current;
         GUIStyle label, button;
+        public Font chineseFont;
 
         void Start() => StartCoroutine(Run());
 
         IEnumerator Run()
         {
             failed = false;
-            status = "Loading...";
+            status = "載入中…";
 #if UNITY_WEBGL && !UNITY_EDITOR
             if (!bundle)
             {
@@ -62,7 +63,7 @@ namespace Liuruan
                 }
                 if (doneBytes != all.Length) { Fail($"Data error (E4, {doneBytes}/{all.Length}). Please reload the page."); yield break; }
 
-                status = "Unpacking...";
+                status = "解壓縮中…";
                 var load = AssetBundle.LoadFromMemoryAsync(all);
                 all = null; // 引擎已有自己的副本，放掉讓 GC 回收
                 yield return load;
@@ -70,7 +71,7 @@ namespace Liuruan
                 if (!bundle) { Fail("Load error (E5). Please reload the page."); yield break; }
             }
 #endif
-            status = "Starting...";
+            status = "準備進入故事…";
             var op = SceneManager.LoadSceneAsync(MainScene);
             if (op == null) { Fail("Load error (E6). Please reload the page."); yield break; } // Editor：Main 不在 Build Settings
             yield return op;
@@ -104,21 +105,21 @@ namespace Liuruan
             int size = Mathf.Max(16, Screen.height / 28);
             if (label == null)
             {
-                label = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, wordWrap = true };
+                label = new GUIStyle(GUI.skin.label) { font = chineseFont, alignment = TextAnchor.MiddleCenter, wordWrap = true };
                 label.normal.textColor = new Color(0.96f, 0.9f, 0.78f);
-                button = new GUIStyle(GUI.skin.button);
+                button = new GUIStyle(GUI.skin.button) { font = chineseFont };
             }
             label.fontSize = button.fontSize = size;
 
             string text = status;
-            if (!failed && totalBytes > 0 && status == "Loading...")
+            if (!failed && totalBytes > 0 && status == "載入中…")
             {
                 long got = doneBytes + (current != null ? (long)current.downloadedBytes : 0);
-                text = $"Loading {Mathf.Clamp(100f * got / totalBytes, 0f, 100f):0}%  ({got / 1048576f:0.0} / {totalBytes / 1048576f:0.0} MB)";
+                text = $"載入中 {Mathf.Clamp(100f * got / totalBytes, 0f, 100f):0}%  ({got / 1048576f:0.0} / {totalBytes / 1048576f:0.0} MB)";
             }
             float w = Mathf.Min(Screen.width - 32, size * 30);
             GUI.Label(new Rect((Screen.width - w) / 2, Screen.height / 2 - size * 2, w, size * 3), text, label);
-            if (failed && GUI.Button(new Rect((Screen.width - size * 6) / 2, Screen.height / 2 + size * 1.5f, size * 6, size * 2), "Retry", button))
+            if (failed && GUI.Button(new Rect((Screen.width - size * 6) / 2, Screen.height / 2 + size * 1.5f, size * 6, size * 2), "重試", button))
                 StartCoroutine(Run());
         }
     }

@@ -1,0 +1,36 @@
+{
+  "acts": [
+    {
+      "act": 4,
+      "scenes": [
+        {
+          "id": "meet_women",
+          "trigger": "interact:Act4_Women",
+          "lines": [
+            {
+              "speaker": "女子",
+              "text": "來何晚耶？",
+              "type": "original"
+            },
+            {
+              "speaker": "劉晨",
+              "text": "她們怎麼認得我們？",
+              "type": "plain"
+            }
+          ]
+        },
+        {
+          "id": "leave",
+          "trigger": "act_start:5",
+          "lines": [
+            {
+              "speaker": "劉晨",
+              "text": "回村看看。",
+              "type": "plain"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

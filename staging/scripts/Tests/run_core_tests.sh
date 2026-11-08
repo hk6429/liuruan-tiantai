@@ -7,7 +7,7 @@ if ! command -v dotnet >/dev/null 2>&1; then
     exit 1
 fi
 export LIURUAN_PROJECT_ROOT=$(CDPATH= cd -- "$scripts_dir/../.." && pwd)
-# R2 的結局測試直接讀取 C 線 JSON／原文，避免複製過期 fixture。
+# R2 讀取正式資料；R3 固定讀 staging/scripts/Tests/Fixtures/R3，另可驗證 C 線交件。
 work_dir=$(mktemp -d "${TMPDIR:-/tmp}/liuruan-core.XXXXXX")
 trap '/bin/rm -r "$work_dir"' EXIT HUP INT TERM
 export DOTNET_CLI_HOME="$work_dir/cli"

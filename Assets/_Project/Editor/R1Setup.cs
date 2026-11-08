@@ -38,7 +38,7 @@ public static class R1Setup
             else if (t.name == "Act2_ClimbBase") it.prompt = "攀援";
             else if (t.name == "Act2_PeachTree") it.prompt = "摘桃";
             else if (t.name.StartsWith("Act3_Drift_")) it.prompt = "撿起";
-            else if (t.name == "Act3_Wade") it.prompt = "涉水";
+            else if (t.name == "Act3_Wade") it.prompt = "越過山，來到大溪邊";
             else if (t.name == "Act4_Board") it.prompt = "閱讀原文";
             else if (t.name == "Act5_Return") it.prompt = "返回村口";
             else it.prompt = "查看";

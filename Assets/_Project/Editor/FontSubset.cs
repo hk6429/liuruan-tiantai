@@ -115,6 +115,7 @@ namespace Liuruan.EditorTools
             var jsonSet = new HashSet<char>();
             if (File.Exists(CluesPath))
                 AddNonAscii(DecodeEscapes(File.ReadAllText(CluesPath, Encoding.UTF8)), jsonSet);
+            // 包含 Data/r3/*.json；WebGL 新增故事、對話、詞卡與題庫的字集。
             foreach (var data in Directory.Exists("Assets/_Project/Data") ? Directory.GetFiles("Assets/_Project/Data", "*.json", SearchOption.AllDirectories) : new string[0])
                 AddNonAscii(DecodeEscapes(File.ReadAllText(data, Encoding.UTF8)), jsonSet);
             // 場景內序列化字串（Interactable 的 prompt／toast 等，YAML 以 \uXXXX 跳脫）

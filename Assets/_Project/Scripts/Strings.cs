@@ -6,7 +6,7 @@ namespace Liuruan
     {
         // ---------- 互動 ----------
         public const string DefaultPrompt = "E 查看";
-        public const string InteractTooFar = "附近沒有可互動目標，請靠近發光卷軸或人物再試一次。";
+        public const string InteractTooFar = "附近沒有可互動的東西，靠近發光處再試";
         public const string RereadPrompt = "E 再讀";            // Round14：已收集的線索點
         public const string TouchPromptPrefix = "點「互動」";
         public const string TouchInteract = "互動";

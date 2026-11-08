@@ -1,0 +1,1630 @@
+OpenAI Codex v0.167.0
+--------
+workdir: /Volumes/hk6429/projects/liuruan-tiantai
+model: gpt-6.1-sol
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR]
+reasoning effort: medium
+reasoning summaries: none
+session id: 01a1ba24-aa90-70a0-ba8a-6b2ff2ab18dd
+--------
+user
+# C 線 R3：故事卡、任務、提示、對話、逐句白話、注釋、題目
+
+先讀 AGENTS.md（**R3 起可加簡短白話提示對話**，規則在鐵律）、docs/r3-diagnosis.md（四專家診斷）、docs/plan.md、sources/liuruan_tw.txt、sources/variants.md、docs/content/acts.md、glossary.md、compare_taohuayuan.md、Assets/_Project/Data/*.json（只讀）。只能寫 docs/content/r3/ 與 tools/check_r3.py。不開 Unity。交件報告 docs/content/r3/C-R3.md。
+
+原則：
+- 原文引用一律逐字照 liuruan_tw.txt（type="original"）。
+- 白話（type="plain"）每句 ≤20 字，給沒讀過故事的國中生，不得新增原文沒有的情節；留宿段照 AGENTS.md 略過，只用「遂停半年」。
+- 地名器物照原文：筒瓦屋（不是銅）、度山出一大溪（不是涉水）、百鳥鳴呼（不是啼鳴）。「洞中方七日，世上已千年」不是本篇原文，出現時要標明「後人俗語」。
+- 遊戲裡**沒有告示板**了（R3b 會移除），第四幕改由二女與屋內事件推進。
+
+## 要交的檔案（JSON 用 UTF-8，格式照寫，S 線會照這個讀）
+1. `story_card.json`：開場故事卡 3–4 張（每張 ≤45 字，含人物、時代「漢明帝永平五年」、剡縣、入天台山取穀皮、迷路十三日糧盡；最後一張「你是劉晨，阮肇在你身旁」＋目標）。格式 `{"cards":[{"text":"…","orig":"可選，原文句"}]}`。
+2. `objectives.json`：五幕每一步 `{goal, why, where, count}`（格式見 briefs/S-R3.md 第 3 點）。第四幕步驟改成：見溪邊二女 → 跟二女回家 → 屋內款待 → 群女來賀 → （遂停半年）→ 聽見百鳥鳴呼 → 求歸。第五幕：回到村口 → 找人問 → 見七世孫。
+3. `hints.json`：每幕每步 30/60/90 秒三級提示，desktop 與 touch 各一版（touch 用「搖桿」「互動鈕」）。`{"acts":[{"act":1,"steps":[{"id":"bark","l1":{"desktop":"…","touch":"…"},"l2":{…},"l3":{…}}]}]}`。l3 是阮肇說的話（例如「跟我來，這邊！」）。
+4. `dialogue.json`（格式見 S-R3 第 2 點）：
+   - 每幕開頭 1–2 句劉阮白話對話（帶出目標）。
+   - 第三幕撿到漂流物時的原文半句＋推論（「此知去人徑不遠」逐字）。
+   - 第四幕：二女原文台詞全部（呼姓、「劉、阮二郎捉向所失流杯來」、「來何晚耶」、款待「敕云」、群女「賀汝婿來」、求歸時女子的原文回應），劉阮的白話反應（例如「她們怎麼認得我們？」對應「晨、肇既不識之」）、奏樂送行。
+   - 第五幕：七世孫——原文是「問得七世孫，傳聞上世入山，迷不得歸」，七世孫台詞用白話轉述並附原文。
+   每個 scene 給 trigger（例如 `act_start:1`、`interact:Act4_Women`、`interact:Act4_House`、`after:half_year`、`interact:Act5_Grandson`）。
+5. `narration.json`（取代現行版）：每幕開頭先顯示**原文關鍵句**再接白話一句。格式 `{"acts":[{"act":1,"lines":[{"text":"…","type":"original"},{"text":"…","type":"plain"}]}]}`。
+6. `sentences.json`：全文 7 段逐句切開，每句 orig＋plain＋terms（格式見 S-R3 第 6 點）。
+7. `glossary_cards.json`：把 glossary.md 40 條轉成 `{term, reading, meaning}`；「要」讀ㄧㄠ；sentences 用到的 terms 都要在這裡。
+8. `questions_r3.json`：補 4 題理解型三選一（一詞多義「去」、二女呼名暗示什麼、「忻怖交並」喜什麼怕什麼、「瓊實」前後呼應），格式沿用 clues.json 題目欄位；並寫明 clues.json:127 與 EpilogueCore 推論題重複，建議保留哪一題。
+9. `epilogue_guide.json`：結局導讀 3–4 頁（半年 vs 七世、為什麼是七世孫、與〈桃花源記〉一句比較、俗語標註），每頁 ≤60 字。
+10. `tools/check_r3.py`：檢查所有 type=original 的字串都在 liuruan_tw.txt 逐字找到（或在 variants.md）、plain ≤20 字（故事卡／導讀依各自上限）、禁用字（銅瓦、涉水、啼鳴、告示板）不出現、sentences 的 terms 都在 glossary_cards。實跑輸出貼報告。
+
+warning: Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.
+  user (/Users/naichengchen/.codex/config.toml): `features.rmcp_client` is ignored.
+  user (/Users/naichengchen/.codex/config.toml): `writable_roots` is ignored.
+warning: Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.
+  user (/Users/naichengchen/.codex/config.toml): `features.rmcp_client` is ignored.
+  user (/Users/naichengchen/.codex/config.toml): `writable_roots` is ignored.
+warning: Under-development features enabled: chronicle. Under-development features are incomplete and may behave unpredictably. To suppress this warning, set `suppress_unstable_features_warning = true` in /Users/naichengchen/.codex/config.toml.
+warning: Exceeded skills context budget. All skill descriptions were removed and 49 additional skills were not included in the model-visible skills list.
+hook: SessionStart
+hook: SessionStart
+hook: SessionStart Completed
+hook: SessionStart Completed
+hook: UserPromptSubmit
+hook: UserPromptSubmit
+hook: UserPromptSubmit Completed
+hook: UserPromptSubmit Completed
+codex
+我會先核對 R3 格式契約與原文，再製作內容和檢查程式；只寫入指定路徑，不開 Unity。
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "rg -n 'liuruan|天台|C 線' /Users/naichengchen/.codex/memories/MEMORY.md" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+181:# Task Group: 〈天台山・流杯記〉Unity WebGL 國文冒險遊戲立項
+184:applies_to: cwd=/Volumes/hk6429/projects/liuruan-tiantai; reuse_rule=the educational-game planning pattern is reusable, but project files, Unity version, MCP availability, art credits, repository state, and deployment outcome must be inspected anew.
+186:## Task 1: 由 AI 3D 工具研究轉為 Unity 6.3 WebGL 〈天台山・流杯記〉立項；目錄與 Git 開始建立，未見 Unity MCP／成品驗證
+190:- extensions/skysight/resources/2026-11-06T16-20-00-DHLy-10min-memory-summary.md (cwd=/Volumes/hk6429/projects/liuruan-tiantai, rollout_path=extensions/skysight/resources/2026-11-06T16-20-00-DHLy-10min-memory-summary.md, updated_at=2026-11-06T16:20:00+00:00, thread_id=None, project/Git initialization observed; Unity MCP unconfirmed) [skysight memory]
+195:- liuruan-tiantai, 天台山・流杯記, 劉晨, 阮肇, Unity 6.3 WebGL, Unity MCP, AGENTS.md, Git, Cloudflare, Netlify, 手機瀏覽器
+201:- extensions/skysight/resources/2026-11-07T04-50-00-JDbE-10min-memory-summary.md (cwd=/Volumes/hk6429/projects/liuruan-tiantai, rollout_path=extensions/skysight/resources/2026-11-07T04-50-00-JDbE-10min-memory-summary.md, updated_at=2026-11-07T04:50:00+00:00, thread_id=None, terminal displayed v0.2.0 deployed to two platforms with matching online hashes; no play acceptance captured) [skysight memory]
+202:- extensions/skysight/resources/2026-11-07T09-20-00-atAR-10min-memory-summary.md (cwd=/Volumes/hk6429/projects/liuruan-tiantai, rollout_path=extensions/skysight/resources/2026-11-07T09-20-00-atAR-10min-memory-summary.md, updated_at=2026-11-07T09:20:00+00:00, thread_id=None, user play feedback: unclear task, insufficient hints/text linkage, and no recovery after getting stuck) [skysight memory]
+203:- extensions/skysight/resources/2026-11-07T03-50-00-LDLm-10min-memory-summary.md (cwd=/Volumes/hk6429/projects/liuruan-tiantai, rollout_path=extensions/skysight/resources/2026-11-07T03-50-00-LDLm-10min-memory-summary.md, updated_at=2026-11-07T03:50:00+00:00, thread_id=None, Mixamo login observed; six-animation download/integration pending) [skysight memory]
+204:- extensions/skysight/resources/2026-11-07T03-40-00-CLVj-10min-memory-summary.md (cwd=/Volumes/hk6429/projects/liuruan-tiantai, rollout_path=extensions/skysight/resources/2026-11-07T03-40-00-CLVj-10min-memory-summary.md, updated_at=2026-11-07T03:40:00+00:00, thread_id=None, R2 task briefs/dispatch began; no final integration or deploy) [skysight memory]
+208:- liuruan-tiantai, 天台山・流杯記, R2, v0.2.0, Claude Code, Codex, S線, A線, C線, Mixamo, Adobe login, six animations, 第二幕摘桃, engine.js, dual-platform deployment, matching hashes, Unity WebGL
+218:- The selected adaptation moved from 《桃花源記》 candidates to the 劉晨、阮肇 story; the working name is 〈天台山・流杯記〉 and project code is `liuruan-tiantai`. The plan scopes art, interaction, text review, questions, and teacher material, with about 200 generation credits and Cloudflare/Netlify as the stated deployment scope. [Task 1] [skysight memory]
+219:- The observed terminal sequence began `/Volumes/hk6429/projects/liuruan-tiantai`, Git, `AGENTS.md`, and four work briefs. Unity Hub was opened, but no Unity MCP server startup, scene/build, or WebGL play result was recorded. [Task 1] [skysight memory]
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc 'ls -a | head -25;' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+.
+..
+.cf-branch
+.git
+.gitignore
+.netlify
+.wrangler
+AGENTS.md
+Assets
+Build
+Captures
+Deploy
+Library
+Packages
+ProjectSettings
+README.md
+Temp
+UserSettings
+_backup_r1
+briefs
+docs
+logs
+scripts
+sources
+staging
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc 'cat AGENTS.md briefs/S-R3.md docs/r3-diagnosis.md sources/liuruan_tw.txt sources/variants.md' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+# 天台山・流杯記（liuruan-tiantai）— Codex 接手說明
+
+Unity 6000.3.27f1 URP WebGL 國文遊戲，題材《幽明錄》〈劉晨阮肇入天台〉。回覆一律繁體中文（台灣）。
+計劃書：docs/plan.md（五幕：迷山／攀桃／流杯／仙村／歸鄉；四線 U/S/A/C）。
+參考畫面：staging/ref/*.jpg（UE5 Q 版小勇者影片截圖，風格與 HUD 版面照它）。
+骨架來源：/Volumes/hk6429/projects/liulaolao-garden（劉姥姥，只讀，絕不修改該專案）。
+
+## 鐵律
+- 只寫自己這條線被指定的資料夾，不碰別線的檔案。
+- 只有 U 線可以操作 Unity（UnityMCP 或 batchmode），其他線不得開 Unity。
+- 原文引用一律逐字照 sources/liuruan_tw.txt，不准自編違背原文的情節。
+- R3 起（使用者 2026-11-08 同意）：可加**簡短白話提示對話**（劉晨、阮肇、二女、七世孫），每句 ≤20 字，目的是讓沒讀過故事的國中生懂目標；資料裡要標 type="plain"，原文台詞標 type="original"。白話不得新增原文沒有的情節。
+- 女子留宿段（「各就一帳宿」起至「遂停半年」前）整段略過，只用旁白「遂停半年」帶過。
+- 不做戰鬥。不推 GitHub、不推 Vercel。生成產物不放 iCloud。
+- 刪檔用 /bin/rm；Blender 只能 headless（-b --factory-startup）。
+- 完成時在 logs/<線>-R<輪>.md 寫交件報告：做了什麼、檔案清單、怎麼驗證的、沒做到什麼。不得謊報。
+# S 線 R3：提示與對話核心系統
+
+先讀 AGENTS.md（R3 白話對話規則）、docs/r3-diagnosis.md、staging/scripts/INTEGRATION.md、你上一輪的 staging/scripts/logs/S-R2.md。也讀 Assets/_Project/Scripts/GameFlow.cs、HudUI.cs、ClueManager.cs（只讀，不准改）。只能寫 staging/scripts/。不開 Unity。延續純 C# Core＋MonoBehaviour 包裝＋NUnit 測試（console runner 可離線跑）。交件報告 staging/scripts/logs/S-R3.md。
+
+C 線同時在寫 docs/content/r3/*.json（格式見下），你的 loader 要照這些格式讀；C 還沒交件時先用你自己寫的測試樣本。
+
+## 要做的事
+1. **StallHintCore**（停滯分級提示）：
+   - 輸入：每幀 deltaTime、是否在讀卷軸／對話（暫停計時）、進度事件（歸零）。
+   - 門檻預設 30/60/90 秒，觸發 Level1（文字）、Level2（操作提示＋目標光柱加亮）、Level3（同伴帶路＋鏡頭轉向）各一次；進度事件後重置。
+   - 提示文字由 hints.json 依幕與裝置（desktop/touch）取。
+   - 測試：暫停時不計、各級只發一次、進度歸零、裝置切換取對文字。
+2. **DialogueCore**（對話序列）：
+   - 讀 dialogue.json：`{ "acts":[{"act":4,"scenes":[{"id":"meet_women","trigger":"interact:Act4_Women","lines":[{"speaker":"女子","text":"…","type":"original"}, …]}]}]}`。
+   - API：Start(sceneId)、Next()、IsActive、CurrentLine、OnSceneEnd(sceneId)。每個 scene 預設只自動播一次，可重播。
+   - 測試：順序、結束事件、未知 id 不爆、type 欄位保留。
+3. **ObjectiveCore**（任務欄文字）：讀 objectives.json `{ "acts":[{"act":1,"steps":[{"id":"bark","goal":"剝楮樹皮","why":"糧食快吃完了","where":"沿小徑往北，找有光柱的樹","count":5}]}]}`，輸出「目標 n/N」＋「方向」兩行；測試計數與步驟切換。
+4. **RescueCore**：記錄最後安全點（著地且非水中、每 2 秒更新），判斷是否要傳回（y < 門檻、離開邊界矩形）；測試。
+5. **OffscreenArrowCore**：給相機 VP 矩陣與目標世界座標，回傳「是否在畫面內」與畫面邊緣箭頭的位置與角度（含目標在相機後方時翻轉）；測試四邊與背後情況。
+6. **ReadingCore**（逐句原文＋白話＋注釋）：讀 sentences.json `{ "paragraphs":[{"p":1,"sentences":[{"orig":"…","plain":"…","terms":["穀皮"]}]}]}` 與 glossary_cards.json `{ "terms":[{"term":"穀皮","reading":"","meaning":"…"}]}`；API：取段落、切換顯示模式（原文／原文＋白話）、查詞卡；測試詞卡都查得到、每句 terms 都在 glossary 裡（缺的列出）。
+7. 每個系統一個薄 MonoBehaviour 包裝（只發事件、提供資料，不建 UI）。更新 INTEGRATION.md 寫清楚掛法、事件、資料檔放 Assets/_Project/Data/r3/ 的路徑。run_core_tests.sh 加新測試，實跑全綠，輸出貼報告。
+---
+date: 2026-11-07
+type: 專案診斷
+tags: [劉晨阮肇, Unity, 遊戲設計, 新手引導, R3]
+---
+
+# 天台山・流杯記 v0.2.0 四專家診斷 → R3 修正清單
+
+使用者試玩：卡住出不來、不知道任務、沒提示、看不懂故事。
+
+## 根因
+1. 說明全被關：`GameFlow.cs:52` DeferHelp=true，`MaybeShowHelp` 無人呼叫 → 開場提示、操作說明都不出現；`JourneyHud` 又把操作提示列藏掉。
+2. 第四幕必卡：銅瓦屋互動點在房子正中心，牆碰撞體還在，玩家最近 3.8m > 半徑 3.5m。自動走查是瞬移穿牆才過。
+3. 結局永久卡：「已結束」存進瀏覽器，重整又進結局；重新開始沒清 `liuruan_r1_progress`。
+4. 敘事倒置：原文卷軸都在「做完之後」才出；旁白 narration.json、注釋 glossary.md 寫好但沒接。
+
+## R3 清單
+### P0 卡關（程式）
+- 屋子互動點移到門前 (-13.5,0,75) 或半徑 5.5
+- 結局頁加「重新開始」，清全部 PlayerPrefs
+- 崖頂摔落：保留攀援點／低於 10m 傳回崖頂
+- 地圖邊界牆＋掉落 y<-10 傳回存檔點
+- 漂流物判定 3m 水平距離、玩家 4m 內暫停漂流；攀援觸發框放大 (5,4,6)
+- 正式版「回本幕起點」「跳過本幕」
+
+### P1 引導（程式＋字串）
+- 開場故事卡＋30 秒教學、常駐「?」說明鈕（H 鍵）
+- 任務欄改「動機＋目標＋方向」
+- 褐球換 FindGlow 光柱、畫面外邊緣箭頭、小地圖黃點貼邊
+- 停滯分級提示 30/60/90 秒（90 秒阮肇帶路）
+- 第一幕飢餓提示改「糧食快吃完了，先剝完樹皮」
+- 手機鈕改中文標籤；載入畫面中文化
+
+### P2 原文結合（程式＋內容）
+- 原文先於動作：每幕開頭播 narration.json＋關鍵句
+- 第四幕拆三站：二女說話（原文五句）、款待（胡麻飯山羊脯）、賀汝婿來；奏樂送行
+- 第五幕加七世孫 NPC；結局全文前加導讀（標明「洞中方七日」非原文）
+- 原文逐句白話對照＋glossary 關鍵詞小卡
+- 理解型題目補 4 題；刪結局重複題
+
+### 錯字（字串）
+- 銅瓦屋→筒瓦屋（GameFlow.cs:46）
+- 百鳥啼鳴→百鳥鳴呼（HudUI.cs:65）
+- 涉水→度山（R1Setup.cs:41）
+- 告示板移除，改由仙女觸發
+
+## 待使用者決定
+- 是否放寬「台詞只逐字引原文」，允許二人白話提示對話（標＊者）
+漢明帝永平五年，剡縣劉晨、阮肇共入天台取穀皮，迷不得返，經十餘日，糧食乏盡，饑餒殆死。
+遙望山上有一桃樹，大有子實，而絕岩邃澗，了無登路。攀葛乃得至，啖數枚，而饑止體充。
+復下山持杯取水，欲盥漱，見蕪菁葉從山腹流出，甚鮮新。復一杯流出，有胡麻糝。相謂曰：「此處去人徑不遠。」度山出一大溪。
+溪邊有二女子，姿質妙絕，見二人持杯出，便笑曰：「劉、阮二郎捉向所失流杯來。」晨、肇既不識之，二女便呼其姓，如似有舊，相見忻喜，問：「來何晚耶？」因要還家。
+家筒瓦屋，南壁及東壁下各有一大床，皆施絳羅帳，角懸鈴，上金銀交錯，床頭各十侍婢。便敕云：「劉、阮二郎，經涉山阻，向雖得瓊實，猶尚虛弊，可速作食。」有胡麻飯、山羊脯，甚美。食畢行酒，有群女來，各持三五桃子，笑而言：「賀汝婿來。」酒酣作樂，劉、阮忻怖交並。
+……遂停半年。氣候草木是春時，百鳥鳴呼，更懷土，求歸甚苦。女曰：「當如何？」遂呼前來女子有三四十人集會奏樂，共送劉、阮，指示還路。
+既出，親舊零落，邑屋全異，無復相識。問得七世孫，傳聞上世入山，迷不得歸。
+# 異文與校改紀錄（C-R1）
+
+日期：2026-11-07。底本 Y＝[《太平御覽》卷四十一，地部六〈天台山〉引《幽明錄》](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)；G＝[《太平廣記》卷六十一〈天台二女〉](https://zh.wikisource.org/zh-hant/太平廣記/卷第061#天台二女)，篇末標出《神仙記》，改作對校；W＝[維基文庫《幽明錄》通用電子輯文](https://zh.wikisource.org/zh-hant/幽明錄)；E＝[《藝文類聚》卷七](https://zh.wikisource.org/zh-hant/藝文類聚/卷007#天台山)；L＝[ctext《古小說鉤沉》第182段](https://ctext.org/wiki.pl?chapter=798132&if=en)。
+
+本表對照電子轉錄，未核原刻。W 不冒稱魯迅定本；L 仍有缺字，僅沿用 R0 證據。R0 舊正文、校勘與五幕文件保留於 `_R0_guangji/`，現行內容只用 Y，不將長本情節拼入。
+
+## 實際校改與編輯處理（完整清單）
+
+| 位置 | 底本與採用文字 | 依據與理由 |
+|---|---|---|
+| P05，敕後 | 底本作「便敕雲」，據 W「敕云」改為「便敕云」。 | 此為吩咐說話，雲為電子轉錄疑誤；保留其餘 Y 字序，補冒號與引號。 |
+| P05，忻怖後 | 底本作「交幷」，據 W「交並」改為「交並」。 | 幷／並字形統一為台灣常用字，不改語義。 |
+| P07，邑屋後 | 底本作「全异」，據 W「異」字形改為「全異」。 | 异／異字形正規化；不把 Y 的「全」換成 W 的「改」。 |
+| P06，半年 | 底本作「遂留半年」，據 W「遂停半年」改為「遂停半年」。 | **此非可確證的誤字**，是主線拍板之轉場用語例外；明示校改，不假稱 Y 本來作「停」。E 同 Y 作「留」。 |
+| P06，刪節 | Y「至暮，令各就一帳宿」起至「遂留半年」前，全以「……」代替。 | 整段不翻譯、不出題、不演出；文件說明以〔略〕稱之。連同引入語「至暮，令」一起省去，以免留下殘句。原 Y 完整電子文字仍典藏於 `evidence/yulan.txt`。 |
+| 全篇 | 除上述四處改字、指定刪節，僅調整標點與分段。 | 一段一行，七段；人物並列用頓號，說話加「」；長句分句，無新增故事字詞。P06「……」為刪節符號，非古文原字。 |
+
+## 保留的異文（不據以改字）
+
+| Y 現行底本文字 | 他本 | 採用說明 |
+|---|---|---|
+| 共入天台取穀皮 | G「入天台採藥」；W「共入天臺山取穀皮」 | 保留 Y；台／臺為山名字形，不添「山」。穀皮指樹皮，非稻殼。 |
+| 迷不得返；經十餘日 | G「遠不得返，經十三日饑」；W「經十三日」 | 保留 Y，不為配合舊 plan 改成十三日。 |
+| 絕岩邃澗，了無登路；攀葛乃得至，啖數枚 | G「躋險援葛至其下，啗數枚」；W「攀援藤葛，乃得至上。各啖數枚」 | 保留 Y 的岩、啖及簡句，不添各、噉或至上。 |
+| 有胡麻糝 | G「有胡麻飯焉」；W、L「有胡麻飯糝」 | 保留 Y；題目白話說芝麻飯粒，三件線索的意義不變，不悄加「飯」。 |
+| 此處去人徑不遠 | G「此近人矣」；W、L「此知去人徑不遠」 | 保留 Y；任務中的「此知」列作對校，題庫引文用「此處」。 |
+| 度山出一大溪 | G「遂渡山」；W、L 有「便共沒水，逆流二三里，得度山出一大溪」 | Y 不記逆流里數，旁白不添加涉水逆流的情節。 |
+| 因要還家 | G、W「因邀還家」 | 要通邀，保留原字，在詞注說明。 |
+| 家筒瓦屋 | G 無屋瓦記載；W「其家筒瓦屋」；L 電子字作「其家銅瓦屋」 | 主線指定採 Y「筒瓦屋」，說形狀，不做銅金屬材質解釋。 |
+| 南壁及東壁下各有一大床 | G「南東二璧」 | Y 直接作壁；G 校注與方向疑義見 R0 典藏，不沿用到 Y。 |
+| 角懸鈴，上金銀交錯，床頭各十侍婢 | G「帳角懸鈴」及「各有數侍婢」 | 保留 Y，不添帳、有等字。 |
+| 有胡麻飯、山羊脯 | G、W、L 另有牛肉 | 不補入牛肉。 |
+| 百鳥鳴呼，更懷土 | G「百鳥啼鳴，更懷鄉」；W「百鳥啼鳴，更懷悲思」 | 保留 Y「鳴呼」，解作鳥鳴，不改成計畫的「啼鳴」。 |
+| 問得七世孫 | G「鄉邑零落，已十世矣」；E「訊問得七世孫」；W、L「問訊得七世孫」 | 保留 Y 七世，不加訊；七代不等於固定七百年。 |
+| 傳聞上世入山，迷不得歸（篇止） | W、L 尚有晉太元八年再去之事 | Y 此引文無後日再入山，不補結尾；比較表「能否重返」只能寫未交代。 |
+| 《幽明錄》曰 | G 篇末「出《神仙記》」，附明抄本作《搜神記》校注 | 源流標示依見證，不把 G 冒標為《幽明錄》。 |
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc 'cat docs/plan.md docs/content/acts.md docs/content/glossary.md docs/content/compare_taohuayuan.md; ls Assets/_Project/Data; ls docs/content/r3; git status --short; test ! -f RTK.md || cat RTK.md' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+---
+date: 2026-11-07
+type: 計劃書
+tags: [unity-webgl, 教育遊戲, 幽明錄, 劉晨阮肇, 桃花源記, 比較閱讀, 國文]
+---
+
+# 〈劉晨阮肇入天台〉Unity WebGL 教育遊戲計劃書（草案 v0.1）
+
+- 專案代號：`liuruan-tiantai`（實體路徑 `/Volumes/hk6429/projects/liuruan-tiantai`，`~/projects` 是 symlink，Codex 一律帶實體路徑）
+- 參考影片：`~/Downloads/F3-pUil44IpPP3fK.mp4`（UE5 Q 版小勇者，47 秒：帳篷村 → 開寶箱 → 木樁 → 光束森林小徑 → 營火帳篷）
+- 產線：沿用〈劉姥姥〉`~/projects/liulaolao-garden`（Unity 6000.3.27f1 URP WebGL＋Boot 場景包切塊＋R30 畫質工具）與 `/unity-webgl-edu-game` skill
+- 分工：**CC 規劃、寫任務書、驗收；Codex 執行**，每輪四線平行，只有 U 線碰 UnityMCP
+
+---
+
+## 一、教學目標
+
+| # | 目標 | 遊戲中怎麼學 |
+|---|---|---|
+| 1 | 讀懂志怪小說的敘事結構：入山 → 遇仙 → 留居 → 思歸 → 返鄉 | 五幕就是五段，每幕結束時解鎖原文 |
+| 2 | 抓線索推論：蕪菁葉、流杯、胡麻飯糝 →「此知去人徑不遠」 | 溪中漂流物三選一推論題 |
+| 3 | 「仙界一日，人間百年」的時間母題 | 結局村莊整個換樣，七世孫出場 |
+| 4 | 與〈桃花源記〉比較閱讀 | 結局比較表：入口、異境樣貌、離開方式、能否重返 |
+
+## 二、角色
+
+| 影片 | 本作 |
+|---|---|
+| 紅帽小勇者（玩家） | **劉晨**：Q 版漢代採藥人，頭巾、短褐、背簍、腰插小斧 |
+| 發光小象夥伴 | **阮肇**：AI 跟隨，會落後、會回頭催；左下頭像＝阮肇 |
+| 村民 | 二女子、三四十名仙女（遠景群像，用同一模型換色） |
+| 結局 NPC | 七世孫 |
+
+不做戰鬥。影片的劍盾改成小斧＋背簍；木樁靶場改成「取穀皮」的楮樹林。
+
+## 三、遊戲流程（五幕，約 15 分鐘，一節課可玩完＋討論）
+
+台詞與旁白**只引原文逐字**，自撰限簡短白話旁白，不加情節（劉姥姥鐵律沿用）。
+
+| 幕 | 影片對應段 | 原文情節 | 互動 | 考點 |
+|---|---|---|---|---|
+| 一、迷山 | 森林小徑＋光束 | 入天台山取穀皮，迷不得返，經十三日糧乏盡 | 剝 5 棵楮樹皮（＋穀皮計數）；HUD 5 格飢餓值隨時間遞減；小地圖逐漸起霧 | 「迷不得返」的處境 |
+| 二、攀桃 | 森林盡頭山壁 | 遙望山上桃樹，絕巖邃澗，攀援藤葛乃得至上，各噉數枚，飢止體充 | 沿藤蔓攀爬小段；摘桃，飢餓值回滿 | 困境轉折 |
+| 三、流杯 | 開寶箱 | 持杯取水，見蕪菁葉、一杯流出、有胡麻飯糝 →「此知去人徑不遠」 | 溪中三件漂流物＝三個寶箱，按 [E] 撿起；集滿後推論題；涉水逆流 | 線索推論 |
+| 四、仙村 | 帳篷村＋營火＋告示板 | 溪邊二女子喚「劉、阮二郎」；銅瓦屋、絳羅帳、帳角懸鈴；停半年，春時百鳥啼鳴，懷悲思求歸 | 村中任務告示板（原文段落卡）；季節由春轉春、鳥鳴；「求歸」選項 | 身在仙境的矛盾心理 |
+| 五、歸鄉 | （影片無，本作加碼） | 親舊零落，邑屋改異，無復相識；問訊得七世孫 | 回到第一幕起點的村子，整個換樣（同場景換一套建物＋陌生村民）；七世孫對話 | 時間母題＋比較閱讀 |
+
+結局：全文＋推論題（為什麼會是七世？）＋〈桃花源記〉比較表＋成績卡（沿用 QuizStats）。
+
+**待你決定**：原文中女子留宿的段落（「各就一帳宿」那段）國中不適合，建議**整段略過**，只用旁白「遂停半年」帶過。
+
+## 四、HUD（照影片版面）
+
+| 位置 | 影片 | 本作 |
+|---|---|---|
+| 左上 | 5 顆火焰＋「+25 Embers」 | 5 顆桃形飢餓值＋「穀皮 ×N」 |
+| 右上 | 3 個菱形技能格（G/R/F） | 剝皮／取水／呼喚阮肇（手機改成三顆圓鈕） |
+| 左下 | 小象頭像＋點狀冷卻環 | 阮肇頭像＋呼喚冷卻環 |
+| 右下 | 小地圖 | 小地圖（正交俯視 RenderTexture，第一幕會起霧） |
+| 中下 | `[E] Close the chest` | `[E] 撿起` 互動提示（手機改「互動」鈕） |
+
+## 五、美術定調
+
+- 整體：照影片的**風格化 Q 版＋暖陽光束**（頭身比約 1:2.5、飽和暖綠、強烈斜射陽光、柔和陰影）。跟劉姥姥的半寫實武俠不同，這次要可愛。
+- 天台山：松、竹、楮樹、藤蔓、絕巖、溪澗；光束用體積光假面片＋懸浮塵粒（不跑真體積光，WebGL 撐不住）。
+- 仙村：**銅瓦屋**（銅綠＋金邊屋瓦會反光）、絳紅羅帳、帳角懸鈴（風動＋音效）、桃花樹；比影片的帳篷村更夢幻。
+- 歸鄉村：同一塊地，換成破舊陌生的漢代民居、灰冷色調，與仙村形成反差。
+- 產線：codex-image2 概念圖 → **Dzine Normal**（10 點／件）轉 3D → headless Blender 瘦身 → Mixamo 自動綁骨 → Unity Humanoid。
+
+**Dzine 預算**：人物 4（劉晨、阮肇、仙女、七世孫）＋建物道具約 16 件 ≈ 20 件 × 10 點 ＝ 約 200 點。
+
+## 六、技術規劃（只列與劉姥姥不同處）
+
+| 項目 | 規劃 |
+|---|---|
+| 鏡頭 | 第三人稱跟隨＋碰撞縮距（沿用 CamOcclusion），比劉姥姥更低、更貼近，跟影片一樣 |
+| 場景 | 一個大地形分三區（森林／溪谷／村），Boot＋場景包切塊沿用 R30 |
+| 新系統 | `HungerSystem`、`CompanionFollow`（NavMesh 跟隨＋落後催促）、`MinimapCam`、`ClimbZone`、`DriftPickup`、`SeasonSwap`（歸鄉換景） |
+| 沿用 | BootLoader、PlayerController、TouchControls、QualityTier／QualityToggle、FontSubset（RebuildNoDialog）、ClueManager、QuizStats、EpilogueDirector、R30Lighting／R30Foliage、deploy.sh／verify.sh |
+| 包體 | data < 26,214,400 bytes；場景包每塊 20 MiB |
+| 部署 | CF Pages＋Netlify（不推 Vercel）；itch 等你說要再上；不推 GitHub（照劉姥姥） |
+
+## 七、四線分工與輪次
+
+| 線 | 負責 | 寫入範圍 | 工具 |
+|---|---|---|---|
+| **U** | Unity 組裝、建置 | `Assets/`、`ProjectSettings/` | Codex＋UnityMCP（唯一） |
+| **S** | 新系統 C# 原始碼（先在外部寫好、附 EditMode 測試） | `staging/scripts/` | Codex |
+| **A** | 美術：概念圖、天空、貼圖、草叢卡片 | `staging/art/` | Codex 生圖（codex-image2） |
+| **C** | 內容：原文校對、題目、比較表、教師手冊 | `sources/`、`Assets/_Project/Data/`、`docs/` | Codex |
+
+Dzine、Mixamo 要用瀏覽器，由 **CC 主線用 Chrome 操作**（Codex 碰不到你的 Chrome）。
+
+| 輪 | U | S | A | C | 驗收 |
+|---|---|---|---|---|---|
+| R0 開專案 | 從劉姥姥複製骨架、新建 Boot／Main、灰盒地形三區 | HungerSystem、CompanionFollow | 概念圖 6 張（森林、溪谷、仙村、歸鄉村、劉晨、阮肇） | 原文取得與校對（太平廣記卷 61 引幽明錄為底本）→ `sources/liuruan_tw.txt` | 你看概念圖定調 |
+| R1 白模可玩 | 灰盒走完五幕、HUD 版面 | MinimapCam、ClimbZone、DriftPickup | 天空全景、地面貼圖、草叢卡片 | clues.json＋題目＋比較表 | 瀏覽器實開灰盒版 |
+| R2 3D 生成 | 匯入 Dzine 模型 | SeasonSwap、EpilogueDirector 改寫 | 建物道具概念圖（單一主體淺灰底） | 教師手冊、學習單 | 主線跑 Dzine＋Mixamo |
+| R3 質感 | 地形、植被風動、光束、後製、仙村擺件密度 | 觸控三鈕、手機 HUD | 補圖、UI 圖示（桃、穀皮、頭像） | 字型子集字表、製作說明 | 改前改後對照圖 |
+| R4 審查 | 修正 | 修正 | 修正 | 四位專家走查（遊戲、國文、UX、效能） | 你說「全部修正」 |
+| R5 上線 | build＋場景包 | — | — | 上線文案 | deploy.sh＋verify.sh md5＋瀏覽器實開 |
+
+每輪派工規格（照劉姥姥）：任務書寫明寫入範圍、驗收條件、鐵律；`codex exec -C /Volumes/hk6429/projects/liuruan-tiantai -s workspace-write`；驗收看實際 diff 與檔案，不看回報文字；20 分鐘沒動靜視為卡住。
+
+## 八、需要你決定的事
+
+1. 女子留宿段：建議整段略過（見第三節）。
+2. 專案代號 `liuruan-tiantai`、遊戲名〈天台山・流杯記〉，可以嗎？
+3. Dzine 約 200 點，點數夠不夠？
+4. 上線範圍：只上 CF＋Netlify，還是比照劉姥姥也上 itch？
+
+## 九、風險
+
+| 風險 | 對策 |
+|---|---|
+| Q 版光束畫質在 WebGL 達不到影片水準 | 先做森林一區當樣板，你點頭再推其他區（skill 2.5 節） |
+| 原文版本差異（太平廣記／太平御覽／藝文類聚字句不同） | C 線列出異文表，以太平廣記為底本並註明 |
+| 阮肇 AI 跟隨卡地形 | NavMesh＋超距瞬移回身邊 |
+| UnityMCP 斷線（本 session 開頭就是 ECONNREFUSED） | 開工前請你開 Unity，Window → MCP for Unity → Start Server |
+# 五幕內容契約（C-R1）
+
+底本：[《太平御覽》卷四十一引《幽明錄》](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)。逐字正文見 `sources/liuruan_tw.txt`，校改與刪節見 `sources/variants.md`。白話僅供閱讀輔助，不是新增人物台詞。
+
+依 plan 第一節教學目標與第三節流程編排；主線本輪決定優先於舊 plan 的版本用字。以下原文與題庫相同。文件的刪節標記為〔略〕，正文與遊戲則只顯示「……」。
+
+## 第一幕：迷山：糧盡的困境
+
+- 段落：P01；卷軸 id=0，act=1。
+- 出現位置：森林小徑；入山取皮、迷路與缺糧後解鎖。
+
+> 漢明帝永平五年，剡縣劉晨、阮肇共入天台取穀皮，迷不得返，經十餘日，糧食乏盡，饑餒殆死。
+
+白話：漢明帝永平五年，剡縣的劉晨與阮肇進天台山取穀樹皮，迷路無法返回。十多天後，糧食吃完，幾乎餓死。
+
+考點：「迷不得返」與「糧食乏盡」合起來，說明兩人面臨什麼處境？
+
+答案：無法找到歸路，又缺少維生食物
+
+說明：兩人既迷路又缺糧，生存受到威脅；後來吃桃子才出現轉機。
+
+## 第二幕：攀桃：困境的轉機
+
+- 段落：P02；卷軸 id=1，act=2。
+- 出現位置：山壁與桃樹旁；攀葛吃桃後解鎖。
+
+> 遙望山上有一桃樹，大有子實，而絕岩邃澗，了無登路。攀葛乃得至，啖數枚，而饑止體充。
+
+白話：遠遠看見山上有棵桃樹，結了很多果實；岩壁陡峭、山澗幽深，沒有登上的路。他們攀著葛藤才到達，吃了幾顆桃子後，止住飢餓，恢復體力。
+
+考點：「而饑止體充」在故事發展上，主要有什麼作用？
+
+答案：呈現體力恢復，使探路得以繼續
+
+說明：「饑止體充」寫飢餓消除、體力恢復，讓原本幾乎餓死的兩人能繼續行動。
+
+## 第三幕：流杯：沿水發現線索
+
+- 段落：P03；卷軸 id=2，act=3。
+- 出現位置：溪邊取水處；觀察菜葉、杯子與杯中飯粒後解鎖。
+
+> 復下山持杯取水，欲盥漱，見蕪菁葉從山腹流出，甚鮮新。復一杯流出，有胡麻糝。相謂曰：「此處去人徑不遠。」度山出一大溪。
+
+白話：兩人下山拿杯子取水，想洗手漱口，看見新鮮的蕪菁葉從山腹漂出；又漂出一只杯子，裡面有芝麻飯粒。他們認為附近有人行的路，越過山後到了一條大溪。
+
+考點：這段文字呈現的事情，先後順序是哪一項？
+
+答案：取水見漂流物，再推知人徑不遠
+
+說明：先有取水時的觀察，再有「去人徑不遠」的判斷，最後才寫到大溪；兩人此時尚未見到女子。
+
+## 第四幕：仙村：美景中的思歸
+
+- 段落：P04–P06；卷軸 id=4，act=4。
+- 出現位置：女子住處；迎接、款待、半年轉場與求歸送行後解鎖。
+
+> 溪邊有二女子，姿質妙絕，見二人持杯出，便笑曰：「劉、阮二郎捉向所失流杯來。」晨、肇既不識之，二女便呼其姓，如似有舊，相見忻喜，問：「來何晚耶？」因要還家。
+> 家筒瓦屋，南壁及東壁下各有一大床，皆施絳羅帳，角懸鈴，上金銀交錯，床頭各十侍婢。便敕云：「劉、阮二郎，經涉山阻，向雖得瓊實，猶尚虛弊，可速作食。」有胡麻飯、山羊脯，甚美。食畢行酒，有群女來，各持三五桃子，笑而言：「賀汝婿來。」酒酣作樂，劉、阮忻怖交並。
+> ……遂停半年。氣候草木是春時，百鳥鳴呼，更懷土，求歸甚苦。女曰：「當如何？」遂呼前來女子有三四十人集會奏樂，共送劉、阮，指示還路。
+
+白話：溪邊的兩名女子叫出劉、阮的姓，邀他們回家。屋頂覆筒瓦，屋內有紅色羅帳與鈴飾，並以食物款待。……兩人停留半年，氣候草木像春天，鳥聲使他們更思念家鄉，苦求返家。女子們奏樂送行，指出歸路。
+
+考點：仙村有美食與春景，兩人為何仍然「求歸甚苦」？
+
+答案：聽見百鳥鳴叫，因此更深思念故鄉
+
+說明：「百鳥鳴呼，更懷土」直接連結鳥聲與思鄉。生活舒適，仍不能消除兩人對故鄉的牽掛。
+
+## 第五幕：歸鄉：陌生的故鄉
+
+- 段落：P07；卷軸 id=5，act=5。
+- 出現位置：返鄉村落；發現人事全非、問到七世孫後解鎖。
+
+> 既出，親舊零落，邑屋全異，無復相識。問得七世孫，傳聞上世入山，迷不得歸。
+
+白話：出山後，親友已凋零，村落房屋全變了，也沒有認識的人。問到自己的七世孫，才知道後人傳說祖先入山迷路，未能返回。
+
+考點：哪些訊息最能互相印證，說明故鄉已經過漫長歲月？
+
+答案：屋舍改變且遇見七世孫，親友也已凋零
+
+說明：故鄉屋舍與人事的改變，再加上七世孫的出現，共同顯示人間已過多代；不能只憑屋舍改變判定代數。
+
+## 版本與互動界線
+
+- 第一幕 Y 是「取穀皮」「經十餘日」；五棵樹、五格飢餓值是遊戲規則，不是原文數字，旁白不冒稱原文寫五棵。
+- 第二幕用「啖數枚」「攀葛乃得至」，不沿用舊 plan 的「各噉數枚」。
+- 第三幕三種線索是蕪菁葉、杯、胡麻飯粒；Y 逐字作「胡麻糝」「此處去人徑不遠」。W 長本作「胡麻飯糝」「此知去人徑不遠」，僅在異文表對照。Y 無「逆流二三里」，不加入旁白或引文。
+- 第三幕加題 id=3、act=3，requires=[2]；應在第三幕觀察線索後觸發，與第三幕卷軸是兩筆可計分題。
+- 第四幕為「筒瓦屋」，瓦的形狀不代表銅材質。留宿段整段〔略〕，只用「遂停半年」轉場；正文以「……」標省略，省去文字不翻譯、不出題。Y「百鳥鳴呼」保留，不改成舊 plan 的「百鳥啼鳴」。
+- 第五幕用「邑屋全異」「問得七世孫」，不換成他本「邑屋改異」「問訊得七世孫」。七世不可換算成固定七百年。
+
+## 結局與資料介接
+
+結局 id=6、act=5，唯一 isEnding=true。original 是七段刪節整理本全文，含段落換行，沒有另加題名；白話也只摘要保留情節。題目「為什麼回家已是七世？」以異境與人間時間落差為合理推論，不假稱原文明說固定換算率。feedback 不提省略內容。
+
+`clues.json` 共7筆，answer 為0起算，wrongHints 每題2條，options 每題4項。六筆非結局中，第3幕有兩筆，其餘每幕一筆。頂層不另放 infer，避免同題重複。endingText 明填本篇來源，避免落入舊專案的預設揭曉文。
+
+`compare.json` 是 rows: [{aspect, liuruan, taohua}]；`narration.json` 是 acts: [{act, sentences}]。每個句子為一個陣列元素，無人物新台詞。旁白與比較表仍須 S／U 線串接；既有 ClueData 沒有 act，須由該線處理。本輪不改 C#、場景或 Prefab，也不操作 Unity。
+# 字詞注釋（C-R1）
+
+唯一例句來源：[《太平御覽》卷四十一引《幽明錄》](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)，依 `sources/liuruan_tw.txt` 校改刪節整理本。例句全部可在現行正文逐字找到；不是從他本補入的遊戲台詞。解釋供國中閱讀，完整改字理由見 `sources/variants.md`。
+
+| 字詞 | 注釋 | 正文例句 |
+|---|---|---|
+| 剡縣 | 古地名，在今浙江一帶；剡讀ㄕㄢˋ。 | 「剡縣劉晨、阮肇」 |
+| 穀皮 | 穀樹的樹皮，通常解作構樹（楮樹）皮；不是稻穀外殼。 | 「共入天台取穀皮」 |
+| 迷不得返 | 迷路，無法回去；不得是不能，不是不肯。 | 「迷不得返」 |
+| 十餘日 | 十多天；不能改說恰好十三天。 | 「經十餘日」 |
+| 乏盡 | 缺乏而用盡。 | 「糧食乏盡」 |
+| 饑餒殆死 | 餓得幾乎死去；殆，幾乎。保留底本饑字。 | 「饑餒殆死」 |
+| 子實 | 果實，此處指桃子。 | 「大有子實」 |
+| 絕岩邃澗 | 陡峭的岩壁與幽深的山澗。 | 「而絕岩邃澗」 |
+| 了無 | 完全沒有。 | 「了無登路」 |
+| 攀葛 | 攀著葛藤。 | 「攀葛乃得至」 |
+| 啖 | 吃，讀ㄉㄢˋ；不換作他本的啗或未經核證的噉。 | 「啖數枚」 |
+| 饑止體充 | 飢餓消除，身體恢復充實有力。 | 「而饑止體充」 |
+| 盥漱 | 洗手、漱口；盥讀ㄍㄨㄢˋ，漱讀ㄕㄨˋ。 | 「欲盥漱」 |
+| 蕪菁 | 一種可食根、葉的蔬菜；本文出現的是葉子。 | 「見蕪菁葉從山腹流出」 |
+| 復 | 又、再。 | 「復一杯流出」 |
+| 胡麻糝 | 芝麻飯粒；胡麻為芝麻，糝此處指飯粒。Y 沒有飯字，白話可說飯粒。 | 「有胡麻糝」 |
+| 去人徑不遠 | 距離人行的小路不遠；去是距離，不是離去。 | 「此處去人徑不遠」 |
+| 度山 | 越過山。 | 「度山出一大溪」 |
+| 姿質妙絕 | 容貌、姿態十分美好。 | 「姿質妙絕」 |
+| 捉向所失流杯來 | 拿著剛才失落而漂走的杯子來；捉是拿，向是剛才。 | 「捉向所失流杯來」 |
+| 二郎 | 稱呼劉、阮兩位男子，不指各排行第二。 | 「劉、阮二郎」 |
+| 忻喜 | 高興、喜悅；忻通欣，正文保留忻。 | 「相見忻喜」 |
+| 要 | 邀請；此義讀ㄧㄠ。 | 「因要還家」 |
+| 筒瓦屋 | 覆有筒形屋瓦的房屋；筒說形狀，不能解作銅製屋頂。 | 「家筒瓦屋」 |
+| 絳羅帳 | 深紅色薄絲織品做的帷帳；絳讀ㄐㄧㄤˋ。 | 「皆施絳羅帳」 |
+| 侍婢 | 服侍人的女子，反映古代身分制度。 | 「床頭各十侍婢」 |
+| 敕云 | 吩咐說；此處敕不是指皇帝詔書，云是說。 | 「便敕云」 |
+| 瓊實 | 像美玉般珍貴的果實，指先前吃的桃子。 | 「向雖得瓊實」 |
+| 虛弊 | 虛弱、疲憊。 | 「猶尚虛弊」 |
+| 山羊脯 | 山羊肉乾；脯讀ㄈㄨˇ。 | 「山羊脯」 |
+| 行酒 | 斟酒勸飲。 | 「食畢行酒」 |
+| 三五 | 三個、五個，泛指幾個，不是十五個。 | 「各持三五桃子」 |
+| 忻怖交並 | 高興與害怕兩種情緒交織。 | 「劉、阮忻怖交並」 |
+| 遂 | 於是、就；停指停留，該句依主線例外據W改字。 | 「遂停半年」 |
+| 懷土 | 思念家鄉；土指鄉土。 | 「更懷土」 |
+| 親舊零落 | 親人與老朋友已凋零、離散。 | 「親舊零落」 |
+| 邑屋全異 | 村落與房屋完全變了樣；邑是聚落。 | 「邑屋全異」 |
+| 無復相識 | 再也沒有認識的人；復是再。 | 「無復相識」 |
+| 七世孫 | 傳了七代的後裔；世指世代，不是七歲或固定七百年。 | 「問得七世孫」 |
+| 上世 | 前代、祖先所處的年代。 | 「傳聞上世入山」 |
+
+「胡麻飯糝」「此知去人徑不遠」「各噉數枚」「邑屋改異」不是這份正文逐字用語；閱讀提問可談相同意思，但原文欄不得替換。「百鳥鳴呼」保留底本，譯作鳥兒鳴叫。留宿段整段〔略〕，不取其中字詞作例句。
+# 〈劉晨阮肇〉與〈桃花源記〉比較閱讀
+
+劉、阮底本：[《太平御覽》卷四十一引《幽明錄》](https://zh.wikisource.org/wiki/太平御覽/0041#天台山)，本專案刪節校改正文見 `sources/liuruan_tw.txt`。桃花源來源：[陶淵明〈桃花源記〉，維基文庫](https://zh.wikisource.org/zh-hant/桃花源記)，[固定修訂2620894](https://zh.wikisource.org/w/index.php?title=桃花源記&oldid=2620894)。2026-11-07 核讀電子頁，未核原刻影像。
+
+下表與 `Assets/_Project/Data/compare.json` 八列文字完全相同。每格「」為原文，格內其餘文字為概括或閱讀詮釋。無重返記載不等於證明無法重返；志怪時間落差也不能套用到桃花源漁人身上。
+
+| 面向 | 〈劉晨阮肇〉 | 〈桃花源記〉 |
+|---|---|---|
+| 入口 | 迷山後循漂流物發現人跡，再越山到溪邊：「此處去人徑不遠。」「度山出一大溪。」 | 沿溪遇桃林，再穿山口進入：「緣溪行」「山有小口，髣髴若有光。」 |
+| 異境樣貌 | 屋舍裝飾華美、氣候似春：「家筒瓦屋」「皆施絳羅帳」「氣候草木是春時」。 | 農村開闊，田池桑竹俱全：「土地平曠，屋舍儼然。」「有良田、美池、桑竹之屬。」 |
+| 居民 | 兩名女子及侍婢、群女接待來客：「溪邊有二女子」「床頭各十侍婢」「有群女來」。文本未直接稱其為仙女。 | 避秦亂者的後裔與家屬，老幼安樂：「自云先世避秦時亂」「黃髮垂髫，並怡然自樂。」 |
+| 停留 | 停留半年後強烈思鄉：「遂停半年。」「更懷土，求歸甚苦。」（停字校改見異文表。） | 受村人款待數日後辭別：「餘人各復延至其家，皆出酒食。停數日，辭去。」 |
+| 離開方式 | 女子們奏樂送別，指出歸路：「共送劉、阮，指示還路。」 | 自行辭別後找到船，沿原路作記號：「既出，得其船，便扶向路，處處誌之。」 |
+| 回去後 | 故鄉人事全非，問到七世孫：「親舊零落，邑屋全異，無復相識。問得七世孫」。 | 到郡城報告，太守遣人再尋：「及郡下，詣太守，説如此。太守即遣人隨其往」。未寫漁人返鄉已過多代。 |
+| 能否重返 | 本引文未交代再尋或重返；篇末只說祖先入山傳聞：「傳聞上世入山，迷不得歸。」不能據此斷言永遠不能回到異境。 | 重尋迷路，未能再入：「尋向所誌，遂迷，不復得路。」後續又寫「後遂無問津者。」 |
+| 作者寓意 | 閱讀詮釋：以「遂停半年」對照「問得七世孫」，呈現異境與人間時間落差，以及「更懷土」的思鄉牽掛；不是作者明說的唯一寓意。 | 閱讀詮釋：由「先世避秦時亂」與「並怡然自樂」，可讀為嚮往遠離戰亂、安樂生活；「不復得路」又使理想世界難以尋得。 |
+
+## 〈桃花源記〉原文（比較所據之主文）
+
+以下排除網頁「一作」異文夾注與附詩；分段、標點為教學整理。將說話義「自雲」正規化為「自云」，與同段「語云」一致；其餘保留來源主文的髣髴、纔、鷄、絶、説、誌等字形，不擅換成別本。另存 `sources/evidence/taohuayuan.txt`，供比較引文逐字驗證。
+
+> 晉太元中，武陵人捕魚為業。緣溪行，忘路之遠近。忽逢桃花林，夾岸數百步，中無雜樹，芳草鮮美，落英繽紛。漁人甚異之。復前行，欲窮其林。
+
+> 林盡水源，便得一山，山有小口，髣髴若有光。便捨船，從口入，初極狹，纔通人。復行數十步，豁然開朗。土地平曠，屋舍儼然。有良田、美池、桑竹之屬。阡陌交通，鷄犬相聞。其中往來種作，男女衣著，悉如外人。黃髮垂髫，並怡然自樂。
+
+> 見漁人，乃大驚，問所從來，具答之。便要還家，為設酒殺鷄作食。村中聞有此人，咸來問訊。自云先世避秦時亂，率妻子邑人來此絶境，不復出焉，遂與外人間隔。問今是何世，乃不知有漢，無論魏晉。此人一一為具言所聞，皆歎惋。餘人各復延至其家，皆出酒食。停數日，辭去。此中人語云：「不足為外人道也。」
+
+> 既出，得其船，便扶向路，處處誌之。及郡下，詣太守，説如此。太守即遣人隨其往，尋向所誌，遂迷，不復得路。
+
+> 南陽劉子驥，高尚士也。聞之，欣然規往。未果，尋病終。後遂無問津者。
+clues.json
+clues.json.meta
+compare.json
+compare.json.meta
+narration.json
+narration.json.meta
+ M AGENTS.md
+?? briefs/A-R3.md
+?? briefs/C-R3.md
+?? briefs/S-R3.md
+?? briefs/U-R3a.md
+?? docs/r3-diagnosis.md
+?? logs/codex-A-R3.log
+?? logs/codex-C-R3.log
+?? logs/codex-S-R3.log
+?? logs/codex-U-R3a.log
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "cat Assets/_Project/Data/clues.json Assets/_Project/Data/narration.json Assets/_Project/Data/compare.json; rg -n '推論|七世|options|question' Assets/_Project/Scripts/Systems/EpilogueCore.cs staging/scripts/Runtime/EpilogueCore.cs; cat briefs/C-R3.md" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+{
+  "clues": [
+    {
+      "id": 0,
+      "act": 1,
+      "title": "迷山：糧盡的困境",
+      "original": "漢明帝永平五年，剡縣劉晨、阮肇共入天台取穀皮，迷不得返，經十餘日，糧食乏盡，饑餒殆死。",
+      "plain": "漢明帝永平五年，剡縣的劉晨與阮肇進天台山取穀樹皮，迷路無法返回。十多天後，糧食吃完，幾乎餓死。",
+      "question": "「迷不得返」與「糧食乏盡」合起來，說明兩人面臨什麼處境？",
+      "options": [
+        "山路雖然熟悉，卻因取皮而耽擱",
+        "無法找到歸路，又缺少維生食物",
+        "擔心遇到居民，因此不願意返家",
+        "雖然備有糧食，卻找不到採集物"
+      ],
+      "answer": 1,
+      "feedback": "兩人既迷路又缺糧，生存受到威脅；後來吃桃子才出現轉機。",
+      "wrongHints": [
+        "「不得返」是不能回去，還是不願回去？",
+        "「乏盡」表示糧食所剩不多，還是已經用完？"
+      ]
+    },
+    {
+      "id": 1,
+      "act": 2,
+      "title": "攀桃：困境的轉機",
+      "original": "遙望山上有一桃樹，大有子實，而絕岩邃澗，了無登路。攀葛乃得至，啖數枚，而饑止體充。",
+      "plain": "遠遠看見山上有棵桃樹，結了很多果實；岩壁陡峭、山澗幽深，沒有登上的路。他們攀著葛藤才到達，吃了幾顆桃子後，止住飢餓，恢復體力。",
+      "question": "「而饑止體充」在故事發展上，主要有什麼作用？",
+      "options": [
+        "交代山中果實，全年都可以採食",
+        "說明兩人吃飽，決定留山不返家",
+        "暗示山路平坦，採果原本無困難",
+        "呈現體力恢復，使探路得以繼續"
+      ],
+      "answer": 3,
+      "feedback": "「饑止體充」寫飢餓消除、體力恢復，讓原本幾乎餓死的兩人能繼續行動。",
+      "wrongHints": [
+        "先比較吃桃子前後，兩人的身體有何變化。",
+        "下段接著寫下山取水，這需要什麼條件？"
+      ]
+    },
+    {
+      "id": 2,
+      "act": 3,
+      "title": "流杯：沿水發現線索",
+      "original": "復下山持杯取水，欲盥漱，見蕪菁葉從山腹流出，甚鮮新。復一杯流出，有胡麻糝。相謂曰：「此處去人徑不遠。」度山出一大溪。",
+      "plain": "兩人下山拿杯子取水，想洗手漱口，看見新鮮的蕪菁葉從山腹漂出；又漂出一只杯子，裡面有芝麻飯粒。他們認為附近有人行的路，越過山後到了一條大溪。",
+      "question": "這段文字呈現的事情，先後順序是哪一項？",
+      "options": [
+        "取水見漂流物，再推知人徑不遠",
+        "見到溪邊女子，再拾起漂流杯子",
+        "找到山中住屋，再沿溪返回取水",
+        "渡過大溪之後，再上山尋找桃樹"
+      ],
+      "answer": 0,
+      "feedback": "先有取水時的觀察，再有「去人徑不遠」的判斷，最後才寫到大溪；兩人此時尚未見到女子。",
+      "wrongHints": [
+        "先找「見」與「相謂曰」的前後位置。",
+        "女子出場在下一段，別把後文移到前面。"
+      ]
+    },
+    {
+      "id": 3,
+      "act": 3,
+      "title": "流杯推論：物品透露人跡",
+      "original": "復下山持杯取水，欲盥漱，見蕪菁葉從山腹流出，甚鮮新。復一杯流出，有胡麻糝。相謂曰：「此處去人徑不遠。」度山出一大溪。",
+      "plain": "漂下的蕪菁葉很新鮮，杯子裡還有芝麻飯粒。兩人根據這些線索，推測附近有人活動。",
+      "question": "蕪菁葉、杯子與胡麻飯粒，為何使兩人推知「此處去人徑不遠」？",
+      "options": [
+        "物品隨水漂來，證明前方必定有大海",
+        "杯中留有食物，證明採集者就在眼前",
+        "菜葉新鮮且有餐具熟食，顯示附近有人",
+        "三物都能在山中自生，顯示前方有果樹"
+      ],
+      "answer": 2,
+      "feedback": "新鮮菜葉加上人使用的杯子與做好的食物，支持附近有人活動的推論；仍不能斷定人的身分或已在眼前。",
+      "wrongHints": [
+        "杯子和煮好的飯粒，與自然生長的桃子有何不同？",
+        "推論要同時解釋三種線索，不能只看水流。"
+      ],
+      "requires": [
+        2
+      ]
+    },
+    {
+      "id": 4,
+      "act": 4,
+      "title": "仙村：美景中的思歸",
+      "original": "溪邊有二女子，姿質妙絕，見二人持杯出，便笑曰：「劉、阮二郎捉向所失流杯來。」晨、肇既不識之，二女便呼其姓，如似有舊，相見忻喜，問：「來何晚耶？」因要還家。\n家筒瓦屋，南壁及東壁下各有一大床，皆施絳羅帳，角懸鈴，上金銀交錯，床頭各十侍婢。便敕云：「劉、阮二郎，經涉山阻，向雖得瓊實，猶尚虛弊，可速作食。」有胡麻飯、山羊脯，甚美。食畢行酒，有群女來，各持三五桃子，笑而言：「賀汝婿來。」酒酣作樂，劉、阮忻怖交並。\n……遂停半年。氣候草木是春時，百鳥鳴呼，更懷土，求歸甚苦。女曰：「當如何？」遂呼前來女子有三四十人集會奏樂，共送劉、阮，指示還路。",
+      "plain": "溪邊的兩名女子叫出劉、阮的姓，邀他們回家。屋頂覆筒瓦，屋內有紅色羅帳與鈴飾，並以食物款待。……兩人停留半年，氣候草木像春天，鳥聲使他們更思念家鄉，苦求返家。女子們奏樂送行，指出歸路。",
+      "question": "仙村有美食與春景，兩人為何仍然「求歸甚苦」？",
+      "options": [
+        "屋中食物不足，因此急著回鄉找糧",
+        "女子不肯接待，因此只好另尋住處",
+        "春景突然消失，因此擔心山路封閉",
+        "聽見百鳥鳴叫，因此更深思念故鄉"
+      ],
+      "answer": 3,
+      "feedback": "「百鳥鳴呼，更懷土」直接連結鳥聲與思鄉。生活舒適，仍不能消除兩人對故鄉的牽掛。",
+      "wrongHints": [
+        "「懷土」的「土」指田地，還是家鄉？",
+        "從「百鳥鳴呼」後面尋找心理變化。"
+      ]
+    },
+    {
+      "id": 5,
+      "act": 5,
+      "title": "歸鄉：陌生的故鄉",
+      "original": "既出，親舊零落，邑屋全異，無復相識。問得七世孫，傳聞上世入山，迷不得歸。",
+      "plain": "出山後，親友已凋零，村落房屋全變了，也沒有認識的人。問到自己的七世孫，才知道後人傳說祖先入山迷路，未能返回。",
+      "question": "哪些訊息最能互相印證，說明故鄉已經過漫長歲月？",
+      "options": [
+        "屋舍改變且遇見七世孫，親友也已凋零",
+        "杯子漂下且菜葉新鮮，附近應有人行路",
+        "山上桃子很多且可食，兩人體力已恢復",
+        "女子認得兩人的姓氏，屋裡也備有酒食"
+      ],
+      "answer": 0,
+      "feedback": "故鄉屋舍與人事的改變，再加上七世孫的出現，共同顯示人間已過多代；不能只憑屋舍改變判定代數。",
+      "wrongHints": [
+        "題目問回鄉後的證據，先排除入山時的事。",
+        "哪個選項同時包含人事改變與後代身分？"
+      ]
+    },
+    {
+      "id": 6,
+      "act": 5,
+      "title": "結局：山中半年，人間七世",
+      "original": "漢明帝永平五年，剡縣劉晨、阮肇共入天台取穀皮，迷不得返，經十餘日，糧食乏盡，饑餒殆死。\n遙望山上有一桃樹，大有子實，而絕岩邃澗，了無登路。攀葛乃得至，啖數枚，而饑止體充。\n復下山持杯取水，欲盥漱，見蕪菁葉從山腹流出，甚鮮新。復一杯流出，有胡麻糝。相謂曰：「此處去人徑不遠。」度山出一大溪。\n溪邊有二女子，姿質妙絕，見二人持杯出，便笑曰：「劉、阮二郎捉向所失流杯來。」晨、肇既不識之，二女便呼其姓，如似有舊，相見忻喜，問：「來何晚耶？」因要還家。\n家筒瓦屋，南壁及東壁下各有一大床，皆施絳羅帳，角懸鈴，上金銀交錯，床頭各十侍婢。便敕云：「劉、阮二郎，經涉山阻，向雖得瓊實，猶尚虛弊，可速作食。」有胡麻飯、山羊脯，甚美。食畢行酒，有群女來，各持三五桃子，笑而言：「賀汝婿來。」酒酣作樂，劉、阮忻怖交並。\n……遂停半年。氣候草木是春時，百鳥鳴呼，更懷土，求歸甚苦。女曰：「當如何？」遂呼前來女子有三四十人集會奏樂，共送劉、阮，指示還路。\n既出，親舊零落，邑屋全異，無復相識。問得七世孫，傳聞上世入山，迷不得歸。",
+      "plain": "劉晨、阮肇入山取樹皮而迷路，靠桃子止飢，循水中漂流物發現人跡，受兩名女子款待。……停留半年後思鄉返家，卻發現故鄉人事全非，只問到七世孫。",
+      "question": "為什麼回家已是七世？依全文判斷，哪個解釋最合理？",
+      "options": [
+        "兩人把尋路日數算錯，實際已在山中過完七代",
+        "異境與人間時間不同，山中半年人間已過多代",
+        "七世孫故意隱瞞身分，讓兩人誤以為時代改變",
+        "村人搬走又換了房屋，兩人其實回到別的地方"
+      ],
+      "answer": 1,
+      "feedback": "「遂停半年」與「問得七世孫」形成時間落差，可推論異境與人間的時間不同。這是志怪敘事的安排，原文沒有提供固定的年數換算。",
+      "wrongHints": [
+        "把「遂停半年」與「問得七世孫」放在一起讀。",
+        "哪個解釋能同時說明時間落差與故鄉人事全非？"
+      ],
+      "isEnding": true
+    }
+  ],
+  "endingText": "《太平御覽》卷四十一引《幽明錄》：山中停留半年，歸來已見七世孫。"
+}
+{
+  "acts": [
+    {
+      "act": 1,
+      "sentences": [
+        "劉晨、阮肇入山取穀樹皮。",
+        "他們迷路十多天，糧食吃完了。"
+      ]
+    },
+    {
+      "act": 2,
+      "sentences": [
+        "他們攀著葛藤，到了桃樹旁。",
+        "吃下桃子後，兩人恢復體力。"
+      ]
+    },
+    {
+      "act": 3,
+      "sentences": [
+        "溪中漂來菜葉和盛有飯粒的杯子。",
+        "兩人推想附近有人行的路。"
+      ]
+    },
+    {
+      "act": 4,
+      "sentences": [
+        "溪邊的兩名女子邀他們回家。",
+        "遂停半年。",
+        "鳥聲使他們更思鄉，女子們送他們回去。"
+      ]
+    },
+    {
+      "act": 5,
+      "sentences": [
+        "回鄉後，村落房屋全變了。",
+        "問到七世孫，才聽到祖先入山的傳說。"
+      ]
+    }
+  ]
+}
+{
+  "rows": [
+    {
+      "aspect": "入口",
+      "liuruan": "迷山後循漂流物發現人跡，再越山到溪邊：「此處去人徑不遠。」「度山出一大溪。」",
+      "taohua": "沿溪遇桃林，再穿山口進入：「緣溪行」「山有小口，髣髴若有光。」"
+    },
+    {
+      "aspect": "異境樣貌",
+      "liuruan": "屋舍裝飾華美、氣候似春：「家筒瓦屋」「皆施絳羅帳」「氣候草木是春時」。",
+      "taohua": "農村開闊，田池桑竹俱全：「土地平曠，屋舍儼然。」「有良田、美池、桑竹之屬。」"
+    },
+    {
+      "aspect": "居民",
+      "liuruan": "兩名女子及侍婢、群女接待來客：「溪邊有二女子」「床頭各十侍婢」「有群女來」。文本未直接稱其為仙女。",
+      "taohua": "避秦亂者的後裔與家屬，老幼安樂：「自云先世避秦時亂」「黃髮垂髫，並怡然自樂。」"
+    },
+    {
+      "aspect": "停留",
+      "liuruan": "停留半年後強烈思鄉：「遂停半年。」「更懷土，求歸甚苦。」（停字校改見異文表。）",
+      "taohua": "受村人款待數日後辭別：「餘人各復延至其家，皆出酒食。停數日，辭去。」"
+    },
+    {
+      "aspect": "離開方式",
+      "liuruan": "女子們奏樂送別，指出歸路：「共送劉、阮，指示還路。」",
+      "taohua": "自行辭別後找到船，沿原路作記號：「既出，得其船，便扶向路，處處誌之。」"
+    },
+    {
+      "aspect": "回去後",
+      "liuruan": "故鄉人事全非，問到七世孫：「親舊零落，邑屋全異，無復相識。問得七世孫」。",
+      "taohua": "到郡城報告，太守遣人再尋：「及郡下，詣太守，説如此。太守即遣人隨其往」。未寫漁人返鄉已過多代。"
+    },
+    {
+      "aspect": "能否重返",
+      "liuruan": "本引文未交代再尋或重返；篇末只說祖先入山傳聞：「傳聞上世入山，迷不得歸。」不能據此斷言永遠不能回到異境。",
+      "taohua": "重尋迷路，未能再入：「尋向所誌，遂迷，不復得路。」後續又寫「後遂無問津者。」"
+    },
+    {
+      "aspect": "作者寓意",
+      "liuruan": "閱讀詮釋：以「遂停半年」對照「問得七世孫」，呈現異境與人間時間落差，以及「更懷土」的思鄉牽掛；不是作者明說的唯一寓意。",
+      "taohua": "閱讀詮釋：由「先世避秦時亂」與「並怡然自樂」，可讀為嚮往遠離戰亂、安樂生活；「不復得路」又使理想世界難以尋得。"
+    }
+  ]
+}
+staging/scripts/Runtime/EpilogueCore.cs:26:        public string Prompt => "為什麼找到的是七世孫？";
+staging/scripts/Runtime/EpilogueCore.cs:29:            "「遂停半年」與「問得七世孫」",
+staging/scripts/Runtime/EpilogueCore.cs:32:        public string Explanation => "「遂停半年」與「問得七世孫」；以異境與人間時間落差為合理推論，不假稱原文明說固定換算率。";
+Assets/_Project/Scripts/Systems/EpilogueCore.cs:26:        public string Prompt => "為什麼找到的是七世孫？";
+Assets/_Project/Scripts/Systems/EpilogueCore.cs:29:            "「遂停半年」與「問得七世孫」",
+Assets/_Project/Scripts/Systems/EpilogueCore.cs:32:        public string Explanation => "「遂停半年」與「問得七世孫」；以異境與人間時間落差為合理推論，不假稱原文明說固定換算率。";
+# C 線 R3：故事卡、任務、提示、對話、逐句白話、注釋、題目
+
+先讀 AGENTS.md（**R3 起可加簡短白話提示對話**，規則在鐵律）、docs/r3-diagnosis.md（四專家診斷）、docs/plan.md、sources/liuruan_tw.txt、sources/variants.md、docs/content/acts.md、glossary.md、compare_taohuayuan.md、Assets/_Project/Data/*.json（只讀）。只能寫 docs/content/r3/ 與 tools/check_r3.py。不開 Unity。交件報告 docs/content/r3/C-R3.md。
+
+原則：
+- 原文引用一律逐字照 liuruan_tw.txt（type="original"）。
+- 白話（type="plain"）每句 ≤20 字，給沒讀過故事的國中生，不得新增原文沒有的情節；留宿段照 AGENTS.md 略過，只用「遂停半年」。
+- 地名器物照原文：筒瓦屋（不是銅）、度山出一大溪（不是涉水）、百鳥鳴呼（不是啼鳴）。「洞中方七日，世上已千年」不是本篇原文，出現時要標明「後人俗語」。
+- 遊戲裡**沒有告示板**了（R3b 會移除），第四幕改由二女與屋內事件推進。
+
+## 要交的檔案（JSON 用 UTF-8，格式照寫，S 線會照這個讀）
+1. `story_card.json`：開場故事卡 3–4 張（每張 ≤45 字，含人物、時代「漢明帝永平五年」、剡縣、入天台山取穀皮、迷路十三日糧盡；最後一張「你是劉晨，阮肇在你身旁」＋目標）。格式 `{"cards":[{"text":"…","orig":"可選，原文句"}]}`。
+2. `objectives.json`：五幕每一步 `{goal, why, where, count}`（格式見 briefs/S-R3.md 第 3 點）。第四幕步驟改成：見溪邊二女 → 跟二女回家 → 屋內款待 → 群女來賀 → （遂停半年）→ 聽見百鳥鳴呼 → 求歸。第五幕：回到村口 → 找人問 → 見七世孫。
+3. `hints.json`：每幕每步 30/60/90 秒三級提示，desktop 與 touch 各一版（touch 用「搖桿」「互動鈕」）。`{"acts":[{"act":1,"steps":[{"id":"bark","l1":{"desktop":"…","touch":"…"},"l2":{…},"l3":{…}}]}]}`。l3 是阮肇說的話（例如「跟我來，這邊！」）。
+4. `dialogue.json`（格式見 S-R3 第 2 點）：
+   - 每幕開頭 1–2 句劉阮白話對話（帶出目標）。
+   - 第三幕撿到漂流物時的原文半句＋推論（「此知去人徑不遠」逐字）。
+   - 第四幕：二女原文台詞全部（呼姓、「劉、阮二郎捉向所失流杯來」、「來何晚耶」、款待「敕云」、群女「賀汝婿來」、求歸時女子的原文回應），劉阮的白話反應（例如「她們怎麼認得我們？」對應「晨、肇既不識之」）、奏樂送行。
+   - 第五幕：七世孫——原文是「問得七世孫，傳聞上世入山，迷不得歸」，七世孫台詞用白話轉述並附原文。
+   每個 scene 給 trigger（例如 `act_start:1`、`interact:Act4_Women`、`interact:Act4_House`、`after:half_year`、`interact:Act5_Grandson`）。
+5. `narration.json`（取代現行版）：每幕開頭先顯示**原文關鍵句**再接白話一句。格式 `{"acts":[{"act":1,"lines":[{"text":"…","type":"original"},{"text":"…","type":"plain"}]}]}`。
+6. `sentences.json`：全文 7 段逐句切開，每句 orig＋plain＋terms（格式見 S-R3 第 6 點）。
+7. `glossary_cards.json`：把 glossary.md 40 條轉成 `{term, reading, meaning}`；「要」讀ㄧㄠ；sentences 用到的 terms 都要在這裡。
+8. `questions_r3.json`：補 4 題理解型三選一（一詞多義「去」、二女呼名暗示什麼、「忻怖交並」喜什麼怕什麼、「瓊實」前後呼應），格式沿用 clues.json 題目欄位；並寫明 clues.json:127 與 EpilogueCore 推論題重複，建議保留哪一題。
+9. `epilogue_guide.json`：結局導讀 3–4 頁（半年 vs 七世、為什麼是七世孫、與〈桃花源記〉一句比較、俗語標註），每頁 ≤60 字。
+10. `tools/check_r3.py`：檢查所有 type=original 的字串都在 liuruan_tw.txt 逐字找到（或在 variants.md）、plain ≤20 字（故事卡／導讀依各自上限）、禁用字（銅瓦、涉水、啼鳴、告示板）不出現、sentences 的 terms 都在 glossary_cards。實跑輸出貼報告。
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+已確認兩處版本差異：底本是「經十餘日」「此處去人徑不遠」，本輪要求的「十三日」「此知去人徑不遠」均有異文依據。我會在故事卡與對話明標異文，逐句閱讀保留底本；第四幕則依二女、屋內事件、半年轉場與求歸編排。
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "python3 - <<'PY'
+import json,re
+from pathlib import Path
+out=Path('docs/content/r3'); out.mkdir(parents=True,exist_ok=True)
+def save(name,obj): (out/(name+'.json')).write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\\n')
+save('story_card',{'cards':[
+{'text':'漢明帝永平五年，剡縣的劉晨、阮肇，入天台山取穀皮。','orig':'漢明帝永平五年，剡縣劉晨、阮肇共入天台取穀皮'},
+{'text':'兩人迷路十三日，糧食耗盡。底本作十餘日；十三日見異文。','orig':'迷不得返，經十餘日，糧食乏盡'},
+{'text':'你是劉晨，阮肇在你身旁。先完成取皮，再找食物與歸路。'}]})
+# 每項數量為遊戲進度，不是原文數字；方向只依地標。
+steps=[
+[('bark','剝取楮樹皮','入山是為了取穀皮','找森林裡的發光楮樹',5)],
+[('climb','攀上葛藤','山上桃子可以充飢','到山壁下的葛藤旁',1),('peach','摘桃子吃','吃桃子恢復體力','攀到山頂桃樹旁',1)],
+[('leaf','查看蕪菁葉','找出人活動的線索','到溪邊找漂來的菜葉',1),('cup','拾起流杯','杯子可能是人用的','到溪邊找漂來的杯子',1),('rice','查看胡麻糝','飯粒能幫助推論','查看溪中杯裡的飯粒',1),('infer','推論附近是否有人','把三種線索連起來','查看已收集的線索',1),('cross_mountain','度山到大溪','附近可能有人行的小路','沿山路越山到大溪',1)],
+[('women','見溪邊二女','問問眼前的人','到大溪邊二女身旁',1),('follow','跟二女回家','她們邀我們到家裡','跟到筒瓦屋門前',1),('house','接受屋內款待','兩人仍然虛弱疲憊','到筒瓦屋門前互動',1),('guests','聽群女來賀','弄清她們的祝賀','留在屋內看來訪的群女',1),('half_year','遂停半年','閱讀停留半年的轉場','接續屋內事件',1),('birds','聽見百鳥鳴呼','鳥聲勾起思鄉之情','留意屋外的鳥聲',1),('return','向二女求歸','我們思念故鄉','回到二女身旁',1)],
+[('village','回到村口','看看故鄉的變化','沿歸路到村口',1),('ask','找人詢問','眼前已無相識的人','到村中找人交談',1),('grandson','見七世孫','了解祖先入山的傳聞','到七世孫身旁',1)]]
+save('objectives',{'acts':[{'act':a,'steps':[dict(zip(('id','goal','why','where','count'),s)) for s in ss]} for a,ss in enumerate(steps,1)]})
+hacts=[]
+for a,ss in enumerate(steps,1):
+ hs=[]
+ for id,goal,why,where,count in ss:
+  # 最後一級由阮肇說出，系統負責帶路或鏡頭。
+  desktop='靠近目標，按 E 互動。'; touch='推搖桿靠近，按互動鈕。'
+  if id=='climb': desktop='靠近葛藤，按攀爬提示前進。'; touch='推搖桿到葛藤，按互動鈕。'
+  if id in ('infer','half_year','birds','guests'):
+   desktop='閱讀目前事件，按 E 繼續。'; touch='讀完事件，按互動鈕繼續。'
+  hs.append({'id':id,'l1':{'desktop':where+'。','touch':where+'。'},'l2':{'desktop':desktop,'touch':touch},'l3':{'desktop':'跟我來，一起'+goal+'！','touch':'跟我來，一起'+goal+'！'}})
+ hacts.append({'act':a,'steps':hs})
+save('hints',{'acts':hacts})
+def line(speaker,text,typ='plain',**kw): return dict(speaker=speaker,text=text,type=typ,**kw)
+def scene(id,trigger,*lines): return dict(id=id,trigger=trigger,lines=list(lines))
+starts=[('糧食快吃完了，先剝完樹皮。','再找能充飢的食物。'),('山上有桃子！','攀著葛藤上去吧。'),('下山取水，洗手漱口吧。','也看看溪中有什麼。'),('溪邊有兩位女子。','上前問問吧。'),('回到故鄉，怎麼全變了？','找人問問發生了什麼。')]
+dacts=[{'act':a,'scenes':[scene('start_'+str(a),'act_start:'+str(a),line('劉晨',x),line('阮肇',y))]} for a,(x,y) in enumerate(starts,1)]
+dacts[2]['scenes'] += [
+scene('find_leaf','interact:Act3_Leaf',line('旁白','見蕪菁葉從山腹流出，甚鮮新。','original'),line('劉晨','這些菜葉還很新鮮。')),
+scene('find_cup','interact:Act3_Cup',line('旁白','復一杯流出，有胡麻糝。','original'),line('阮肇','杯子裡還有芝麻飯粒。')),
+scene('find_rice','interact:Act3_Rice',line('旁白','有胡麻糝','original'),line('劉晨','有人用過這只杯子吧。')),
+scene('infer_people','after:drift_all',line('劉晨','此處去人徑不遠。','original'),line('旁白','此知去人徑不遠','original',source='sources/variants.md',label='異文：W、L'),line('阮肇','杯子和飯粒，顯示附近有人。'),line('旁白','度山出一大溪。','original'))]
+dacts[3]['scenes'] += [
+scene('meet_women','interact:Act4_Women',line('女子','劉、阮二郎捉向所失流杯來。','original'),line('旁白','晨、肇既不識之，二女便呼其姓，如似有舊','original'),line('劉晨','她們怎麼認得我們？'),line('女子','來何晚耶？','original'),line('旁白','因要還家。','original'),line('阮肇','她們邀我們回家，跟上吧。')),
+scene('follow_home','interact:Act4_Home',line('旁白','家筒瓦屋','original'),line('阮肇','到筒瓦屋門前看看。')),
+scene('house_meal','interact:Act4_House',line('旁白','便敕云','original'),line('女子','劉、阮二郎，經涉山阻，向雖得瓊實，猶尚虛弊，可速作食。','original'),line('旁白','有胡麻飯、山羊脯，甚美。','original'),line('劉晨','吃過桃子，我們仍很疲倦。')),
+scene('guests_arrive','after:meal',line('旁白','食畢行酒，有群女來，各持三五桃子','original'),line('群女','賀汝婿來。','original'),line('旁白','酒酣作樂，劉、阮忻怖交並。','original'),line('劉晨','盛情款待，真讓人高興。'),line('阮肇','可這一切也讓人不安。')),
+scene('half_year','after:guests',line('旁白','遂停半年','original')),
+scene('hear_birds','after:half_year',line('旁白','氣候草木是春時，百鳥鳴呼，更懷土，求歸甚苦。','original'),line('劉晨','聽著鳥聲，我更想家了。'),line('阮肇','向她們請求回家吧。')),
+scene('ask_return','interact:Act4_Return',line('劉晨','我們很想家，請讓我們回去。'),line('女子','當如何？','original'),line('旁白','遂呼前來女子有三四十人集會奏樂，共送劉、阮，指示還路。','original'),line('阮肇','沿她們指的路回家吧。'))]
+dacts[4]['scenes'] += [scene('village_changed','interact:Act5_Village',line('旁白','親舊零落，邑屋全異，無復相識。','original'),line('劉晨','怎麼找不到熟悉的人？')),scene('ask_villagers','interact:Act5_Villager',line('劉晨','請問，有人聽過劉晨、阮肇嗎？')),scene('meet_grandson','interact:Act5_Grandson',line('旁白','問得七世孫，傳聞上世入山，迷不得歸。','original'),line('七世孫','聽說祖先入山迷路，沒能回來。',orig='傳聞上世入山，迷不得歸'),line('阮肇','我們只停留半年啊！'))]
+save('dialogue',{'acts':dacts})
+narr=[('迷不得返，經十餘日，糧食乏盡，饑餒殆死。','迷路又缺糧，得趕快找食物。'),('遙望山上有一桃樹，大有子實','攀著葛藤上山，找桃子充飢。'),('復下山持杯取水，欲盥漱','下山取水，留意溪中的線索。'),('溪邊有二女子，姿質妙絕','到溪邊與兩名女子交談。'),('既出，親舊零落，邑屋全異，無復相識。','故鄉變了，先找人詢問。')]
+save('narration',{'acts':[{'act':a,'lines':[{'text':o,'type':'original'},{'text':p,'type':'plain'}]} for a,(o,p) in enumerate(narr,1)]})
+# 逐句以逗號分句，保留全部字元與標點，可精確重組七段。
+translations=[
+['漢明帝永平五年。','剡縣劉晨、阮肇同入天台取樹皮。','迷路，無法返回。','過了十多天。','糧食耗盡。','餓得幾乎死去。'],
+['遠望山上有棵桃樹。','結了很多果實。','但岩壁陡峭，山澗幽深。','完全沒有上山的路。','攀著葛藤才到達。','吃了幾顆桃子。','飢餓消除，體力恢復。'],
+['又下山拿杯子取水。','想洗手漱口。','看見蕪菁葉從山腹漂出。','十分新鮮。','又漂出一只杯子。','裡面有芝麻飯粒。','兩人互相說。','這裡距離人行小路不遠。','越過山，到了一條大溪。'],
+['溪邊有兩名女子。','容貌姿態十分美好。','看見兩人拿著杯子出來。','便笑著說。','劉、阮二位拿著剛失落的杯子來了。','劉、阮原本不認識她們。','兩名女子卻叫出他們的姓。','好像早已認識。','相見十分高興。','問道。','怎麼來得這麼晚？','於是邀他們回家。'],
+['她們家是覆著筒瓦的房屋。','南牆與東牆下各有一張大床。','都掛著深紅色的薄絲帳。','帳角懸著鈴。','上面金銀裝飾交錯。','床頭各有十名侍女。','便吩咐說。','劉、阮二位。','一路越過險阻山路。','剛才雖然吃到珍貴的桃子。','仍然虛弱疲倦。','趕快準備食物。','有芝麻飯和山羊肉乾。','十分美味。','吃完便斟酒勸飲。','有一群女子前來。','各拿著幾顆桃子。','笑著說。','恭喜你們的夫婿到來。','喝得盡興，奏起音樂。','劉、阮又高興又害怕。'],
+['於是停留半年。','氣候與草木像春天。','各種鳥兒鳴叫。','更加思念家鄉。','懇切請求回家。','女子說。','該怎麼辦呢？','便召來先前的女子三四十人奏樂。','一起送別劉、阮。','指點回家的路。'],
+['出山後。','親人老友凋零離散。','村落房屋全變了樣。','再也沒有認識的人。','詢問後找到七世孫。','聽說祖先曾經入山。','迷路，沒能回來。']]
+rows=[]
+readings={'剡縣':'ㄕㄢˋ ㄒㄧㄢˋ','穀皮':'ㄍㄨˇ ㄆㄧˊ','啖':'ㄉㄢˋ','盥漱':'ㄍㄨㄢˋ ㄕㄨˋ','蕪菁':'ㄨˊ ㄐㄧㄥ','胡麻糝':'ㄏㄨˊ ㄇㄚˊ ㄙㄢˇ','要':'ㄧㄠ','絳羅帳':'ㄐㄧㄤˋ ㄌㄨㄛˊ ㄓㄤˋ','敕云':'ㄔˋ ㄩㄣˊ','瓊實':'ㄑㄩㄥˊ ㄕˊ','山羊脯':'ㄕㄢ ㄧㄤˊ ㄈㄨˇ'}
+for l in Path('docs/content/glossary.md').read_text().splitlines():
+ if l.startswith('| ') and '「' in l:
+  term,meaning,_=[x.strip() for x in l.strip('|').split('|')]
+  rows.append({'term':term,'reading':readings.get(term,''),'meaning':meaning})
+save('glossary_cards',{'terms':rows})
+paras=[]
+for i,raw in enumerate(Path('sources/liuruan_tw.txt').read_text().splitlines()):
+ # 冒號與開引號留在上一分句；閉引號留在前一分句。
+ pieces=re.findall(r'["'^，。？！：]+[，。？！：](?:」)?(?:「)?|[''^，。？！：]+$'"',raw)
+ assert ''.join(pieces)==raw,(i,pieces)
+ assert len(pieces)==len(translations[i]),(i,len(pieces),len(translations[i]),pieces)
+ paras.append({'p':i+1,'sentences':[{'orig':o,'plain':p,'terms':[t['term'] for t in rows if t['term'] in o]} for o,p in zip(pieces,translations[i])]})
+save('sentences',{'paragraphs':paras})
+questions=[
+(7,3,'去：一詞多義','此處去人徑不遠。','這裡離人行小路不遠。','此句的「去」是哪個意思？',['距離','離開','前往'],0,'「不遠」說明距離，去在此是距離。',['看看後面的「不遠」。','這裡在說位置，不是在說動作。']),
+(8,4,'呼姓：熟悉與陌生','晨、肇既不識之，二女便呼其姓，如似有舊','兩人不認識女子，女子卻叫出姓。','二女呼姓主要帶出什麼感受？',['證明雙方早已認識','女子似知來客，增添奇異感','兩人入山前已約好見面'],1,'兩人不識女子，女子卻似熟識，形成奇異感。',['注意「既不識之」。','像有舊交，不代表真有舊交。']),
+(9,4,'忻怖：交織的情緒','酒酣作樂，劉、阮忻怖交並。','兩人又高興又害怕。','哪個推論最能解釋「忻怖交並」？',['喜於找到歸路，怕再度迷山','喜於打敗敵人，怕敵人追來','喜受盛情款待，又因奇異境遇不安'],2,'依款待、呼姓與賀婿推論；喜怕原因未明說。',['回想女子如何款待來客。','陌生女子呼姓、賀婿有何奇異？']),
+(10,4,'瓊實：前後照應','向雖得瓊實，猶尚虛弊','剛吃過珍貴的桃子，仍然疲倦。','「瓊實」呼應前文哪件事？',['攀葛吃桃，恢復體力','溪中拾杯，發現飯粒','群女來賀，各持桃子'],0,'「向」指剛才，回指上山吃桃的經歷。',['看「向雖得」的時間。','群女來賀還在後面，尚未發生。'])]
+save('questions_r3',{'clues':[dict(zip(('id','act','title','original','plain','question','options','answer','feedback','wrongHints'),q)) for q in questions]})
+save('epilogue_guide',{'pages':[
+{'text':'山中只停留半年，回鄉卻見七世孫。兩處時間的落差，是故事最奇異的轉折。'},
+{'text':'七世孫是傳了七代的後裔，顯示人間已過多代；不能換算成固定七百年。'},
+{'text':'兩篇都有異境款待；〈桃花源記〉未寫返鄉已過多代，本篇則以七世孫凸顯時間落差。'},
+{'text':'「洞中方七日，世上已千年」是後人俗語，不是本篇原文；本篇寫停留半年與七世孫。'}]})
+print('已產出九份 JSON；逐句共',sum(len(p['sentences']) for p in paras),'句；詞卡',len(rows),'條')
+PY" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+已產出九份 JSON；逐句共 72 句；詞卡 40 條
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+apply patch
+patch: completed
+/Volumes/hk6429/projects/liuruan-tiantai/tools/check_r3.py
+diff --git a/tools/check_r3.py b/tools/check_r3.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..51014300ec6fe1792eb4caebd0a3289322ca0371
+--- /dev/null
++++ b/tools/check_r3.py
+@@ -0,0 +1,159 @@
++#!/usr/bin/env python3
++"""Validate the C-R3 delivery without Unity or third-party packages."""
++import argparse
++import copy
++import json
++from pathlib import Path
++
++ROOT = Path(__file__).resolve().parents[1]
++NAMES = ('story_card', 'objectives', 'hints', 'dialogue', 'narration',
++         'sentences', 'glossary_cards', 'questions_r3', 'epilogue_guide')
++BANNED = ('銅瓦', '涉水', '啼鳴', '告示板')
++
++
++def validate(data, source, variants):
++    errors = []
++    counts = {'original': 0, 'plain': 0, 'variant': 0}
++
++    def require(ok, path, message):
++        if not ok:
++            errors.append(f'{path}: {message}')
++
++    def original(value, path):
++        counts['original'] += 1
++        valid = isinstance(value, str) and bool(value) and (
++            value in source or value in variants)
++        require(valid, path, '引文未逐字見於底本或異文表')
++        if valid and value not in source:
++            counts['variant'] += 1
++
++    def plain(value, path, limit=20):
++        counts['plain'] += 1
++        require(isinstance(value, str) and 0 < len(value) <= limit,
++                path, f'文字須為非空字串且 ≤{limit} 字（含標點）')
++
++    def walk(value, path):
++        if isinstance(value, dict):
++            if 'type' in value:
++                require(value['type'] in ('original', 'plain'), path, '未知 type')
++                if value['type'] == 'original':
++                    original(value.get('text'), path + '.text')
++                elif value['type'] == 'plain':
++                    plain(value.get('text'), path + '.text')
++            for key, item in value.items():
++                if key in ('orig', 'original'):
++                    original(item, path + '.' + key)
++                elif key == 'plain':
++                    plain(item, path + '.' + key)
++                walk(item, path + '.' + key)
++        elif isinstance(value, list):
++            for i, item in enumerate(value):
++                walk(item, f'{path}[{i}]')
++        elif isinstance(value, str):
++            require(not any(word in value for word in BANNED), path, '含禁用字')
++            if '洞中方七日' in value or '世上已千年' in value:
++                require('後人俗語' in value, path, '俗語須就地標註後人俗語')
++
++    for name, value in data.items():
++        walk(value, name)
++    cards = data['story_card']['cards']
++    require(3 <= len(cards) <= 4, 'story_card', '須有 3–4 張')
++    for i, card in enumerate(cards):
++        plain(card['text'], f'story_card.cards[{i}]', 45)
++    require('你是劉晨，阮肇在你身旁' in cards[-1]['text'], 'story_card', '末卡缺角色定位')
++    pages = data['epilogue_guide']['pages']
++    require(3 <= len(pages) <= 4, 'epilogue_guide', '須有 3–4 頁')
++    for i, page in enumerate(pages):
++        plain(page['text'], f'epilogue_guide.pages[{i}]', 60)
++
++    objectives = data['objectives']['acts']
++    hints = data['hints']['acts']
++    for name in ('objectives', 'hints', 'dialogue', 'narration'):
++        require([a['act'] for a in data[name]['acts']] == list(range(1, 6)),
++                name, '幕序須為 1–5')
++    for act, hint_act in zip(objectives, hints):
++        ids = [s['id'] for s in act['steps']]
++        require(len(ids) == len(set(ids)), 'objectives', '步驟 id 重複')
++        require(ids == [s['id'] for s in hint_act['steps']], 'hints', '提示步驟須與任務同序同名')
++        for step in act['steps']:
++            for key in ('goal', 'why', 'where'):
++                plain(step[key], f'objectives.{act["act"]}.{step["id"]}.{key}')
++            require(type(step['count']) is int and step['count'] > 0, 'objectives', 'count 須為正整數')
++        for step in hint_act['steps']:
++            for level in ('l1', 'l2', 'l3'):
++                for device in ('desktop', 'touch'):
++                    plain(step[level][device], f'hints.{act["act"]}.{step["id"]}.{level}.{device}')
++            require('互動鈕' in step['l2']['touch'], 'hints', '觸控操作須提互動鈕')
++    scenes = [s for a in data['dialogue']['acts'] for s in a['scenes']]
++    require(len({s['id'] for s in scenes}) == len(scenes), 'dialogue', 'scene id 重複')
++    for s in scenes:
++        require(bool(s['trigger']) and bool(s['lines']), s['id'], '缺觸發事件或台詞')
++        for line in s['lines']:
++            require('type' in line and bool(line['speaker']), s['id'], '台詞缺 type 或 speaker')
++    for act in data['narration']['acts']:
++        require([l['type'] for l in act['lines']] == ['original', 'plain'], 'narration', '須先原文再白話')
++
++    terms = data['glossary_cards']['terms']
++    term_set = {t['term'] for t in terms}
++    require(len(terms) == len(term_set) == 40, 'glossary_cards', '須為 40 條不重複詞卡')
++    require(any(t['term'] == '要' and t['reading'] == 'ㄧㄠ' for t in terms), 'glossary_cards', '要讀ㄧㄠ')
++    paragraphs = data['sentences']['paragraphs']
++    require([p['p'] for p in paragraphs] == list(range(1, 8)), 'sentences', '須為七段')
++    require([''.join(s['orig'] for s in p['sentences']) for p in paragraphs]
++            == source.splitlines(), 'sentences', '逐句重組須完整等於底本七段（含刪節符號）')
++    for p in paragraphs:
++        for s in p['sentences']:
++            require(set(s['terms']) <= term_set, 'sentences', '詞卡缺漏')
++            require(all(t in s['orig'] for t in s['terms']), 'sentences', '注釋詞未出現於本句')
++    questions = data['questions_r3']['clues']
++    require(len(questions) == 4 and len({q['id'] for q in questions}) == 4, 'questions_r3', '須有四題獨立 id')
++    for q in questions:
++        require(len(q['options']) == 3 and type(q['answer']) is int and 0 <= q['answer'] < 3,
++                'questions_r3', '須三選一且答案為 0 起算')
++        require(len(q['wrongHints']) == 2, 'questions_r3', '須有兩條錯答提示')
++    return errors, counts
++
++
++def self_test(data, source, variants):
++    def rejects(edit):
++        changed = copy.deepcopy(data)
++        edit(changed)
++        assert validate(changed, source, variants)[0], '錯誤樣本未被攔截'
++    rejects(lambda d: d['narration']['acts'][0]['lines'][0].update(text='原文沒有這句話'))
++    rejects(lambda d: d['dialogue']['acts'][0]['scenes'][0]['lines'][0].update(text='字' * 21))
++    rejects(lambda d: d['story_card']['cards'][0].update(text='字' * 46))
++    rejects(lambda d: d['epilogue_guide']['pages'][0].update(text='字' * 61))
++    for word in BANNED:
++        rejects(lambda d, w=word: d['objectives']['acts'][0]['steps'][0].update(goal=w))
++    rejects(lambda d: d['sentences']['paragraphs'][0]['sentences'][0]['terms'].append('不存在的詞'))
++    rejects(lambda d: d['sentences']['paragraphs'][0]['sentences'].pop())
++    rejects(lambda d: d['hints']['acts'][0]['steps'][0].update(id='wrong'))
++    rejects(lambda d: d['epilogue_guide']['pages'][-1].update(text='洞中方七日，世上已千年'))
++    assert '此知去人徑不遠' in variants and '此知去人徑不遠' not in source
++    print('PASS self-test: 12 個錯誤樣本皆攔截；異文來源已核對')
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--self-test', action='store_true', help='另測試錯誤樣本攔截')
++    args = parser.parse_args()
++    try:
++        data = {n: json.loads((ROOT / 'docs/content/r3' / (n + '.json')).read_text(encoding='utf-8')) for n in NAMES}
++        source = (ROOT / 'sources/liuruan_tw.txt').read_text(encoding='utf-8').strip()
++        variants = (ROOT / 'sources/variants.md').read_text(encoding='utf-8')
++        errors, counts = validate(data, source, variants)
++    except (OSError, ValueError, KeyError, TypeError) as exc:
++        print(f'FAIL 結構或檔案錯誤: {exc}')
++        return 1
++    if errors:
++        print('\n'.join('FAIL ' + e for e in errors))
++        return 1
++    print(f'PASS 9 JSON；原文 {counts["original"]} 處（異文 {counts["variant"]} 處）；短文 {counts["plain"]} 處')
++    print('PASS 五幕任務／提示對齊；七段逐字重組；40 詞卡；4 題三選一；禁用字與俗語標註')
++    if args.self_test:
++        self_test(data, source, variants)
++    return 0
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc 'python3 tools/check_r3.py --self-test' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+PASS 9 JSON；原文 107 處（異文 1 處）；短文 278 處
+PASS 五幕任務／提示對齊；七段逐字重組；40 詞卡；4 題三選一；禁用字與俗語標註
+PASS self-test: 12 個錯誤樣本皆攔截；異文來源已核對
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+九份 JSON 已產出，檢查通過：七段共 72 個分句可逐字重組底本，40 條詞卡齊全，任務與提示步驟一致。檢查程式也攔截了錯引、超字數、缺詞卡等 12 個錯誤樣本。接著會完成交件報告，列出觸發事件與結局重複題的處理建議。
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc "python3 - <<'PY'
+from pathlib import Path
+import json
+p=Path('docs/content/r3/hints.json'); d=json.loads(p.read_text())
+fix={'infer':'一起看看線索，附近有人嗎？','half_year':'一起讀完這段，再繼續吧。','birds':'先聽聽鳥聲，再想想故鄉。','guests':'看看來訪的女子，聽她們說。'}
+for a in d['acts']:
+ for s in a['steps']:
+  if s['id'] in fix: s['l3']={x:fix[s['id']] for x in ('desktop','touch')}
+p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\\n')
+for name in ('dialogue','objectives','hints','sentences'):
+ d=json.loads(Path('docs/content/r3/'+name+'.json').read_text())
+ print(name, sum(len(a.get('scenes',a.get('steps',a.get('sentences',[])))) for a in d.get('acts',d.get('paragraphs',[]))))
+PY
+python3 tools/check_r3.py --self-test
+sed -n '20,36p' Assets/_Project/Scripts/Systems/EpilogueCore.cs
+nl -ba Assets/_Project/Data/clues.json | sed -n '123,144p'
+git diff --stat" in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 24ms:
+dialogue 19
+objectives 18
+hints 18
+sentences 72
+PASS 9 JSON；原文 107 處（異文 1 處）；短文 278 處
+PASS 五幕任務／提示對齊；七段逐字重組；40 詞卡；4 題三選一；禁用字與俗語標註
+PASS self-test: 12 個錯誤樣本皆攔截；異文來源已核對
+        public int Id { get; }
+        public bool FirstTryCorrect { get; }
+        public ReadingResult(int id, bool firstTryCorrect) { Id = id; FirstTryCorrect = firstTryCorrect; }
+    }
+    public sealed class EndingQuestion
+    {
+        public string Prompt => "為什麼找到的是七世孫？";
+        public ReadOnlyCollection<string> Options { get; } = Array.AsReadOnly(new[] {
+            "「攀葛乃得至」與「而饑止體充」",
+            "「遂停半年」與「問得七世孫」",
+            "「見蕪菁葉從山腹流出」與「此處去人徑不遠」" });
+        public int AnswerIndex => 1;
+        public string Explanation => "「遂停半年」與「問得七世孫」；以異境與人間時間落差為合理推論，不假稱原文明說固定換算率。";
+    }
+    public readonly struct ComparisonRow
+    {
+        public string Aspect { get; }
+   123	        "哪個選項同時包含人事改變與後代身分？"
+   124	      ]
+   125	    },
+   126	    {
+   127	      "id": 6,
+   128	      "act": 5,
+   129	      "title": "結局：山中半年，人間七世",
+   130	      "original": "漢明帝永平五年，剡縣劉晨、阮肇共入天台取穀皮，迷不得返，經十餘日，糧食乏盡，饑餒殆死。\n遙望山上有一桃樹，大有子實，而絕岩邃澗，了無登路。攀葛乃得至，啖數枚，而饑止體充。\n復下山持杯取水，欲盥漱，見蕪菁葉從山腹流出，甚鮮新。復一杯流出，有胡麻糝。相謂曰：「此處去人徑不遠。」度山出一大溪。\n溪邊有二女子，姿質妙絕，見二人持杯出，便笑曰：「劉、阮二郎捉向所失流杯來。」晨、肇既不識之，二女便呼其姓，如似有舊，相見忻喜，問：「來何晚耶？」因要還家。\n家筒瓦屋，南壁及東壁下各有一大床，皆施絳羅帳，角懸鈴，上金銀交錯，床頭各十侍婢。便敕云：「劉、阮二郎，經涉山阻，向雖得瓊實，猶尚虛弊，可速作食。」有胡麻飯、山羊脯，甚美。食畢行酒，有群女來，各持三五桃子，笑而言：「賀汝婿來。」酒酣作樂，劉、阮忻怖交並。\n……遂停半年。氣候草木是春時，百鳥鳴呼，更懷土，求歸甚苦。女曰：「當如何？」遂呼前來女子有三四十人集會奏樂，共送劉、阮，指示還路。\n既出，親舊零落，邑屋全異，無復相識。問得七世孫，傳聞上世入山，迷不得歸。",
+   131	      "plain": "劉晨、阮肇入山取樹皮而迷路，靠桃子止飢，循水中漂流物發現人跡，受兩名女子款待。……停留半年後思鄉返家，卻發現故鄉人事全非，只問到七世孫。",
+   132	      "question": "為什麼回家已是七世？依全文判斷，哪個解釋最合理？",
+   133	      "options": [
+   134	        "兩人把尋路日數算錯，實際已在山中過完七代",
+   135	        "異境與人間時間不同，山中半年人間已過多代",
+   136	        "七世孫故意隱瞞身分，讓兩人誤以為時代改變",
+   137	        "村人搬走又換了房屋，兩人其實回到別的地方"
+   138	      ],
+   139	      "answer": 1,
+   140	      "feedback": "「遂停半年」與「問得七世孫」形成時間落差，可推論異境與人間的時間不同。這是志怪敘事的安排，原文沒有提供固定的年數換算。",
+   141	      "wrongHints": [
+   142	        "把「遂停半年」與「問得七世孫」放在一起讀。",
+   143	        "哪個解釋能同時說明時間落差與故鄉人事全非？"
+   144	      ],
+ AGENTS.md                                       |  3 +-
+ Assets/_Project/Editor/R1Bridge.cs              |  5 +--
+ Assets/_Project/Editor/R1Setup.cs               |  2 +-
+ Assets/_Project/Editor/R2Setup.cs               |  5 +--
+ Assets/_Project/Editor/R2bSetup.cs              |  7 +++-
+ Assets/_Project/Scripts/ClueManager.cs          |  6 +---
+ Assets/_Project/Scripts/GameFlow.cs             | 47 +++++++++++++++++++++----
+ Assets/_Project/Scripts/HudUI.cs                | 30 +++++++++++++---
+ Assets/_Project/Scripts/ScrollUI.cs             | 12 +++++--
+ Assets/_Project/Scripts/Strings.cs              |  2 +-
+ Assets/_Project/Scripts/Systems/DriftCore.cs    |  6 ++--
+ Assets/_Project/Scripts/Systems/DriftPickup.cs  |  3 +-
+ Assets/_Project/Scripts/Systems/HungerSystem.cs |  3 +-
+ Assets/_Project/Tests/EditMode/R1CoreTests.cs   | 13 +++----
+ 14 files changed, 107 insertions(+), 37 deletions(-)
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc pwd in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+/Volumes/hk6429/projects/liuruan-tiantai
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+apply patch
+patch: completed
+/Volumes/hk6429/projects/liuruan-tiantai/docs/content/r3/C-R3.md
+diff --git a/docs/content/r3/C-R3.md b/docs/content/r3/C-R3.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..273471ff6021cc0c4779ba4750c00aafa8a22fd2
+--- /dev/null
++++ b/docs/content/r3/C-R3.md
+@@ -0,0 +1,97 @@
++# C 線 R3 交件報告
++
++日期：2026-11-08。範圍：僅 `docs/content/r3/` 與 `tools/check_r3.py`。未操作 Unity、未改 Assets、未部署；工作區其他線的變更保留原樣。
++
++## 交件清單
++
++| 檔案 | 內容與數量 |
++|---|---|
++| story_card.json | 3 張開場卡，每張 ≤45 字；最後一張定位玩家與目標 |
++| objectives.json | 五幕 18 步，皆含 id、goal、why、where、count |
++| hints.json | 同序 18 步 × 3 級 × 2 裝置，共 108 條；每條 ≤20 字 |
++| dialogue.json | 五幕共 19 個 scene；每幕起始兩句劉阮白話，含漂流物、二女全部原文台詞、款待、賀婿、半年、鳥聲、求歸、奏樂送行與七世孫 |
++| narration.json | 五幕各一條原文關鍵句，接一條 ≤20 字白話；取代舊 sentences 陣列格式 |
++| sentences.json | 七段共 72 個短分句；orig、plain、terms；含標點可完整重組底本 |
++| glossary_cards.json | glossary.md 全部 40 條，保留原注釋；易誤讀詞另填注音，其餘 reading 為空字串；要讀ㄧㄠ |
++| questions_r3.json | 4 題，id=7–10；沿用 clues 容器及題目欄位，三選一、0 起算答案、每題兩條錯答提示 |
++| epilogue_guide.json | pages: [{text}]，4 頁，每頁 ≤60 字 |
++| tools/check_r3.py | 標準函式庫檢查器，無新增套件；支援 --self-test |
++| C-R3.md | 本報告與介接／驗證說明 |
++
++## 版本與教學處理
++
++- 底本以本輪實讀的 `sources/liuruan_tw.txt` 為準，逐句翻譯完整保留現行七段，分句含逗號與說話提示語，避免長句白話超過 20 字。
++- 開場依指定寫「十三日」，同卡明示底本作「十餘日」、十三日見異文；其 orig 仍引底本。未把十三日冒充底本原字。
++- 第三幕先引底本「此處去人徑不遠。」，另列指定「此知去人徑不遠」，type=original 並附 source、label，明標 W、L 異文。介面須顯示 label，避免兩版本被當成兩次人物發言。
++- 第四幕依二女→回家→款待→群女→半年→鳥聲→求歸七步，不依賴舊互動設施。筒瓦屋、度山、百鳥鳴呼均照底本。
++- 半年轉場只用旁白原文「遂停半年」。逐句第六段保留既有刪節符號；沒有還原、翻譯或出題涉及省略內容。
++- 七世孫兩句均有界線：入山傳聞先由旁白引原文，角色用短白話轉述，並附 orig。原文未直接提供七世孫的引號台詞。
++- 「忻怖交並」的喜怕原因在答案回饋明說是依款待、呼姓、賀婿的推論，並非原文明說心理原因。
++- 結局不換算固定年數；俗語所在頁就地標「後人俗語」，不設 type=original。
++
++## S／U 線介接契約
++
++JSON 使用 UTF-8、不含 BOM。objectives、hints、dialogue、narration 根節點皆為 acts；sentences 為 paragraphs；glossary 為 terms。story_card 為 cards；epilogue_guide 為 pages；題目沿用 clues。
++
++任務與提示共用的步驟 id：
++
++| 幕 | 步驟順序 |
++|---|---|
++| 1 | bark（count=5） |
++| 2 | climb、peach |
++| 3 | leaf、cup、rice、infer、cross_mountain |
++| 4 | women、follow、house、guests、half_year、birds、return |
++| 5 | village、ask、grandson |
++
++除 bark 外 count=1；它們是遊戲進度單位，不宣稱原文指定五棵樹或一顆桃子。方向只寫可識別地標，沒有虛構方位或座標。
++
++提示對應 l1=30 秒、l2=60 秒、l3=90 秒，計時由 S 線處理。l3 全部由阮肇說；提示檔依指定格式不另加 speaker/type，兩裝置各自具備文字，觸控二級提示使用互動鈕，移動提示使用搖桿。閱讀事件的三級提示採一起閱讀／聽鳥聲，不要求玩家離開事件。
++
++每幕開頭 trigger=act_start:1 至 act_start:5；其餘如下：
++
++| scene id | trigger |
++|---|---|
++| find_leaf | interact:Act3_Leaf |
++| find_cup | interact:Act3_Cup |
++| find_rice | interact:Act3_Rice |
++| infer_people | after:drift_all |
++| meet_women | interact:Act4_Women |
++| follow_home | interact:Act4_Home |
++| house_meal | interact:Act4_House |
++| guests_arrive | after:meal |
++| half_year | after:guests |
++| hear_birds | after:half_year |
++| ask_return | interact:Act4_Return |
++| village_changed | interact:Act5_Village |
++| ask_villagers | interact:Act5_Villager |
++| meet_grandson | interact:Act5_Grandson |
++
++這些是待接線的事件契約，不代表場景已有同名物件。請由事件轉接對應現有物件；對話讀完推進下一步，半年與鳥聲不應要求玩家另外找互動物。follow_home 在門前、house_meal 在屋內款待階段，避免同一門前事件連續重播。所有 scene id 唯一。
++
++## 結局重複題建議
++
++已實讀 `Assets/_Project/Data/clues.json:127`（id=6，題幹在第132行）與 `Assets/_Project/Scripts/Systems/EpilogueCore.cs:26`，以及 staging 同版核心：兩者都考「山中半年、人間多代」的時間落差。
++
++**建議保留 EpilogueCore 的 EndingQuestion，取消 clues id=6 的重複作答與計分。** 核心題要求從文中選對照證據，適合結局讀後推論。保留 id=6 的全文及 isEnding 結局用途，不能直接刪整筆，以免破壞結局觸發。由 S／U 線處理結局題路由，確保只問一次；C 線本輪沒有修改唯讀題庫或 C#。
++
++## 實跑驗證
++
++指令：`python3 tools/check_r3.py --self-test`
++
++結束碼：0。最終內容修改後實跑輸出：
++
++```text
++PASS 9 JSON；原文 107 處（異文 1 處）；短文 278 處
++PASS 五幕任務／提示對齊；七段逐字重組；40 詞卡；4 題三選一；禁用字與俗語標註
++PASS self-test: 12 個錯誤樣本皆攔截；異文來源已核對
++```
++
++原文檢查同時涵蓋 type=original 的 text、orig 與 original 欄位；白話檢查包含 plain 欄位、type=plain、任務三欄與全部裝置提示。長度含標點計算。詞卡 meaning 保留既有教學注釋，未套用短台詞的 20 字限制；題幹、選項與回饋也屬題庫欄位而非短對話。
++
++自測攔截：錯引、21 字台詞、46 字故事卡、61 字導讀、四種禁用字、缺詞卡、缺原文分句、任務提示 id 錯置、俗語未標。除此之外，檢查完整七段重組、五幕順序、三選一答案範圍、scene id 唯一與先原文再白話。
++
++## 未做、風險與下一步
++
++- 未開 Unity、未建置、未做桌機／手機遊玩驗收，亦未把內容複製進 Assets。下一步由 S／U 線讀檔、接事件與實測。
++- 自動檢查證明字串、長度與基本資料關係；不能證明場景可達、計時正確、異文標籤顯示或結局只計分一次。
++- 本輪限寫指定路徑，且 Obsidian Vault 不在可寫範圍，未另存 Vault；本報告留在授權交件目錄。
+diff --git a/tools/check_r3.py b/tools/check_r3.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..51014300ec6fe1792eb4caebd0a3289322ca0371
+--- /dev/null
++++ b/tools/check_r3.py
+@@ -0,0 +1,159 @@
++#!/usr/bin/env python3
++"""Validate the C-R3 delivery without Unity or third-party packages."""
++import argparse
++import copy
++import json
++from pathlib import Path
++
++ROOT = Path(__file__).resolve().parents[1]
++NAMES = ('story_card', 'objectives', 'hints', 'dialogue', 'narration',
++         'sentences', 'glossary_cards', 'questions_r3', 'epilogue_guide')
++BANNED = ('銅瓦', '涉水', '啼鳴', '告示板')
++
++
++def validate(data, source, variants):
++    errors = []
++    counts = {'original': 0, 'plain': 0, 'variant': 0}
++
++    def require(ok, path, message):
++        if not ok:
++            errors.append(f'{path}: {message}')
++
++    def original(value, path):
++        counts['original'] += 1
++        valid = isinstance(value, str) and bool(value) and (
++            value in source or value in variants)
++        require(valid, path, '引文未逐字見於底本或異文表')
++        if valid and value not in source:
++            counts['variant'] += 1
++
++    def plain(value, path, limit=20):
++        counts['plain'] += 1
++        require(isinstance(value, str) and 0 < len(value) <= limit,
++                path, f'文字須為非空字串且 ≤{limit} 字（含標點）')
++
++    def walk(value, path):
++        if isinstance(value, dict):
++            if 'type' in value:
++                require(value['type'] in ('original', 'plain'), path, '未知 type')
++                if value['type'] == 'original':
++                    original(value.get('text'), path + '.text')
++                elif value['type'] == 'plain':
++                    plain(value.get('text'), path + '.text')
++            for key, item in value.items():
++                if key in ('orig', 'original'):
++                    original(item, path + '.' + key)
++                elif key == 'plain':
++                    plain(item, path + '.' + key)
++                walk(item, path + '.' + key)
++        elif isinstance(value, list):
++            for i, item in enumerate(value):
++                walk(item, f'{path}[{i}]')
++        elif isinstance(value, str):
++            require(not any(word in value for word in BANNED), path, '含禁用字')
++            if '洞中方七日' in value or '世上已千年' in value:
++                require('後人俗語' in value, path, '俗語須就地標註後人俗語')
++
++    for name, value in data.items():
++        walk(value, name)
++    cards = data['story_card']['cards']
++    require(3 <= len(cards) <= 4, 'story_card', '須有 3–4 張')
++    for i, card in enumerate(cards):
++        plain(card['text'], f'story_card.cards[{i}]', 45)
++    require('你是劉晨，阮肇在你身旁' in cards[-1]['text'], 'story_card', '末卡缺角色定位')
++    pages = data['epilogue_guide']['pages']
++    require(3 <= len(pages) <= 4, 'epilogue_guide', '須有 3–4 頁')
++    for i, page in enumerate(pages):
++        plain(page['text'], f'epilogue_guide.pages[{i}]', 60)
++
++    objectives = data['objectives']['acts']
++    hints = data['hints']['acts']
++    for name in ('objectives', 'hints', 'dialogue', 'narration'):
++        require([a['act'] for a in data[name]['acts']] == list(range(1, 6)),
++                name, '幕序須為 1–5')
++    for act, hint_act in zip(objectives, hints):
++        ids = [s['id'] for s in act['steps']]
++        require(len(ids) == len(set(ids)), 'objectives', '步驟 id 重複')
++        require(ids == [s['id'] for s in hint_act['steps']], 'hints', '提示步驟須與任務同序同名')
++        for step in act['steps']:
++            for key in ('goal', 'why', 'where'):
++                plain(step[key], f'objectives.{act["act"]}.{step["id"]}.{key}')
++            require(type(step['count']) is int and step['count'] > 0, 'objectives', 'count 須為正整數')
++        for step in hint_act['steps']:
++            for level in ('l1', 'l2', 'l3'):
++                for device in ('desktop', 'touch'):
++                    plain(step[level][device], f'hints.{act["act"]}.{step["id"]}.{level}.{device}')
++            require('互動鈕' in step['l2']['touch'], 'hints', '觸控操作須提互動鈕')
++    scenes = [s for a in data['dialogue']['acts'] for s in a['scenes']]
++    require(len({s['id'] for s in scenes}) == len(scenes), 'dialogue', 'scene id 重複')
++    for s in scenes:
++        require(bool(s['trigger']) and bool(s['lines']), s['id'], '缺觸發事件或台詞')
++        for line in s['lines']:
++            require('type' in line and bool(line['speaker']), s['id'], '台詞缺 type 或 speaker')
++    for act in data['narration']['acts']:
++        require([l['type'] for l in act['lines']] == ['original', 'plain'], 'narration', '須先原文再白話')
++
++    terms = data['glossary_cards']['terms']
++    term_set = {t['term'] for t in terms}
++    require(len(terms) == len(term_set) == 40, 'glossary_cards', '須為 40 條不重複詞卡')
++    require(any(t['term'] == '要' and t['reading'] == 'ㄧㄠ' for t in terms), 'glossary_cards', '要讀ㄧㄠ')
++    paragraphs = data['sentences']['paragraphs']
++    require([p['p'] for p in paragraphs] == list(range(1, 8)), 'sentences', '須為七段')
++    require([''.join(s['orig'] for s in p['sentences']) for p in paragraphs]
++            == source.splitlines(), 'sentences', '逐句重組須完整等於底本七段（含刪節符號）')
++    for p in paragraphs:
++        for s in p['sentences']:
++            require(set(s['terms']) <= term_set, 'sentences', '詞卡缺漏')
++            require(all(t in s['orig'] for t in s['terms']), 'sentences', '注釋詞未出現於本句')
++    questions = data['questions_r3']['clues']
++    require(len(questions) == 4 and len({q['id'] for q in questions}) == 4, 'questions_r3', '須有四題獨立 id')
++    for q in questions:
++        require(len(q['options']) == 3 and type(q['answer']) is int and 0 <= q['answer'] < 3,
++                'questions_r3', '須三選一且答案為 0 起算')
++        require(len(q['wrongHints']) == 2, 'questions_r3', '須有兩條錯答提示')
++    return errors, counts
++
++
++def self_test(data, source, variants):
++    def rejects(edit):
++        changed = copy.deepcopy(data)
++        edit(changed)
++        assert validate(changed, source, variants)[0], '錯誤樣本未被攔截'
++    rejects(lambda d: d['narration']['acts'][0]['lines'][0].update(text='原文沒有這句話'))
++    rejects(lambda d: d['dialogue']['acts'][0]['scenes'][0]['lines'][0].update(text='字' * 21))
++    rejects(lambda d: d['story_card']['cards'][0].update(text='字' * 46))
++    rejects(lambda d: d['epilogue_guide']['pages'][0].update(text='字' * 61))
++    for word in BANNED:
++        rejects(lambda d, w=word: d['objectives']['acts'][0]['steps'][0].update(goal=w))
++    rejects(lambda d: d['sentences']['paragraphs'][0]['sentences'][0]['terms'].append('不存在的詞'))
++    rejects(lambda d: d['sentences']['paragraphs'][0]['sentences'].pop())
++    rejects(lambda d: d['hints']['acts'][0]['steps'][0].update(id='wrong'))
++    rejects(lambda d: d['epilogue_guide']['pages'][-1].update(text='洞中方七日，世上已千年'))
++    assert '此知去人徑不遠' in variants and '此知去人徑不遠' not in source
++    print('PASS self-test: 12 個錯誤樣本皆攔截；異文來源已核對')
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--self-test', action='store_true', help='另測試錯誤樣本攔截')
++    args = parser.parse_args()
++    try:
++        data = {n: json.loads((ROOT / 'docs/content/r3' / (n + '.json')).read_text(encoding='utf-8')) for n in NAMES}
++        source = (ROOT / 'sources/liuruan_tw.txt').read_text(encoding='utf-8').strip()
++        variants = (ROOT / 'sources/variants.md').read_text(encoding='utf-8')
++        errors, counts = validate(data, source, variants)
++    except (OSError, ValueError, KeyError, TypeError) as exc:
++        print(f'FAIL 結構或檔案錯誤: {exc}')
++        return 1
++    if errors:
++        print('\n'.join('FAIL ' + e for e in errors))
++        return 1
++    print(f'PASS 9 JSON；原文 {counts["original"]} 處（異文 {counts["variant"]} 處）；短文 {counts["plain"]} 處')
++    print('PASS 五幕任務／提示對齊；七段逐字重組；40 詞卡；4 題三選一；禁用字與俗語標註')
++    if args.self_test:
++        self_test(data, source, variants)
++    return 0
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Failed
+hook: PreToolUse Completed
+exec
+/bin/zsh -lc 'python3 tools/check_r3.py --self-test; git status --short -- docs/content/r3 tools/check_r3.py' in /Volumes/hk6429/projects/liuruan-tiantai
+ succeeded in 0ms:
+PASS 9 JSON；原文 107 處（異文 1 處）；短文 278 處
+PASS 五幕任務／提示對齊；七段逐字重組；40 詞卡；4 題三選一；禁用字與俗語標註
+PASS self-test: 12 個錯誤樣本皆攔截；異文來源已核對
+?? docs/content/r3/
+?? tools/check_r3.py
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+已完成九份 JSON、檢查程式與[交件報告](/Volumes/hk6429/projects/liuruan-tiantai/docs/content/r3/C-R3.md)。
+
+- 18 步任務、108 條提示、19 組對話。
+- 七段共 72 分句、40 詞卡、4 題理解題。
+- `check_r3.py --self-test` 通過，12 個錯誤樣本皆成功攔截。
+- 報告已列出版本差異、事件契約與結局重複題處理建議。
+
+未開 Unity、未驗證實際遊玩；事件接線與介面呈現仍待 S／U 線驗收。受寫入範圍限制，未另存 Obsidian。
+
+
+hook: Stop
+hook: Stop
+hook: Stop Completed
+hook: Stop Completed
+tokens used
+73,044
+已完成九份 JSON、檢查程式與[交件報告](/Volumes/hk6429/projects/liuruan-tiantai/docs/content/r3/C-R3.md)。
+
+- 18 步任務、108 條提示、19 組對話。
+- 七段共 72 分句、40 詞卡、4 題理解題。
+- `check_r3.py --self-test` 通過，12 個錯誤樣本皆成功攔截。
+- 報告已列出版本差異、事件契約與結局重複題處理建議。
+
+未開 Unity、未驗證實際遊玩；事件接線與介面呈現仍待 S／U 線驗收。受寫入範圍限制，未另存 Obsidian。
+
+

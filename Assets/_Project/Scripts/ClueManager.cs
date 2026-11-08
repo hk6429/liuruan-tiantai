@@ -231,11 +231,7 @@ namespace Liuruan
 
         public void ResetProgress()
         {
-            PlayerPrefs.DeleteKey(SaveKey);
-            QuizStats.Clear();
-            PlayerPrefs.DeleteKey(ScrollUI.HelpSeenKey); // 共用電腦：下一位學生重新開始也看得到操作說明
-            PlayerPrefs.Save();
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            GameFlow.RestartJourney();
         }
     }
 }

@@ -36,7 +36,7 @@ namespace Liuruan
         void Update()
         {
             var ui = ScrollUI.I;
-            bool reading = ui && !ui.Cinematic && (ui.PanelOpen || ui.ExternalUI);
+            bool reading = ui && !ui.Cinematic && !ui.KeepScene && (ui.PanelOpen || ui.ExternalUI);
             Reading = reading;
             bool mobile = TouchInput.Enabled;
             int fps = reading ? (mobile ? MobileReadingFps : DesktopReadingFps) : (mobile ? MobileFps : DesktopFps);

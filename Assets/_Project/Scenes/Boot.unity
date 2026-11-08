@@ -231,6 +231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d89b742b67a847febebc3e3fbb00728, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Liuruan.BootLoader
+  chineseFont: {fileID: 12800000, guid: 17975c7a0aca74ec2980ec16a82d7aa9, type: 3}
 --- !u!4 &2019210850
 Transform:
   m_ObjectHideFlags: 0

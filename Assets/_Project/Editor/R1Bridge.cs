@@ -17,13 +17,14 @@ public static class R1Bridge
         if (command.Length == 0) { last = null; return; }
         if (command == last) return; if (EditorApplication.isPlaying) { EditorApplication.isPlaying = false; return; }
         last = command;
-        string round = command.StartsWith("r2") ? "R2" : "R1";
+        string round = command.StartsWith("r3") ? "R3" : command.StartsWith("r2") ? "R2" : "R1";
         try
         {
             File.WriteAllText("logs/U-" + round + "-bridge.md", DateTime.Now.ToString("o") + " " + command + " ready " + Application.dataPath);
             File.WriteAllText(Request, "");
             if (command.StartsWith("refresh")) AssetDatabase.Refresh();
-            if (command.StartsWith("r2")) R2Validation.Begin();
+            if (command.StartsWith("r3")) R3Validation.Begin();
+            else if (command.StartsWith("r2")) R2Validation.Begin();
             else if (command.StartsWith("all")) R1Validation.Begin();
         }
         catch (Exception e) { File.AppendAllText("logs/U-" + round + "-failure.md", e + "\n"); Debug.LogException(e); }

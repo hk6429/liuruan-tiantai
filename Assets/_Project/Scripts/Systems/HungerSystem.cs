@@ -36,11 +36,12 @@ namespace Liuruan
         public void Resume() => Core.Resume();
         public void Eat(float amount) => Core.Eat(amount);
         public void FillAll() => Core.FillAll();
+        public string StarvingMessage = "肚子餓了，去找些食物吧。";
         private void HandleStarving()
         {
             onStarving.Invoke();
             OnStarving?.Invoke();
-            const string message = "肚子餓了，去找些食物吧。";
+            string message = StarvingMessage;
             onToast.Invoke(message);
             OnToast?.Invoke(message);
         }

@@ -10,6 +10,7 @@ using UnityEngine.Rendering;
 
 public static class R2Setup
 {
+    public static bool UseInstalledArt;
     const string Art = "Assets/_Project/Art/R1/";
     const string Mats = "Assets/_Project/Materials/R2/";
     [Serializable] sealed class AtlasEntry { public string name; public float[] uv_bottom_left; }
@@ -50,7 +51,7 @@ public static class R2Setup
         var zoneGo = GameObject.Find("ActPoints/Act2_ClimbBase");
         // East face of the west cliff; keep the whole attach/top-out path outside its collider.
         zoneGo.transform.position = new Vector3(-13.8f, 0.1f, -29);
-        var box = Add<BoxCollider>(zoneGo); box.isTrigger = true; box.size = new Vector3(3, 4, 4); box.center = Vector3.up;
+        var box = Add<BoxCollider>(zoneGo); box.isTrigger = true; box.size = new Vector3(5, 4, 6); box.center = Vector3.up;
         var body = Add<Rigidbody>(zoneGo); body.isKinematic = true; body.useGravity = false;
         var zone = Add<ClimbZone>(zoneGo);
         var plane = Node("R2VinePlane", new Vector3(-13.8f, 0.1f, -29)); plane.rotation = Quaternion.Euler(0, 90, 0);
@@ -73,7 +74,7 @@ public static class R2Setup
             for (int j = 0; j < 4; j++) waypoints.GetArrayElementAtIndex(j).objectReferenceValue =
                 Node("R2Drift" + i + "_" + j, new Vector3(-1.8f + (i - 1) * 1.8f, 0.32f, 48 - j * 24));
             properties.ApplyModifiedPropertiesWithoutUndo();
-            var it = go.GetComponent<Interactable>(); it.radius = 2; it.clueId = -1; it.toast = "";
+            var it = go.GetComponent<Interactable>(); it.radius = 3; it.clueId = -1; it.toast = "";
             var marker = go.transform.Find("R1Marker");
             marker.localPosition = Vector3.zero; marker.localScale = new Vector3(0.45f, 0.18f, 0.55f);
         }
