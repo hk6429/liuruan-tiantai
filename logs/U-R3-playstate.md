@@ -108,3 +108,47 @@
   at R3Validation.Tick () [0x00245] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R3Validation.cs:203 
   at UnityEditor.EditorApplication.Internal_CallUpdateFunctions () [0x00032] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:392 
 18:43:55.910 EnteredEditMode phase=capture step=18
+18:46:51.570 ExitingEditMode phase=play step=0
+18:46:56.654 EnteredPlayMode phase=play step=0
+18:50:12.737 ExitingPlayMode phase=capture step=18
+  at System.Environment.get_StackTrace () [0x00000] in <2a006e6a126e4f7e85a63629ee4f3912>:0 
+  at R3Validation+<>c.<.cctor>b__44_0 (UnityEditor.PlayModeStateChange state) [0x00000] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R3Validation.cs:49 
+  at UnityEditor.EditorApplication.Internal_PlayModeStateChanged (UnityEditor.PlayModeStateChange state) [0x000d9] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:506 
+  at UnityEditor.EditorApplication.set_isPlaying (System.Boolean ) [0x00000] in <25617923f64842dd81bde9025797023e>:0 
+  at R3Validation.FinishJourney (Liuruan.GameFlow flow) [0x0021a] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R3Validation.cs:459 
+  at R3Validation.Tick () [0x00245] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R3Validation.cs:203 
+  at UnityEditor.EditorApplication.Internal_CallUpdateFunctions () [0x00032] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:392 
+18:50:13.156 EnteredEditMode phase=capture step=18
+18:57:11.958 ExitingEditMode phase=play step=0
+18:57:17.150 EnteredPlayMode phase=play step=0
+19:00:33.091 ExitingPlayMode phase=capture step=18
+  at System.Environment.get_StackTrace () [0x00000] in <2a006e6a126e4f7e85a63629ee4f3912>:0 
+  at R3Validation+<>c.<.cctor>b__44_0 (UnityEditor.PlayModeStateChange state) [0x00000] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R3Validation.cs:49 
+  at UnityEditor.EditorApplication.Internal_PlayModeStateChanged (UnityEditor.PlayModeStateChange state) [0x000d9] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:506 
+  at UnityEditor.EditorApplication.set_isPlaying (System.Boolean ) [0x00000] in <25617923f64842dd81bde9025797023e>:0 
+  at R3Validation.FinishJourney (Liuruan.GameFlow flow) [0x0021a] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R3Validation.cs:459 
+  at R3Validation.Tick () [0x00245] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R3Validation.cs:203 
+  at UnityEditor.EditorApplication.Internal_CallUpdateFunctions () [0x00032] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:392 
+19:00:33.473 EnteredEditMode phase=capture step=18
+19:10:24.047 ExitingEditMode phase=play step=0
+19:10:29.156 EnteredPlayMode phase=play step=0
+19:13:45.371 ExitingPlayMode phase=capture step=18
+  at System.Environment.get_StackTrace () [0x00000] in <2a006e6a126e4f7e85a63629ee4f3912>:0 
+  at R3Validation+<>c.<.cctor>b__44_0 (UnityEditor.PlayModeStateChange state) [0x00000] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R3Validation.cs:49 
+  at UnityEditor.EditorApplication.Internal_PlayModeStateChanged (UnityEditor.PlayModeStateChange state) [0x000d9] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:506 
+  at UnityEditor.EditorApplication.set_isPlaying (System.Boolean ) [0x00000] in <25617923f64842dd81bde9025797023e>:0 
+  at R3Validation.FinishJourney (Liuruan.GameFlow flow) [0x0021a] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R3Validation.cs:459 
+  at R3Validation.Tick () [0x00245] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R3Validation.cs:203 
+  at UnityEditor.EditorApplication.Internal_CallUpdateFunctions () [0x00032] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:392 
+19:13:45.755 EnteredEditMode phase=capture step=18
+19:16:17.470 ExitingEditMode phase=play step=0
+19:16:22.270 EnteredPlayMode phase=play step=0
+19:19:38.249 ExitingPlayMode phase=capture step=18
+  at System.Environment.get_StackTrace () [0x00000] in <2a006e6a126e4f7e85a63629ee4f3912>:0 
+  at R3Validation+<>c.<.cctor>b__44_0 (UnityEditor.PlayModeStateChange state) [0x00000] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R3Validation.cs:49 
+  at UnityEditor.EditorApplication.Internal_PlayModeStateChanged (UnityEditor.PlayModeStateChange state) [0x000d9] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:506 
+  at UnityEditor.EditorApplication.set_isPlaying (System.Boolean ) [0x00000] in <25617923f64842dd81bde9025797023e>:0 
+  at R3Validation.FinishJourney (Liuruan.GameFlow flow) [0x0021a] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R3Validation.cs:459 
+  at R3Validation.Tick () [0x00245] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R3Validation.cs:203 
+  at UnityEditor.EditorApplication.Internal_CallUpdateFunctions () [0x00032] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:392 
+19:19:38.608 EnteredEditMode phase=capture step=18

@@ -139,6 +139,8 @@ namespace Liuruan
         void LateUpdate()
         {
             if (!cam) return;
+            if (!climbZone) climbZone = FindFirstObjectByType<ClimbZone>();
+            if (climbZone && climbZone.IsLocked && climbZone.DriveCamera(cam)) { RestoreFoliage(); HideSelf(false); return; }
             if (CamShot) { cam.SetPositionAndRotation(CamShot.position, CamShot.rotation); RestoreFoliage(); HideSelf(false); return; }
             Vector3 pivot = transform.position + Vector3.up * camHeight;
             // 低矮屋簷下（亭子內抬高視角）鏡頭會被樑擋到貼著後腦：暫時把俯角放低，挑退得最遠的角度（不改玩家設定的 pitch）
@@ -178,6 +180,7 @@ namespace Liuruan
         }
 
         float camDist = 5f;
+        ClimbZone climbZone;
         const float CamRadius = 0.22f, CamMin = 0.35f;
 
         /// R17-U：鏡頭可退多遠。SphereCastAll 取最近的非玩家碰撞（含 CamOcclusion 鏡頭層），
@@ -267,3 +270,5 @@ namespace Liuruan
         }
     }
 }
+
+// R3: climb camera handed to ClimbZone.DriveCamera

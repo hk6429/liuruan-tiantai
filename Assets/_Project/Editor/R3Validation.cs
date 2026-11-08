@@ -309,7 +309,7 @@ public static class R3Validation
                         if (!climbShot && flow.Player.transform.position.y > 12f) { climbShot = true; ScreenCapture.CaptureScreenshot("Captures/r3/r3_climb.png");
                             var c = Camera.main.transform; var pp = flow.Player.transform.position + Vector3.up * 1.2f; var ray = new Ray(c.position, pp - c.position);
                             var sb = new System.Text.StringBuilder("CLIMBCAM cam=" + c.position + " fwd=" + c.forward + " player=" + flow.Player.transform.position + " blockers:");
-                            foreach (var rr in UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None)) if (rr.enabled && rr.bounds.IntersectRay(ray, out var dd) && dd < Vector3.Distance(c.position, pp) && !rr.transform.IsChildOf(flow.Player.transform)) sb.Append(" " + rr.name + "@" + dd.ToString("0.0"));
+                            foreach (var rr in UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None)) if (rr.enabled && rr.bounds.IntersectRay(ray, out var dd) && dd < Vector3.Distance(c.position, pp) && !rr.transform.IsChildOf(flow.Player.transform)) sb.Append(" " + rr.name + "<" + (rr.transform.parent ? rr.transform.parent.name : "") + ">@" + dd.ToString("0.0") + "[" + rr.shadowCastingMode + " size=" + rr.bounds.size.magnitude.ToString("0") + " c=" + rr.bounds.center + "]");
                             Debug.Log(sb.ToString()); }
                         flow.climb.SetMoveInput(Vector2.up); return;
                     }

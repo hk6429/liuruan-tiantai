@@ -3,7 +3,7 @@
 development=false
 Compression=Brotli
 DecompressionFallback=True
-Build/WebGL/Build/f6d7d5d5f112f676675f4c690ab5d96f.wasm.unityweb：7640160 bytes
-Build/WebGL/Build/e9c2cdb3754038d6ab7b19a157b0a941.data.unityweb：7392127 bytes
-PASS：.bundle-done=2026-11-08T18:44:44.4928980+08:00
+Build/WebGL/Build/e7fd0b195748506fba62ba387ab05bec.wasm.unityweb：7638969 bytes
+Build/WebGL/Build/bea1b51844113ac853399657e0f4af24.data.unityweb：7396577 bytes
+PASS：.bundle-done=2026-11-08T19:22:40.9792980+08:00
 

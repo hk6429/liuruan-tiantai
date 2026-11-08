@@ -74,14 +74,16 @@ namespace Liuruan
             else if (State == ClimbState.Release) { RestoreMovement(); core.Finish(); }
         }
         // 攀爬時一般移動元件被關掉，它的 LateUpdate 鏡頭跟隨也停了 → 這裡接手：從崖外側斜後方看人物。
-        private void LateUpdate()
+        private void LateUpdate() { if (ownsMovement && Camera.main) DriveCamera(Camera.main.transform); }
+        /// PlayerController 在攀爬時也會呼叫（它的 LateUpdate 可能比這裡晚，否則會把鏡頭蓋回去）。
+        public bool DriveCamera(Transform camT)
         {
-            if (!ownsMovement) return;
-            var cam = Camera.main; if (!cam) return;
+            if (!ownsMovement || !camT) return false;
+            var cam = Camera.main ? Camera.main.transform : camT;
             Vector3 pivot = player.position + Vector3.up * 1.2f;
             Vector3 away = planeOrigin.forward; // 玩家面向 -forward（崖壁），鏡頭放在 +forward 側
-            Vector3 dir = (away * 0.85f + Vector3.up * 0.35f + planeOrigin.right * 0.25f).normalized;
-            float dist = CamClear(pivot, dir, 7f, player);
+            Vector3 dir = (away * 0.8f + Vector3.up * 0.55f + planeOrigin.right * 0.2f).normalized;
+            float dist = CamClear(pivot, dir, 5f, player);
             if (dist < 1.5f)
             {
                 Vector3 alt = (-away * 0.85f + Vector3.up * 0.35f).normalized;
@@ -89,10 +91,17 @@ namespace Liuruan
                 if (d2 > dist) { dir = alt; dist = d2; }
             }
             Vector3 want = pivot + dir * dist;
-            cam.transform.position = Vector3.Lerp(cam.transform.position, want, 1f - Mathf.Exp(-8f * Time.deltaTime));
-            cam.transform.rotation = Quaternion.LookRotation(pivot - cam.transform.position, Vector3.up);
-            HideBlockers(cam.transform.position, pivot);
+            if (Time.frameCount != camFrame)
+            {
+                camPos = camFrame < 0 || (camPos - want).sqrMagnitude > 400f ? want : Vector3.Lerp(camPos, want, 1f - Mathf.Exp(-8f * Mathf.Max(Time.unscaledDeltaTime, 0.016f)));
+                camFrame = Time.frameCount;
+            }
+            cam.position = camPos;
+            cam.rotation = Quaternion.LookRotation(pivot - cam.position, Vector3.up);
+            HideBlockers(cam.position, pivot);
+            return true;
         }
+        private int camFrame = -1; private Vector3 camPos;
         // 樹木等道具沒有碰撞體，擋在鏡頭與人物之間時暫時只投影子（爬完恢復）。
         private Renderer[] nearby;
         private readonly Dictionary<Renderer, UnityEngine.Rendering.ShadowCastingMode> hidden = new Dictionary<Renderer, UnityEngine.Rendering.ShadowCastingMode>();
@@ -103,7 +112,7 @@ namespace Liuruan
             {
                 var list = new List<Renderer>();
                 foreach (var r in FindObjectsByType<Renderer>(FindObjectsSortMode.None))
-                    if (!r.transform.IsChildOf(player) && r.bounds.size.magnitude < 40f && Vector3.Distance(r.bounds.center, planeOrigin.position) < 30f) list.Add(r);
+                    if (!r.transform.IsChildOf(player) && r.bounds.size.magnitude < 60f && Vector3.Distance(r.bounds.center, planeOrigin.position) < 45f) list.Add(r);
                 nearby = list.ToArray();
             }
             var ray = new Ray(from, to - from); float len = Vector3.Distance(from, to);
@@ -138,7 +147,7 @@ namespace Liuruan
         private void RestoreMovement()
         {
             if (!ownsMovement) return;
-            ownsMovement = false; moveInput = Vector2.zero; RestoreBlockers();
+            ownsMovement = false; moveInput = Vector2.zero; RestoreBlockers(); camFrame = -1;
             if (controller) controller.enabled = controllerWasEnabled;
             if (playerMovement) playerMovement.enabled = movementWasEnabled;
             var animator = player.GetComponentInChildren<Animator>();
