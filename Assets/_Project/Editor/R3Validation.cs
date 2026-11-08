@@ -39,7 +39,7 @@ public static class R3Validation
     static GameFlow reloadedFrom;
     static readonly string[] IntKeys = { "liuruan_help_seen", "liuruan_mute", "liuruan_quality_high", "liuruan_bigfont", "liuruan_fontlevel", R3Journey.StoryKey, R3Journey.TutorialKey };
     static readonly string[] StringKeys = { SaveKey, "liuruan_collected" };
-    static bool chasing, climbing;
+    static bool chasing, climbing, climbShot;
     static readonly string[] Route = { "Act1_Bark_1", "Act1_Bark_2", "Act1_Bark_3", "Act1_Bark_4", "Act1_Bark_5", "Act2_ClimbBase", "Act2_PeachTree", "Act3_Drift_1", "Act3_Drift_2", "Act3_Drift_3", "Act3_Wade", "Act4_Women", "Act4_Home", "Act4_House", "Act4_Return", "Act5_Return", "Act5_Villager", "Act5_Grandson" };
     static R3Validation()
     {
@@ -72,7 +72,7 @@ public static class R3Validation
         SessionState.SetString(Phase, "");
         SessionState.SetInt("Liuruan.R3.Step", 0);
         SessionState.SetFloat("Liuruan.R3.PlayAt", 0);
-        started = next = actionAt = 0; chasing = climbing = false;
+        started = next = actionAt = 0; chasing = climbing = climbShot = false;
         capturedStory = capturedTutorial = capturedTerm = stallComplete = secondVisit = false;
         capturedGuide = false; capturedDialogues.Clear(); endedDialogues.Clear(); observedFlow = null;
         introFlow = null; hintLevels = introFrame = mobileStage = 0; stallAt = 0;
@@ -304,7 +304,15 @@ public static class R3Validation
                 }
                 if (climbing)
                 {
-                    if (flow.climb.IsLocked) { flow.climb.SetMoveInput(Vector2.up); return; }
+                    if (flow.climb.IsLocked)
+                    {
+                        if (!climbShot && flow.Player.transform.position.y > 12f) { climbShot = true; ScreenCapture.CaptureScreenshot("Captures/r3/r3_climb.png");
+                            var c = Camera.main.transform; var pp = flow.Player.transform.position + Vector3.up * 1.2f; var ray = new Ray(c.position, pp - c.position);
+                            var sb = new System.Text.StringBuilder("CLIMBCAM cam=" + c.position + " fwd=" + c.forward + " player=" + flow.Player.transform.position + " blockers:");
+                            foreach (var rr in UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None)) if (rr.enabled && rr.bounds.IntersectRay(ray, out var dd) && dd < Vector3.Distance(c.position, pp) && !rr.transform.IsChildOf(flow.Player.transform)) sb.Append(" " + rr.name + "@" + dd.ToString("0.0"));
+                            Debug.Log(sb.ToString()); }
+                        flow.climb.SetMoveInput(Vector2.up); return;
+                    }
                     Require(flow.State.climbed && flow.Player.transform.position.y > 17.8f, "未真正攀至崖頂。");
                     Require(it.enabled, "攀爬完成後攀援點被關閉。");
                     CompleteStep(); return;
@@ -333,7 +341,7 @@ public static class R3Validation
             {
                 RestorePrefs();
                 string capture = "Captures/r3";
-                foreach (string name in new[] { "r3_act1", "r3_act2", "r3_act3", "r3_act4", "r3_act4_door", "r3_act5", "r3_story", "r3_tutorial", "r3_objective", "r3_dialogue_women", "r3_dialogue_grandson", "r3_term", "r3_epilogue_guide", "r3_mobile", "r3_arrow" })
+                foreach (string name in new[] { "r3_act1", "r3_act2", "r3_act3", "r3_act4", "r3_act4_door", "r3_act5", "r3_story", "r3_tutorial", "r3_objective", "r3_dialogue_women", "r3_dialogue_grandson", "r3_term", "r3_epilogue_guide", "r3_mobile", "r3_arrow", "r3_climb" })
                 {
                     var info = new FileInfo(capture + "/" + name + ".png");
                     Require(info.Exists && info.Length > 1024 && info.LastWriteTimeUtc.Ticks >= long.Parse(SessionState.GetString("Liuruan.R3.CaptureAfter", "0")), "缺少本輪有效截圖：" + name);

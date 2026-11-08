@@ -7,6 +7,7 @@ Captures/r3/r3_act4.png
 Captures/r3/r3_act4_door.png
 Captures/r3/r3_act5.png
 Captures/r3/r3_arrow.png
+Captures/r3/r3_climb.png
 Captures/r3/r3_dialogue_grandson.png
 Captures/r3/r3_dialogue_women.png
 Captures/r3/r3_epilogue_guide.png

@@ -34,14 +34,17 @@ class DeliveryTests(unittest.TestCase):
                 except UnicodeDecodeError:
                     pass
         self.assertEqual(len(guids), len(set(guids)), 'Unity GUID 重複')
-        forbidden = {'EggMinigame.cs', 'LaughMatch.cs', 'BanquetGate.cs', 'EpilogueDirector.cs', 'PortraitReadingLayout.cs'}
+        # R3 起 Systems/EpilogueDirector.cs 為本專案自寫（Liuruan 命名空間，非劉姥姥複製），自禁名表移除
+        forbidden = {'EggMinigame.cs', 'LaughMatch.cs', 'BanquetGate.cs', 'PortraitReadingLayout.cs'}
         for p in (ROOT / 'Assets/_Project/Scripts').rglob('*'):
             self.assertNotIn(p.name, forbidden)
             self.assertNotIn(p.name, {'Quest', 'Performances'})
             self.assertFalse(p.name.startswith('Hotfix1'))
         self.assertTrue(json.loads((ROOT / 'Packages/manifest.json').read_text())['dependencies'])
         settings = (ROOT / 'ProjectSettings/ProjectSettings.asset').read_text()
-        self.assertIn('productName: "天台山・流杯記"', settings)
+        # Unity 重新序列化後會寫成 \uXXXX 轉義，兩種寫法都接受
+        unescaped = re.sub(r'\\u([0-9A-Fa-f]{4})', lambda m: chr(int(m[1], 16)), settings)
+        self.assertIn('productName: "天台山・流杯記"', unescaped)
         self.assertEqual(settings.count('tw.naicheng.liuruan'), 3)
 
     def test_html_patches_are_idempotent(self):

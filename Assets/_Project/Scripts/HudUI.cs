@@ -143,7 +143,7 @@ namespace Liuruan
             prompt.text = near ? (TouchInput.Enabled ? "互動　" : "[E] ") + near.prompt : "";
             prompt.transform.parent.gameObject.SetActive(!busy && !string.IsNullOrEmpty(prompt.text));
             returnButton.gameObject.SetActive(flow.CanReturn && !busy);
-            birds.gameObject.SetActive(!flow.State.ended && Time.unscaledTime < birdsUntil);
+            birds.transform.parent.gameObject.SetActive(!flow.State.ended && Time.unscaledTime < birdsUntil);
             if (TouchInput.Enabled)
             {
                 var p = (RectTransform)cooldown.transform; p.anchoredPosition = new Vector2(75, 250);
