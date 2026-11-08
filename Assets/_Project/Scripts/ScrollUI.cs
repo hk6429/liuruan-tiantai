@@ -917,14 +917,14 @@ namespace Liuruan
             if (!portrait) return;
             SetAnchors((RectTransform)hudText.transform.parent, new Vector4(0.025f, 0.86f, 0.975f, 0.99f));
             SetAnchors((RectTransform)promptBox.transform, new Vector4(0.29f, 0.22f, 0.71f, 0.28f));
-            SetAnchors((RectTransform)toastBox.transform, new Vector4(0.03f, 0.65f, 0.97f, 0.76f));
+            SetAnchors((RectTransform)toastBox.transform, new Vector4(0.03f, 0.58f, 0.97f, 0.69f));
             string[] names = { "BookBtn", "FontBtn", "QualityBtn", "MuteBtn" };
             for (int i = 0; i < names.Length; i++)
             {
                 var rt = (RectTransform)transform.Find(names[i]);
-                if (rt) SetAnchors(rt, new Vector4(0.02f + i * 0.96f / names.Length, 0.775f, 0.01f + (i + 1) * 0.96f / names.Length, 0.85f));
+                if (rt) SetAnchors(rt, new Vector4(0.02f + i * 0.96f / names.Length, 0.73f, 0.01f + (i + 1) * 0.96f / names.Length, 0.79f)); // R3c：讓出 JourneyHUD 任務欄（y −160..−260）
             }
-            if (scoreBtnGo) SetAnchors((RectTransform)scoreBtnGo.transform, new Vector4(0.02f, 0.775f, 0.202f, 0.85f));
+            if (scoreBtnGo) SetAnchors((RectTransform)scoreBtnGo.transform, new Vector4(0.02f, 0.73f, 0.202f, 0.79f));
         }
 
         /// Round14：字級「大／特大」時，題幹與答對後的解析下限也跟著放大（答錯提示框小，維持原下限避免溢出）
@@ -1184,12 +1184,12 @@ namespace Liuruan
 
             // 右上按鈕列（觸控版高 0.13 螢幕 ≈ 140 參考單位 ≈ 97px@1334×750；全螢幕面板開著時收起，見 Update）
             var muteBtn = Btn(root, "MuteBtn", new Vector2(0.905f, 0.93f), new Vector2(0.99f, 0.99f), Txt.ReadOn);
-            T(muteBtn, 0.89f, 0.86f, 0.99f, 0.99f);
+            T(muteBtn, 0.91f, 0.86f, 0.99f, 0.99f);   // R3c：觸控橫式整排右縮到 x≥0.60，讓出任務欄
             muteText = muteBtn.GetComponentInChildren<TMP_Text>();
             muteBtnGo = muteBtn.gameObject;
             muteBtn.onClick.AddListener(ToggleMute);
             var qBtn = Btn(root, "QualityBtn", new Vector2(0.815f, 0.93f), new Vector2(0.9f, 0.99f), Txt.QualityHigh);
-            T(qBtn, 0.78f, 0.86f, 0.88f, 0.99f);
+            T(qBtn, 0.81f, 0.86f, 0.90f, 0.99f);
             qualityText = qBtn.GetComponentInChildren<TMP_Text>();
             qBtn.onClick.AddListener(() =>
             {
@@ -1198,12 +1198,12 @@ namespace Liuruan
                 qualityText.text = QualityToggle.I.High ? Txt.QualityHigh : Txt.QualityLow;
             });
             var fBtn = Btn(root, "FontBtn", new Vector2(0.71f, 0.93f), new Vector2(0.81f, 0.99f), Txt.FontNormal);
-            T(fBtn, 0.65f, 0.86f, 0.77f, 0.99f);
+            T(fBtn, 0.70f, 0.86f, 0.80f, 0.99f);
             fontTexts.Add(fBtn.GetComponentInChildren<TMP_Text>());
             fBtn.GetComponentInChildren<TMP_Text>().textWrappingMode = TextWrappingModes.NoWrap;   // R18：觸控窄鈕「字級：標準」不折行（放不下就自動縮字）
             fBtn.onClick.AddListener(ToggleFont);
             var bBtn = Btn(root, "BookBtn", new Vector2(0.625f, 0.93f), new Vector2(0.705f, 0.99f), Txt.Book);
-            T(bBtn, 0.54f, 0.86f, 0.64f, 0.99f);
+            T(bBtn, 0.60f, 0.86f, 0.69f, 0.99f);
             bBtn.onClick.AddListener(() =>
             {
                 if (!Cinematic && !ExternalUI && !scrollPanel.activeSelf && !endingPanel.activeSelf && !fullPanel.activeSelf && !helpPanel.activeSelf)
@@ -1211,7 +1211,7 @@ namespace Liuruan
             });
 
             var sBtn = Btn(root, "ScoreBtn", new Vector2(0.54f, 0.93f), new Vector2(0.62f, 0.99f), Txt.ScoreBtn);
-            T(sBtn, 0.43f, 0.86f, 0.53f, 0.99f);
+            T(sBtn, 0.50f, 0.86f, 0.59f, 0.99f);
             sBtn.onClick.AddListener(() =>
             {
                 if (!Cinematic && !ExternalUI && !scrollPanel.activeSelf && !endingPanel.activeSelf && !fullPanel.activeSelf && !helpPanel.activeSelf)

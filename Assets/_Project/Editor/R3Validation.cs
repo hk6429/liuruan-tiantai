@@ -188,7 +188,7 @@ public static class R3Validation
                 if (!ReferenceEquals(observedFlow, flow)) { observedFlow = flow; journey.dialogue.OnSceneEnd += DialogueEnded; }
                 if (journey.StoryVisible)
                 {
-                    if (!capturedStory) { ScreenCapture.CaptureScreenshot("Captures/r3/r3_story.png"); capturedStory = true; }
+                    if (!capturedStory) { ScreenCapture.CaptureScreenshot("Captures/r3/r3_story.png", 3); capturedStory = true; }
                     if (introFrame++ % 12 == 0) journey.Next(); return;
                 }
                 if (journey.Busy)
@@ -196,7 +196,7 @@ public static class R3Validation
                     if (journey.dialogue.IsActive)
                     {
                         string id = journey.dialogue.Core.SceneId;
-                        if ((id == "meet_women" || id == "meet_grandson") && capturedDialogues.Add(id)) ScreenCapture.CaptureScreenshot("Captures/r3/r3_dialogue_" + (id == "meet_women" ? "women" : "grandson") + ".png");
+                        if ((id == "meet_women" || id == "meet_grandson") && capturedDialogues.Add(id)) ScreenCapture.CaptureScreenshot("Captures/r3/r3_dialogue_" + (id == "meet_women" ? "women" : "grandson") + ".png", 3);
                     }
                     if (introFrame++ % 12 == 0) journey.Next(); return;
                 }
@@ -206,7 +206,7 @@ public static class R3Validation
                     // CC：Opening 協程先 yield 一格才開故事卡，給 10 秒寬限避免競態誤判。
                     if (!(capturedStory && journey.TutorialStep > 0) && EditorApplication.timeSinceStartup - started < 10) return;
                     Require(capturedStory && journey.StoryCount == 1 && journey.TutorialStep > 0, "首次故事／教學未出現。");
-                    ScreenCapture.CaptureScreenshot("Captures/r3/r3_tutorial.png"); capturedTutorial = true;
+                    ScreenCapture.CaptureScreenshot("Captures/r3/r3_tutorial.png", 3); capturedTutorial = true;
                     preFall = flow.Player.transform.position; // CC：救援回「最後安全點」（RescueCore），不一定是幕起點
                     flow.MovePlayer(new Vector3(0, -20, -104));
                     recoveryStage = 1; actionAt = EditorApplication.timeSinceStartup; return;
@@ -224,7 +224,7 @@ public static class R3Validation
                     if (!capturedTerm && !ScrollUI.I.Typing)
                     {
                         journey.ReadingLink("t:穀皮"); Require(journey.TermVisible, "詞卡未顯示。");
-                        ScreenCapture.CaptureScreenshot("Captures/r3/r3_term.png"); capturedTerm = true; next = EditorApplication.timeSinceStartup + .3; return;
+                        ScreenCapture.CaptureScreenshot("Captures/r3/r3_term.png", 3); capturedTerm = true; next = EditorApplication.timeSinceStartup + .3; return;
                     }
                     if (journey.TermVisible) { if (EditorApplication.timeSinceStartup < next) return; journey.CloseTerm(); }
                     AdvanceCard(flow); return;
@@ -246,7 +246,7 @@ public static class R3Validation
                         Require(flow.State.bark == 1, "引導測試重載遺失進度。");
                         secondVisit = false; journey.hints.OnHint += HintLevel;
                         journey.hints.Progress(); stallAt = EditorApplication.timeSinceStartup;
-                        ScreenCapture.CaptureScreenshot("Captures/r3/r3_objective.png");
+                        ScreenCapture.CaptureScreenshot("Captures/r3/r3_objective.png", 3);
                         arrowShot = new GameObject("R3ArrowTestCamera").transform;
                         arrowShot.position = flow.Player.cam.position;
                         arrowShot.rotation = Quaternion.LookRotation(flow.Player.cam.position - GameObject.Find("ActPoints/Act1_Bark_2").transform.position);
@@ -257,7 +257,7 @@ public static class R3Validation
                     {
                         if (EditorApplication.timeSinceStartup < next) return;
                         Require(journey.ArrowVisible, "畫面外箭頭未出現。");
-                        ScreenCapture.CaptureScreenshot("Captures/r3/r3_arrow.png");
+                        ScreenCapture.CaptureScreenshot("Captures/r3/r3_arrow.png", 3);
                         PlayerController.CamShot = null; UnityEngine.Object.Destroy(arrowShot.gameObject); arrowShot = null;
                     }
                     Require(EditorApplication.timeSinceStartup - stallAt < 180, "95 秒停滯模擬未完成。");
@@ -274,7 +274,7 @@ public static class R3Validation
                     if (mobileStage == 1)
                     {
                         File.AppendAllText("logs/U-R3-play.md", "- 手機 GameView 實際 " + Screen.width + "×" + Screen.height + "（WARN：GameView 未切到直式，手機版面改瀏覽器實測）。\n");
-                        ScreenCapture.CaptureScreenshot("Captures/r3/r3_mobile.png"); mobileStage = 2; mobileFrame = Time.frameCount; return;
+                        ScreenCapture.CaptureScreenshot("Captures/r3/r3_mobile.png", 3); mobileStage = 2; mobileFrame = Time.frameCount; return;
                     }
                     RestoreSize(); mobileStage = 3; return;
                 }
@@ -283,7 +283,7 @@ public static class R3Validation
                     lastAct = flow.Act;
                     // 唯一的路線放置入口：每幕起點；互動點一律步行接近。
                     flow.MovePlayer(GameFlow.ActStart(flow.Act));
-                    ScreenCapture.CaptureScreenshot("Captures/r3/r3_act" + flow.Act + ".png");
+                    ScreenCapture.CaptureScreenshot("Captures/r3/r3_act" + flow.Act + ".png", 3);
                 }
                 string key = Route[step];
                 var it = GameObject.Find("ActPoints/" + key)?.GetComponent<Interactable>();
@@ -306,7 +306,7 @@ public static class R3Validation
                 {
                     if (flow.climb.IsLocked)
                     {
-                        if (!climbShot && flow.Player.transform.position.y > 12f) { climbShot = true; ScreenCapture.CaptureScreenshot("Captures/r3/r3_climb.png");
+                        if (!climbShot && flow.Player.transform.position.y > 12f) { climbShot = true; ScreenCapture.CaptureScreenshot("Captures/r3/r3_climb.png", 3);
                             var c = Camera.main.transform; var pp = flow.Player.transform.position + Vector3.up * 1.2f; var ray = new Ray(c.position, pp - c.position);
                             var sb = new System.Text.StringBuilder("CLIMBCAM cam=" + c.position + " fwd=" + c.forward + " player=" + flow.Player.transform.position + " blockers:");
                             foreach (var rr in UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None)) if (rr.enabled && rr.bounds.IntersectRay(ray, out var dd) && dd < Vector3.Distance(c.position, pp) && !rr.transform.IsChildOf(flow.Player.transform)) sb.Append(" " + rr.name + "<" + (rr.transform.parent ? rr.transform.parent.name : "") + ">@" + dd.ToString("0.0") + "[" + rr.shadowCastingMode + " size=" + rr.bounds.size.magnitude.ToString("0") + " c=" + rr.bounds.center + "]");
@@ -329,7 +329,7 @@ public static class R3Validation
                 if (inside && (!pickup || pickup.CanInteract) && (!climb || climb.CanInteract) && Interactable.Nearest(flow.Player.transform.position) == it)
                 {
                     RecordPoint(it, true, "PASS");
-                    if (key == "Act4_House") ScreenCapture.CaptureScreenshot("Captures/r3/r3_act4_door.png");
+                    if (key == "Act4_House") ScreenCapture.CaptureScreenshot("Captures/r3/r3_act4_door.png", 3);
                     it.Interact();
                     if (climb) { Require(climb.IsLocked, "攀援未啟動。"); climbing = true; flow.climb.SetMoveInput(Vector2.up); return; }
                     if (pickup) Require(!it.gameObject.activeSelf, key + " 未收集。");
@@ -434,7 +434,7 @@ public static class R3Validation
         {
             if (!capturedGuide)
             {
-                ScreenCapture.CaptureScreenshot("Captures/r3/r3_epilogue_guide.png"); capturedGuide = true; next = EditorApplication.timeSinceStartup + .3; return;
+                ScreenCapture.CaptureScreenshot("Captures/r3/r3_epilogue_guide.png", 3); capturedGuide = true; next = EditorApplication.timeSinceStartup + .3; return;
             }
             if (EditorApplication.timeSinceStartup < next) return;
             Require(endedDialogues.Count == 19, "19 段對話未全部 Next 到結束：" + string.Join(",",endedDialogues));

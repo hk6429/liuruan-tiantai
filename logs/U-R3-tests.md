@@ -1,6 +1,6 @@
 # EditMode Test Runner
 
-Passed=132 Failed=0 Skipped=0 Duration=4.3987273
+Passed=132 Failed=0 Skipped=0 Duration=4.6020488
 - Liuruan.Tests.CharacterBobCoreTests.FiniteForHugeInputsAndLongRunningPhase：Passed 
 - Liuruan.Tests.CharacterBobCoreTests.FrequencyIsMonotonicAndCapsAtMaxSpeed：Passed 
 - Liuruan.Tests.CharacterBobCoreTests.IdleHasNoBounceSwayOrLeanAndBreathStaysWithinOnePointFivePercent：Passed 

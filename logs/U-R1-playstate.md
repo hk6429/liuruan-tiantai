@@ -172,3 +172,64 @@
   at R3Validation.Tick () [0x00245] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R3Validation.cs:203 
   at UnityEditor.EditorApplication.Internal_CallUpdateFunctions () [0x00032] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:392 
 19:19:38.607 EnteredEditMode phase= step=16
+19:43:15.892 ExitingEditMode phase= step=16
+19:43:21.316 EnteredPlayMode phase= step=16
+19:46:52.920 ExitingPlayMode phase= step=16
+  at System.Environment.get_StackTrace () [0x00000] in <2a006e6a126e4f7e85a63629ee4f3912>:0 
+  at R1Validation+<>c.<.cctor>b__7_0 (UnityEditor.PlayModeStateChange state) [0x00000] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R1Validation.cs:25 
+  at UnityEditor.EditorApplication.Internal_PlayModeStateChanged (UnityEditor.PlayModeStateChange state) [0x000d9] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:506 
+  at UnityEditor.EditorApplication.set_isPlaying (System.Boolean ) [0x00000] in <25617923f64842dd81bde9025797023e>:0 
+  at R3Validation.FinishJourney (Liuruan.GameFlow flow) [0x0021b] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R3Validation.cs:459 
+  at R3Validation.Tick () [0x00247] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R3Validation.cs:203 
+  at UnityEditor.EditorApplication.Internal_CallUpdateFunctions () [0x00032] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:392 
+19:46:57.321 EnteredEditMode phase= step=16
+19:50:43.721 ExitingEditMode phase= step=16
+19:50:48.654 EnteredPlayMode phase= step=16
+19:50:50.645 ExitingPlayMode phase= step=16
+  at System.Environment.get_StackTrace () [0x00000] in <2a006e6a126e4f7e85a63629ee4f3912>:0 
+  at R1Validation+<>c.<.cctor>b__7_0 (UnityEditor.PlayModeStateChange state) [0x00000] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R1Validation.cs:25 
+  at UnityEditor.EditorApplication.Internal_PlayModeStateChanged (UnityEditor.PlayModeStateChange state) [0x000d9] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:506 
+  at UnityEditor.EditorApplication.set_isPlaying (System.Boolean ) [0x00000] in <25617923f64842dd81bde9025797023e>:0 
+  at HudLayoutCapture.Tick () [0x001e3] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/HudLayoutCapture.cs:52 
+  at UnityEditor.EditorApplication.Internal_CallUpdateFunctions () [0x00032] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:392 
+19:50:51.033 EnteredEditMode phase= step=16
+19:52:16.753 ExitingEditMode phase= step=16
+19:52:21.298 EnteredPlayMode phase= step=16
+19:52:58.011 ExitingPlayMode phase= step=16
+  at System.Environment.get_StackTrace () [0x00000] in <2a006e6a126e4f7e85a63629ee4f3912>:0 
+  at R1Validation+<>c.<.cctor>b__7_0 (UnityEditor.PlayModeStateChange state) [0x00000] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R1Validation.cs:25 
+  at UnityEditor.EditorApplication.Internal_PlayModeStateChanged (UnityEditor.PlayModeStateChange state) [0x000d9] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:506 
+  at UnityEditor.EditorApplication.set_isPlaying (System.Boolean ) [0x00000] in <25617923f64842dd81bde9025797023e>:0 
+  at HudLayoutCapture.Tick () [0x00275] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/HudLayoutCapture.cs:61 
+  at UnityEditor.EditorApplication.Internal_CallUpdateFunctions () [0x00032] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:392 
+19:52:58.355 EnteredEditMode phase= step=16
+19:54:00.323 ExitingEditMode phase= step=16
+19:54:05.462 EnteredPlayMode phase= step=16
+19:54:41.629 ExitingPlayMode phase= step=16
+  at System.Environment.get_StackTrace () [0x00000] in <2a006e6a126e4f7e85a63629ee4f3912>:0 
+  at R1Validation+<>c.<.cctor>b__7_0 (UnityEditor.PlayModeStateChange state) [0x00000] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R1Validation.cs:25 
+  at UnityEditor.EditorApplication.Internal_PlayModeStateChanged (UnityEditor.PlayModeStateChange state) [0x000d9] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:506 
+  at UnityEditor.EditorApplication.set_isPlaying (System.Boolean ) [0x00000] in <25617923f64842dd81bde9025797023e>:0 
+  at HudLayoutCapture.Tick () [0x002a2] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/HudLayoutCapture.cs:64 
+  at UnityEditor.EditorApplication.Internal_CallUpdateFunctions () [0x00032] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:392 
+19:54:42.048 EnteredEditMode phase= step=16
+19:55:29.695 ExitingEditMode phase= step=16
+19:55:35.540 EnteredPlayMode phase= step=16
+19:55:37.507 ExitingPlayMode phase= step=16
+  at System.Environment.get_StackTrace () [0x00000] in <2a006e6a126e4f7e85a63629ee4f3912>:0 
+  at R1Validation+<>c.<.cctor>b__7_0 (UnityEditor.PlayModeStateChange state) [0x00000] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R1Validation.cs:25 
+  at UnityEditor.EditorApplication.Internal_PlayModeStateChanged (UnityEditor.PlayModeStateChange state) [0x000d9] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:506 
+  at UnityEditor.EditorApplication.set_isPlaying (System.Boolean ) [0x00000] in <25617923f64842dd81bde9025797023e>:0 
+  at HudLayoutCapture.Tick () [0x002ad] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/HudLayoutCapture.cs:64 
+  at UnityEditor.EditorApplication.Internal_CallUpdateFunctions () [0x00032] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:392 
+19:55:37.867 EnteredEditMode phase= step=16
+20:04:53.564 ExitingEditMode phase= step=16
+20:05:01.101 EnteredPlayMode phase= step=16
+20:05:03.698 ExitingPlayMode phase= step=16
+  at System.Environment.get_StackTrace () [0x00000] in <2a006e6a126e4f7e85a63629ee4f3912>:0 
+  at R1Validation+<>c.<.cctor>b__7_0 (UnityEditor.PlayModeStateChange state) [0x00000] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/R1Validation.cs:25 
+  at UnityEditor.EditorApplication.Internal_PlayModeStateChanged (UnityEditor.PlayModeStateChange state) [0x000d9] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:506 
+  at UnityEditor.EditorApplication.set_isPlaying (System.Boolean ) [0x00000] in <25617923f64842dd81bde9025797023e>:0 
+  at HudLayoutCapture.Tick () [0x002e5] in /Volumes/hk6429/projects/liuruan-tiantai/Assets/_Project/Editor/HudLayoutCapture.cs:68 
+  at UnityEditor.EditorApplication.Internal_CallUpdateFunctions () [0x00032] in /Users/bokken/build/output/unity/unity/Editor/Mono/EditorApplication.cs:392 
+20:05:04.555 EnteredEditMode phase= step=16

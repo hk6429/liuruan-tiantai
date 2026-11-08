@@ -15,6 +15,8 @@ namespace Liuruan
         Image cooldown;
         TMP_Text bark, objective, prompt, controls;
         Button returnButton;
+        RectTransform[] skillRects = new RectTransform[3];
+        RectTransform recoverRect, skipRect, mapRect, portraitRect, frameRect, promptRect, returnRect, birdsRect, controlsRect;
         Sprite circle;
         TMP_Text endingText, birds;
         EpilogueModel endingModel;
@@ -47,29 +49,37 @@ namespace Liuruan
             for (int i = 0; i < 3; i++)
             {
                 int index = i;
-                var image = Icon("Skill" + keys[i], new Vector2(1, 1), new Vector2(-218 + i * 82, -63), new Vector2(76, 76), new[] { skillBark, skillWater, skillCall }[i], Color.white);
+                var image = Icon("Skill" + keys[i], new Vector2(1, 1), new Vector2(-218 + i * 82, -105), new Vector2(76, 76), new[] { skillBark, skillWater, skillCall }[i], Color.white);
+                skillRects[i] = (RectTransform)image.transform;
                 var button = image.gameObject.AddComponent<Button>();
                 button.onClick.AddListener(() => flow.UseSkill(index));
                 ChildLabel(image.transform, names[i] + "\n" + keys[i], 19);
             }
-            var portrait = Icon("CompanionPortraitFrame", new Vector2(0, 0), new Vector2(75, 78), new Vector2(108, 108), portraitFrame, Color.white);
+            frameRect = (RectTransform)(Icon("CompanionPortraitFrame", new Vector2(0, 0), new Vector2(75, 78), new Vector2(108, 108), portraitFrame, Color.white)).transform;
             cooldown = Icon("CallCooldown", new Vector2(0, 0), new Vector2(75, 78), new Vector2(108, 108), circle, new Color(0.96f, 0.72f, 0.3f));
             cooldown.type = Image.Type.Filled; cooldown.fillMethod = Image.FillMethod.Radial360; cooldown.fillClockwise = true;
-            Icon("CompanionPortrait", new Vector2(0, 0), new Vector2(75, 78), new Vector2(88, 88), portraitImage, Color.white);
-            portrait.transform.SetAsLastSibling();
+            portraitRect = (RectTransform)Icon("CompanionPortrait", new Vector2(0, 0), new Vector2(75, 78), new Vector2(88, 88), portraitImage, Color.white).transform;
+            frameRect.SetAsLastSibling();
             var map = Icon("MinimapFrame", new Vector2(1, 0), new Vector2(-104, 104), new Vector2(184, 184), null, Color.clear);
-            if (flow.minimap) flow.minimap.HudFrame = (RectTransform)map.transform;
+            mapRect = (RectTransform)map.transform;
+            if (flow.minimap) flow.minimap.HudFrame = mapRect;
             controls = Label("Controls", new Vector2(.5f, 0), new Vector2(0, 35), new Vector2(720, 34), 18);
+            controlsRect = (RectTransform)controls.transform.parent;
+            controls.enableAutoSizing = true; controls.fontSizeMin = 11; controls.fontSizeMax = 18; controls.textWrappingMode = TextWrappingModes.NoWrap;
             controls.text = TouchInput.Enabled ? "方向盤移動　滑動畫面轉視角　互動鈕操作　? 開啟說明" : "WASD／方向鍵移動　滑鼠右鍵轉視角　E 互動　H／? 開啟說明";
             prompt = Label("InteractPrompt", new Vector2(0.5f, 0), new Vector2(0, 84), new Vector2(450, 42), 26);
+            promptRect = (RectTransform)prompt.transform.parent;
             returnButton = ActionButton("ReturnHome", "求歸", new Vector2(0.5f, 0), new Vector2(0, 145), new Vector2(160, 52));
             returnButton.onClick.AddListener(flow.ReturnHome);
+            returnRect = (RectTransform)returnButton.transform;
             helpButton = ActionButton("Help", "?", new Vector2(0, 1), new Vector2(32, -128), new Vector2(48, 44));
             helpButton.onClick.AddListener(() => ScrollUI.I.ShowHelp());
             var recover = ActionButton("Recover", "回本幕起點", new Vector2(0, 1), new Vector2(155, -128), new Vector2(180, 44));
             recover.onClick.AddListener(flow.RecoverToStart);
+            recoverRect = (RectTransform)recover.transform;
             var skip = ActionButton("Skip", "跳過本幕", new Vector2(0, 1), new Vector2(155, -178), new Vector2(180, 44));
             skip.onClick.AddListener(() => { skipPanel.SetActive(true); ScrollUI.I.ExternalUI = true; });
+            skipRect = (RectTransform)skip.transform;
             skipPanel = new GameObject("SkipConfirm", typeof(RectTransform), typeof(Image));
             skipPanel.transform.SetParent(root.transform, false);
             var sr = (RectTransform)skipPanel.transform; sr.anchorMin = new Vector2(.25f, .35f); sr.anchorMax = new Vector2(.75f, .65f); sr.offsetMin = sr.offsetMax = Vector2.zero;
@@ -84,6 +94,7 @@ namespace Liuruan
             skipPanel.SetActive(false);
             birds = Label("Birds", new Vector2(.5f, 1), new Vector2(0, -230), new Vector2(250, 36), 21);
             birds.text = "百鳥鳴呼";
+            birdsRect = (RectTransform)birds.transform.parent;
             ending = new GameObject("JourneyEnding", typeof(RectTransform), typeof(Image));
             ending.transform.SetParent(root.transform, false);
             var er = (RectTransform)ending.transform; er.anchorMin = new Vector2(0.05f, 0.05f); er.anchorMax = new Vector2(0.95f, 0.95f); er.offsetMin = er.offsetMax = Vector2.zero;
@@ -134,21 +145,48 @@ namespace Liuruan
             objective.text = flow.Objective;
             cooldown.fillAmount = flow.Companion.CooldownRatio;
             controls.text = TouchInput.Enabled ? "方向盤移動　滑動畫面轉視角　互動鈕操作　? 開啟說明" : "WASD／方向鍵移動　滑鼠右鍵轉視角　E 互動　H／? 開啟說明";
-            bool tall = Screen.height > Screen.width;
-            root.GetComponent<CanvasScaler>().referenceResolution = tall ? new Vector2(720,1280) : new Vector2(1280,720);
-            var o = (RectTransform)objective.transform.parent; o.anchoredPosition = new Vector2(0,tall ? -140 : -46); o.sizeDelta = new Vector2(tall ? 680 : 750, tall ? 110 : 88);
-            objective.enableAutoSizing = true; objective.fontSizeMin = 24; objective.fontSizeMax = 26;
-            objective.transform.parent.gameObject.SetActive(!flow.State.ended);
+            Layout();
+            objective.transform.parent.gameObject.SetActive(!flow.State.ended && !busy);   // R3c：故事卡／對話開著時不露出任務欄
             var near = Interactable.Nearest(flow.Player.transform.position);
             prompt.text = near ? (TouchInput.Enabled ? "互動　" : "[E] ") + near.prompt : "";
             prompt.transform.parent.gameObject.SetActive(!busy && !string.IsNullOrEmpty(prompt.text));
             returnButton.gameObject.SetActive(flow.CanReturn && !busy);
             birds.transform.parent.gameObject.SetActive(!flow.State.ended && Time.unscaledTime < birdsUntil);
-            if (TouchInput.Enabled)
+        }
+        /// 三種版面（每幀套用，避免轉向後殘留）。座標單位＝參考解析度：橫式 1280×720、直式 720×1280。
+        /// 右上 ScrollUI 設定列（線索冊／字級／畫質／朗讀）：桌機 x≥0.625、y 頂端 50；觸控橫式 x≥0.60、y 頂端 101；直式整排在 y 0.73–0.79。
+        /// 觸控的搖桿／互動鈕由 ScrollUI.ApplyPortraitHud 放：橫式搖桿約 x 47–260、y 47–260，互動鈕約 x 1067–1227、y 173–333；
+        /// 直式搖桿約 x 29–231、y 78–280，互動鈕約 x 508–674、y 135–301。這裡的位置都避開這些區域。
+        void Layout()
+        {
+            bool touch = TouchInput.Enabled, tall = Screen.height > Screen.width;
+            root.GetComponent<CanvasScaler>().referenceResolution = tall ? new Vector2(720, 1280) : new Vector2(1280, 720);
+            var o = (RectTransform)objective.transform.parent;
+            objective.enableAutoSizing = true; objective.fontSizeMin = 20; objective.fontSizeMax = 26;
+            float skillY = tall ? -63 : touch ? -150 : -105;
+            for (int i = 0; i < 3; i++) skillRects[i].anchoredPosition = new Vector2(-218 + i * 82, skillY);
+            recoverRect.anchoredPosition = new Vector2(155, -128);
+            skipRect.anchoredPosition = tall ? new Vector2(345, -128) : new Vector2(155, -178);
+            if (tall)
             {
-                var p = (RectTransform)cooldown.transform; p.anchoredPosition = new Vector2(75, 250);
-                root.transform.Find("CompanionPortrait").GetComponent<RectTransform>().anchoredPosition = p.anchoredPosition;
-                root.transform.Find("CompanionPortraitFrame").GetComponent<RectTransform>().anchoredPosition = p.anchoredPosition;
+                o.anchorMin = o.anchorMax = new Vector2(0.5f, 1); o.anchoredPosition = new Vector2(0, -210); o.sizeDelta = new Vector2(680, 100);
+                birdsRect.anchoredPosition = new Vector2(0, -370);
+                controlsRect.sizeDelta = new Vector2(700, 34);
+                promptRect.anchoredPosition = new Vector2(0, 340);
+                returnRect.anchoredPosition = new Vector2(0, 410);
+                mapRect.anchoredPosition = new Vector2(-104, 470); mapRect.sizeDelta = new Vector2(184, 184);
+                frameRect.anchoredPosition = portraitRect.anchoredPosition = ((RectTransform)cooldown.transform).anchoredPosition = new Vector2(75, 400);
+            }
+            else
+            {
+                // 任務欄靠左放（x 250–750），不再壓到右上設定列
+                o.anchorMin = o.anchorMax = new Vector2(0, 1); o.anchoredPosition = new Vector2(500, -46); o.sizeDelta = new Vector2(500, 88);
+                birdsRect.anchoredPosition = new Vector2(0, -230);
+                controlsRect.sizeDelta = new Vector2(720, 34);
+                promptRect.anchoredPosition = new Vector2(0, 84);
+                returnRect.anchoredPosition = new Vector2(0, 145);
+                mapRect.anchoredPosition = touch ? new Vector2(-104, 423) : new Vector2(-104, 104); mapRect.sizeDelta = Vector2.one * (touch ? 160 : 184);
+                frameRect.anchoredPosition = portraitRect.anchoredPosition = ((RectTransform)cooldown.transform).anchoredPosition = touch ? new Vector2(75, 330) : new Vector2(75, 78);
             }
         }
         public void ShowEnding()
